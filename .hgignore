@@ -1,0 +1,3 @@
+glob:*.resharper.user
+glob:*.suo
+glob:_ReSharper*
