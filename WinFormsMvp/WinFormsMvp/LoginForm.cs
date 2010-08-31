@@ -24,9 +24,9 @@ namespace WinFormsMvp
             set { TextBoxPassword.Text = value; }
         }
 
-        public void Run ()
+        public string Run ()
         {
-            Application.Run(this);
+            return ShowDialog().ToString();
         }
 
         private void LoginButton_Click(object sender, EventArgs e)

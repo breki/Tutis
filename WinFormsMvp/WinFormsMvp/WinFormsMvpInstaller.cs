@@ -1,5 +1,3 @@
-using System;
-using System.Windows.Forms;
 using Castle.Facilities.Startable;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
@@ -11,13 +9,19 @@ namespace WinFormsMvp
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.AddFacility<StartableFacility>();
+            WinFormsMvpFacility mvcFacility = new WinFormsMvpFacility();
+            container.AddFacility(mvcFacility.GetType().FullName, mvcFacility);
 
-            container.Register(Component.For<ILoginView>().ImplementedBy<LoginForm>());
-            container.Register(Component.For<LoginPresenter>()
-                .StartUsingMethod(x => x.Run));
+            container.Register(Component.For<IMainAppView>().ImplementedBy<MainForm>().LifeStyle.Transient);
+            container.Register(Component.For<MainAppPresenter>()
+                .StartUsingMethod(x => x.Run).LifeStyle.Transient);
+
+            container.Register(Component.For<ILoginView>().ImplementedBy<LoginForm>().LifeStyle.Transient);
+            container.Register(Component.For<LoginPresenter>().LifeStyle.Transient);
 
             container.Register(Component.For<ILoginService>().ImplementedBy<LoginService>());
+
+            mvcFacility.ApplicationCanStart();
         }
     }
 }

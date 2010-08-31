@@ -19,7 +19,6 @@ namespace WinFormsMvp
             using (IWindsorContainer container = new WindsorContainer())
             {
                 container.Install(new WinFormsMvpInstaller());
-                LoginPresenter presenter = container.Resolve<LoginPresenter>();
             }
         }
     }
