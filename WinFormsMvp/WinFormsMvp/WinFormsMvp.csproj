@@ -56,7 +56,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DialogPresenterBase.cs" />
+    <Compile Include="DialogRunner.cs" />
+    <Compile Include="IDialogPresenter.cs" />
+    <Compile Include="IDialogRunner.cs" />
+    <Compile Include="IDialogView.cs" />
+    <Compile Include="IScreenView.cs" />
     <Compile Include="ILoginService.cs" />
+    <Compile Include="IMainAppView.cs" />
+    <Compile Include="IView.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,10 +74,21 @@
     <Compile Include="ILoginView.cs" />
     <Compile Include="LoginPresenter.cs" />
     <Compile Include="LoginService.cs" />
+    <Compile Include="MainAppPresenter.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PresenterBase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -89,6 +108,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="WinFormsMvpFacility.cs" />
     <Compile Include="WinFormsMvpInstaller.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
