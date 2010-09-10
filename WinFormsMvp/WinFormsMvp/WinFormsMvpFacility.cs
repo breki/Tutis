@@ -10,8 +10,11 @@ namespace WinFormsMvp
     {
         public void ApplicationCanStart()
         {
-            DialogRunner dialogRunner = new DialogRunner(Kernel);
-            Kernel.Register(Component.For<IDialogRunner>().Instance(dialogRunner));
+            DialogsRunner dialogsRunner = new DialogsRunner(Kernel);
+            Kernel.Register(Component.For<IDialogsRunner>().Instance(dialogsRunner));
+
+            DocumentsFactory documentsFactory = new DocumentsFactory(Kernel);
+            Kernel.Register(Component.For<IDocumentsFactory>().Instance(documentsFactory));
         }
 
         protected override void Init()
@@ -28,6 +31,41 @@ namespace WinFormsMvp
 
         private void ComponentUnregistered(string key, IHandler handler)
         {
+        }
+
+        public WinFormsMvpFacility MainForm<TPresenter, TView, TViewImpl>()
+            where TPresenter : MainAppPresenter
+            where TView : IMainAppView
+            where TViewImpl : TView
+        {
+            Kernel.Register(Component.For<TView, TViewImpl>().ImplementedBy<TViewImpl>()
+                                .LifeStyle.Transient);
+            Kernel.Register(Component.For<TPresenter>()
+                .StartUsingMethod(x => x.Run).LifeStyle.Transient);
+
+            return this;
+        }
+
+        public WinFormsMvpFacility Dialog<TPresenter, TView, TViewImpl>()
+            where TPresenter : DialogPresenterBase<TView>
+            where TView : IDialogView
+            where TViewImpl : TView
+        {
+            Kernel.Register(Component.For<TView, TViewImpl>().ImplementedBy<TViewImpl>()
+                                .LifeStyle.Transient);
+            Kernel.Register(Component.For<TPresenter>().LifeStyle.Transient);
+            return this;
+        }
+
+        public WinFormsMvpFacility Document<TPresenter, TView, TViewImpl>()
+            where TPresenter : DocumentPresenterBase<TView>
+            where TView : IDocumentView
+            where TViewImpl : TView
+        {
+            Kernel.Register(Component.For<TView, TViewImpl>().ImplementedBy<TViewImpl>()
+                                .LifeStyle.Transient);
+            Kernel.Register(Component.For<TPresenter>().LifeStyle.Transient);
+            return this;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace WinFormsMvp
 {
-    partial class MainForm
+    partial class MyDocumentForm
     {
         /// <summary>
         /// Required designer variable.
@@ -30,14 +30,13 @@
         {
             this.SuspendLayout();
             // 
-            // MainForm
+            // MyDocumentForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(963, 361);
-            this.IsMdiContainer = true;
-            this.Name = "MainForm";
-            this.Text = "MainForm";
+            this.ClientSize = new System.Drawing.Size(692, 284);
+            this.Name = "MyDocumentForm";
+            this.Text = "MyDocumentForm";
             this.ResumeLayout(false);
 
         }

@@ -4,9 +4,13 @@ namespace WinFormsMvp
 {
     public class MainAppPresenter : PresenterBase<IMainAppView>
     {
-        public MainAppPresenter(IMainAppView view, IDialogRunner dialogRunner) : base(view)
+        public MainAppPresenter(
+            IMainAppView view, 
+            IDialogsRunner dialogsRunner,
+            IDocumentsFactory documentsFactory) : base(view)
         {
-            this.dialogRunner = dialogRunner;
+            this.dialogsRunner = dialogsRunner;
+            this.documentsFactory = documentsFactory;
             view.Shown += OnShown;
         }
 
@@ -17,10 +21,14 @@ namespace WinFormsMvp
 
         private void OnShown(object sender, EventArgs e)
         {
-            dialogRunner.Run<LoginPresenter>();
-            dialogRunner.Run<LoginPresenter>();
+            string result = dialogsRunner.Run<LoginPresenter>();
+            if ("OK" == result)
+            {
+                documentsFactory.ShowDocument<MyDocumentPresenter>();
+            }
         }
 
-        private readonly IDialogRunner dialogRunner;
+        private readonly IDialogsRunner dialogsRunner;
+        private readonly IDocumentsFactory documentsFactory;
     }
 }

@@ -10,14 +10,22 @@ namespace WinFormsMvp
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             WinFormsMvpFacility mvcFacility = new WinFormsMvpFacility();
+
             container.AddFacility(mvcFacility.GetType().FullName, mvcFacility);
 
-            container.Register(Component.For<IMainAppView>().ImplementedBy<MainForm>().LifeStyle.Transient);
-            container.Register(Component.For<MainAppPresenter>()
-                .StartUsingMethod(x => x.Run).LifeStyle.Transient);
+            mvcFacility
+                .MainForm<MainAppPresenter, IMainAppView, MainForm>()
+                .Dialog<LoginPresenter, ILoginView, LoginForm>()
+                .Document<MyDocumentPresenter, IMyDocumentView, MyDocumentForm>();
 
-            container.Register(Component.For<ILoginView>().ImplementedBy<LoginForm>().LifeStyle.Transient);
-            container.Register(Component.For<LoginPresenter>().LifeStyle.Transient);
+                //.RegisterAllOfMvc(typeof(MainForm).Assembly);
+
+            //container.Register(Component.For<IMainAppView>().ImplementedBy<MainForm>().LifeStyle.Transient);
+            //container.Register(Component.For<MainAppPresenter>()
+            //    .StartUsingMethod(x => x.Run).LifeStyle.Transient);
+
+            //container.Register(Component.For<ILoginView>().ImplementedBy<LoginForm>().LifeStyle.Transient);
+            //container.Register(Component.For<LoginPresenter>().LifeStyle.Transient);
 
             container.Register(Component.For<ILoginService>().ImplementedBy<LoginService>());
 

@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0265E3CA-D54E-4DC7-8D8A-3554DB324995}</ProjectGuid>
+    <ProjectGuid>{933138CB-5CC3-4788-B203-B3D16F8EB286}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WinFormsMvp</RootNamespace>
-    <AssemblyName>WinFormsMvp</AssemblyName>
+    <RootNamespace>App</RootNamespace>
+    <AssemblyName>App</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,13 +31,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Castle.Core, Version=2.5.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+    <Reference Include="Gallio, Version=3.1.0.0, Culture=neutral, PublicKeyToken=eb9cfa67ee6ab36e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Castle\bin\Castle.Core.dll</HintPath>
+      <HintPath>..\..\Maperitive\trunk\lib\Gallio\bin\Gallio.dll</HintPath>
     </Reference>
-    <Reference Include="Castle.Windsor, Version=2.5.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Castle\bin\Castle.Windsor.dll</HintPath>
+      <HintPath>..\..\Maperitive\trunk\lib\log4net-1.2.10\bin\net\2.0\release\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="MbUnit, Version=3.1.0.0, Culture=neutral, PublicKeyToken=eb9cfa67ee6ab36e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Maperitive\trunk\lib\Gallio\bin\MbUnit.dll</HintPath>
+    </Reference>
+    <Reference Include="PowerCollections, Version=1.0.2824.15175, Culture=neutral, PublicKeyToken=eb278df4c33bb275, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Quiki\sources\Quiki\lib\PowerCollections\Binaries\PowerCollections.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -56,54 +64,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DialogPresenterBase.cs" />
-    <Compile Include="DialogsRunner.cs" />
-    <Compile Include="DocumentPresenterBase.cs" />
-    <Compile Include="DocumentsFactory.cs" />
-    <Compile Include="IDialogPresenter.cs" />
-    <Compile Include="IDialogsRunner.cs" />
-    <Compile Include="IDialogView.cs" />
-    <Compile Include="IDocumentPresenter.cs" />
-    <Compile Include="IDocumentsFactory.cs" />
-    <Compile Include="IDocumentView.cs" />
-    <Compile Include="ILoginService.cs" />
-    <Compile Include="IMainAppView.cs" />
-    <Compile Include="IMyDocumentView.cs" />
-    <Compile Include="IView.cs" />
-    <Compile Include="LoginForm.cs">
+    <Compile Include="Dimension.cs" />
+    <Compile Include="ExperimentalLayoutMechanism.cs" />
+    <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LoginForm.Designer.cs">
-      <DependentUpon>LoginForm.cs</DependentUpon>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="ILoginView.cs" />
-    <Compile Include="LoginPresenter.cs" />
-    <Compile Include="LoginService.cs" />
-    <Compile Include="MainAppPresenter.cs" />
-    <Compile Include="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MyDocumentForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MyDocumentForm.Designer.cs">
-      <DependentUpon>MyDocumentForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MyDocumentPresenter.cs" />
-    <Compile Include="PresenterBase.cs" />
+    <Compile Include="GdiLayoutVisualizer.cs" />
+    <Compile Include="HorizontalDimensionConstraint.cs" />
+    <Compile Include="IDimensionConstraint.cs" />
+    <Compile Include="IRelationship.cs" />
+    <Compile Include="ILayoutMechanism.cs" />
+    <Compile Include="ILayoutElement.cs" />
+    <Compile Include="ILayoutVisualizer.cs" />
+    <Compile Include="IVisualSystem.cs" />
+    <Compile Include="ConstraintViolationException.cs" />
+    <Compile Include="LayoutTests.cs" />
+    <Compile Include="LeftNoFlyZoneConstraint.cs" />
+    <None Include="MaximumHeightConstraint.cs" />
+    <None Include="MaximumWidthConstraint.cs" />
+    <None Include="MinimumHeightConstraint.cs" />
+    <None Include="MinimumWidthConstraint.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="LoginForm.resx">
-      <DependentUpon>LoginForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MyDocumentForm.resx">
-      <DependentUpon>MyDocumentForm.cs</DependentUpon>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -114,6 +101,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="App.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -123,8 +111,21 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="WinFormsMvpFacility.cs" />
-    <Compile Include="WinFormsMvpInstaller.cs" />
+    <Compile Include="RightAnchorConstraint.cs" />
+    <Compile Include="RightDockConstraint.cs" />
+    <Compile Include="RightNoFlyZoneConstraint.cs" />
+    <Compile Include="SimpleLayoutElement.cs" />
+    <Compile Include="BrekiLayoutPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Tests.cs">
+    </Compile>
+    <Compile Include="TopAnchorConstraint.cs" />
+    <Compile Include="TopNoFlyZoneConstraint.cs" />
+    <Compile Include="VerticalDimensionConstraint.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

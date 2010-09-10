@@ -24,8 +24,17 @@ namespace WinFormsMvp
             set { TextBoxPassword.Text = value; }
         }
 
+        public IMainAppView MainAppView
+        {
+            get { return mainAppView; }
+            set { mainAppView = value; }
+        }
+
         public string Run ()
         {
+            if (mainAppView != null)
+                return ShowDialog((IWin32Window) mainAppView).ToString();
+
             return ShowDialog().ToString();
         }
 
@@ -34,5 +43,7 @@ namespace WinFormsMvp
             if (LoginButtonClicked != null)
                 LoginButtonClicked(sender, e);
         }
+
+        private IMainAppView mainAppView;
     }
 }
