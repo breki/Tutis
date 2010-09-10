@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             this.MainPanel = new System.Windows.Forms.Panel();
-            this.ButtonsPanel = new System.Windows.Forms.Panel();
-            this.LoginButton = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.TextBoxUserName = new System.Windows.Forms.TextBox();
             this.TextBoxPassword = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.TextBoxUserName = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.ButtonsPanel = new System.Windows.Forms.Panel();
+            this.LoginButton = new System.Windows.Forms.Button();
             this.MainPanel.SuspendLayout();
             this.ButtonsPanel.SuspendLayout();
             this.SuspendLayout();
@@ -51,46 +51,6 @@
             this.MainPanel.Name = "MainPanel";
             this.MainPanel.Size = new System.Drawing.Size(395, 89);
             this.MainPanel.TabIndex = 0;
-            // 
-            // ButtonsPanel
-            // 
-            this.ButtonsPanel.Controls.Add(this.LoginButton);
-            this.ButtonsPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.ButtonsPanel.Location = new System.Drawing.Point(0, 89);
-            this.ButtonsPanel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.ButtonsPanel.Name = "ButtonsPanel";
-            this.ButtonsPanel.Size = new System.Drawing.Size(395, 49);
-            this.ButtonsPanel.TabIndex = 1;
-            // 
-            // LoginButton
-            // 
-            this.LoginButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.LoginButton.Location = new System.Drawing.Point(270, 7);
-            this.LoginButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.LoginButton.Name = "LoginButton";
-            this.LoginButton.Size = new System.Drawing.Size(112, 37);
-            this.LoginButton.TabIndex = 0;
-            this.LoginButton.Text = "Log In";
-            this.LoginButton.UseVisualStyleBackColor = true;
-            this.LoginButton.Click += new System.EventHandler(this.LoginButton_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 13);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(88, 21);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "User name:";
-            // 
-            // TextBoxUserName
-            // 
-            this.TextBoxUserName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.TextBoxUserName.Location = new System.Drawing.Point(107, 10);
-            this.TextBoxUserName.Name = "TextBoxUserName";
-            this.TextBoxUserName.Size = new System.Drawing.Size(275, 29);
-            this.TextBoxUserName.TabIndex = 1;
             // 
             // TextBoxPassword
             // 
@@ -109,6 +69,47 @@
             this.label2.Size = new System.Drawing.Size(80, 21);
             this.label2.TabIndex = 2;
             this.label2.Text = "Password:";
+            // 
+            // TextBoxUserName
+            // 
+            this.TextBoxUserName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.TextBoxUserName.Location = new System.Drawing.Point(107, 10);
+            this.TextBoxUserName.Name = "TextBoxUserName";
+            this.TextBoxUserName.Size = new System.Drawing.Size(275, 29);
+            this.TextBoxUserName.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(13, 13);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(88, 21);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "User name:";
+            // 
+            // ButtonsPanel
+            // 
+            this.ButtonsPanel.Controls.Add(this.LoginButton);
+            this.ButtonsPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.ButtonsPanel.Location = new System.Drawing.Point(0, 89);
+            this.ButtonsPanel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.ButtonsPanel.Name = "ButtonsPanel";
+            this.ButtonsPanel.Size = new System.Drawing.Size(395, 49);
+            this.ButtonsPanel.TabIndex = 1;
+            // 
+            // LoginButton
+            // 
+            this.LoginButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.LoginButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.LoginButton.Location = new System.Drawing.Point(270, 7);
+            this.LoginButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.LoginButton.Name = "LoginButton";
+            this.LoginButton.Size = new System.Drawing.Size(112, 37);
+            this.LoginButton.TabIndex = 0;
+            this.LoginButton.Text = "Log In";
+            this.LoginButton.UseVisualStyleBackColor = true;
+            this.LoginButton.Click += new System.EventHandler(this.LoginButton_Click);
             // 
             // LoginForm
             // 

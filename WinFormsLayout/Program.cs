@@ -1,8 +1,9 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
-using Castle.Windsor;
 
-namespace WinFormsMvp
+namespace App
 {
     static class Program
     {
@@ -14,11 +15,7 @@ namespace WinFormsMvp
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
-            using (IWindsorContainer container = new WindsorContainer())
-            {
-                container.Install(new WinFormsMvpInstaller());
-            }
+            Application.Run(new Form1());
         }
     }
 }
