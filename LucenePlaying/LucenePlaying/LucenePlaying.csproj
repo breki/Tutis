@@ -61,8 +61,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyFixture.cs" />
+    <Compile Include="CamelCaseWordBreaker.cs" />
+    <Compile Include="CamelCaseTokenFilter.cs" />
+    <Compile Include="FileDocumentsSource.cs" />
+    <Compile Include="IDocumentsSource.cs" />
+    <Compile Include="SourceCodeCharTokenizer.cs" />
+    <Compile Include="Tests\CamelCaseTokenizingTests.cs" />
+    <Compile Include="Tests\CamelCaseTokenBreakerTests.cs" />
+    <Compile Include="CamelCaseTokenPart.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimpleTests.cs" />
+    <Compile Include="Tests\SourceCodeIndexingTests.cs" />
+    <Compile Include="SourceCodeIdentifierAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
