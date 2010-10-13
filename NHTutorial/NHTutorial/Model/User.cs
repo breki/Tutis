@@ -8,7 +8,12 @@ namespace NHTutorial.Model
         public virtual string EmailAddress { get; set; }
         public virtual string Name { get; set; }
         public virtual string PasswordHash { get; set; }
-        public virtual IList<Account> Accounts { get; set; }
+
+        public virtual IList<Account> Accounts
+        {
+            get { return accounts; }
+            set { accounts = value; }
+        }
 
         public virtual Account CreateAccount(string accountName, AccountType accountType)
         {
@@ -24,9 +29,12 @@ namespace NHTutorial.Model
             Account toAccount)
         {
             Transaction trans = new Transaction();
+            trans.User = this;
             trans.FromAccount = fromAccount;
             trans.ToAccount = toAccount;
             return trans;
         }
+
+        private IList<Account> accounts = new List<Account>();
     }
 }

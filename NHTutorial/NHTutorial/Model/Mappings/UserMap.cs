@@ -12,7 +12,8 @@ namespace NHTutorial.Model.Mappings
             Map(x => x.Name).Not.Nullable();
             Map(x => x.PasswordHash).Not.Nullable();
             HasMany(x => x.Accounts)
-                .Cascade.Delete()
+                .Inverse()
+                .Cascade.All()
                 .ForeignKeyConstraintName("FK_Account")
                 .KeyColumn("UserId");
         }

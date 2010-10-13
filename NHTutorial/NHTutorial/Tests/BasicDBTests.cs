@@ -4,7 +4,7 @@ using NHibernate;
 
 namespace NHTutorial.Tests
 {
-    public class Tests1
+    public class BasicDBTests
     {
         /// <summary>
         /// Creates a database structure (tables, indices, constraints) for the tutorial DB. 
