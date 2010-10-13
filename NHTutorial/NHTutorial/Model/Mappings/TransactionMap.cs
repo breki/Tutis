@@ -6,6 +6,8 @@ namespace NHTutorial.Model.Mappings
     {
         public TransactionMap()
         {
+            ImportType<AmountByDate>();
+
             Table("Transactions");
             Id(x => x.Id).GeneratedBy.Identity();
             Map(x => x.Date).Not.Nullable();
