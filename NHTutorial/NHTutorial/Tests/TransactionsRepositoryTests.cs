@@ -24,7 +24,7 @@ namespace NHTutorial.Tests
             }
         }
 
-        [Test]
+        [Test, Pending("Not working, see http://support.fluentnhibernate.org/discussions/help/343-importtype-not-working")]
         public void ListAmountsByDate()
         {
             using (ISession session = SessionFactory.OpenSession())
@@ -37,6 +37,23 @@ namespace NHTutorial.Tests
                     new DateTime(2010, 10, 1),
                     new DateTime(2010, 11, 1));
                 Assert.AreEqual(10, amounts.Count);
+            }
+        }
+
+        [Test]
+        public void ListTransactionsFromAccount()
+        {
+            using (ISession session = SessionFactory.OpenSession())
+            using (ITransaction trans = session.BeginTransaction())
+            {
+                IList<Transaction> transactions = TransactionsRepository.ListTransactionsFromAccount(
+                    session,
+                    mother.Users[0].Id,
+                    mother.Accounts["account1"].Id,
+                    new DateTime(2010, 10, 1),
+                    new DateTime(2010, 11, 1));
+
+                Assert.AreEqual(10, transactions.Count);
             }
         }
 

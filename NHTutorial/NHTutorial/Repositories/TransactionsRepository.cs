@@ -23,6 +23,13 @@ namespace NHTutorial.Repositories
             int accountId,
             DateTime fromDate,
             DateTime tillDate);
+
+        IList<Transaction> ListTransactionsFromAccount (
+            ISession session,
+            int userId,
+            int accountId,
+            DateTime fromDate,
+            DateTime tillDate);
     }
 
     public class TransactionsRepository : ITransactionsRepository
@@ -55,12 +62,32 @@ namespace NHTutorial.Repositories
         {
             return session.CreateQuery(
                 @"select new AmountByDate (t.Date, t.Amount)
-from Transaction t
-where t.Date >= :fromDate
-and t.Date < :tillDate")
+ from Transaction t
+ where t.Date >= :fromDate
+ and t.Date < :tillDate")
                 .SetDateTime("fromDate", fromDate)
                 .SetDateTime("tillDate", tillDate)
                 .List<AmountByDate>();
+        }
+
+        public IList<Transaction> ListTransactionsFromAccount (
+            ISession session,
+            int userId,
+            int accountId,
+            DateTime fromDate,
+            DateTime tillDate)
+        {
+            Account fromAccount = session.Get<Account>(accountId);
+            if (fromAccount.User.Id != userId)
+                throw new ArgumentException("UserId and AccountId do not match");
+
+            return session.CreateCriteria<Transaction>()
+                .Add(Expression.Between("Date", fromDate, tillDate))
+                .Add(Expression.Eq("FromAccount", fromAccount))
+                .SetMaxResults(1000)
+                .AddOrder(Order.Asc("Date"))
+                .AddOrder(Order.Asc("Id"))
+                .List<Transaction>();            
         }
     }
 }
