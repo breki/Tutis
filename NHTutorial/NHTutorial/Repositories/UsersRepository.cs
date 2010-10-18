@@ -28,13 +28,18 @@ namespace NHTutorial.Repositories
 
         public void DeleteUser(ISession session, string userEmailAddress)
         {
-            User user = GetUserByEmailAddress(session, userEmailAddress);
             session.Delete(
-                "from Transaction t where t.User.Id=?`",
-                user.Id,
-                NHibernate.NHibernateUtil.Int32);
-
-            session.Delete(user);
+                "from Transaction t where t.User.EmailAddress=?",
+                userEmailAddress,
+                NHibernate.NHibernateUtil.String);
+            session.Delete(
+                "from Account a where a.User.EmailAddress=?",
+                userEmailAddress,
+                NHibernate.NHibernateUtil.String);
+            session.Delete(
+                "from User u where u.EmailAddress=?",
+                userEmailAddress,
+                NHibernate.NHibernateUtil.String);
         }
 
         public User GetUserByEmailAddress(ISession session, string emailAddress)
