@@ -8,8 +8,7 @@ namespace PBuff.Sample4
     public class GpsTrack
     {
         public const float MagicElevation = -5000;
-        public const double Nanodegree = 0.000000001;
-        public const double HGranularity = 100;
+        public const double HGranularity = 0.000001;
         public const float VGranularity = 0.1f;
 
         [ProtoMember(1, Name = "x", Options = MemberSerializationOptions.Packed)]
@@ -28,8 +27,8 @@ namespace PBuff.Sample4
         { 
             get 
             { 
-                float? max = null;
-                foreach (float elevation in Elevation)
+                int? max = null;
+                foreach (int elevation in Elevation)
                 {
                     if (max == null)
                         max = elevation;

@@ -72,13 +72,14 @@
     <Compile Include="Sample2\GpsTrack.cs" />
     <Compile Include="Sample3\GpsTrack.cs" />
     <Compile Include="Sample4\GpsTrack.cs" />
+    <Compile Include="Sample5\GpsTrack.cs" />
+    <Compile Include="Sample6\GpsTrack.cs" />
     <Compile Include="Tests\Sample3Tests.cs" />
     <Compile Include="Tests\Sample1Tests.cs" />
     <Compile Include="Tests\Sample2Tests.cs" />
     <Compile Include="Tests\Sample4Tests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Sample5\" />
+    <Compile Include="Tests\Sample5Tests.cs" />
+    <Compile Include="Tests\Sample6Tests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

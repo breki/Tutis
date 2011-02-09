@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Brejc.GpsLibrary.Gpx;
 using MbUnit.Framework;
@@ -48,7 +49,13 @@ namespace PBuff.Tests
             using (Stream inputStream = File.Open("Sample2.dat", FileMode.Open))
             {
                 GpsTrack track2 = Serializer.Deserialize<GpsTrack>(inputStream);
+                Assert.AreEqual(15.604103, track2.Points[10].X);
+                Assert.AreEqual(45.896726, track2.Points[10].Y);
+                Assert.AreEqual(128.47f, track2.Points[10].Elevation);
+                Assert.AreEqual(new DateTime(2010, 06, 17, 8, 32, 44).Ticks, track2.Points[10].Time);
+
                 Assert.AreEqual(170.77f, track2.MaxElevation);
+
                 Assert.AreElementsEqual(track.Points, track2.Points);
             }
         }
