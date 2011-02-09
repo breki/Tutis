@@ -1,0 +1,17 @@
+﻿ometa NullOptimization<HostExpression> : OMeta<HostExpression> {
+  SetHelped = !{Set("DidSomething", true)},
+  SetNotHelped = !{Set("DidSomething", false)},
+  Helped    = ?(Get<bool>("DidSomething", false)),
+  Trans     = [:t ?(HasMethod(t)) Apply(t):ans] -> { ans }
+            | Anything,
+  Optimize  = SetNotHelped Trans:x Helped     -> { x },
+  Or        Trans*:xs            -> { Sugar.HackedInnerConcat("Or", xs) },
+  And       Trans*:xs            -> { Sugar.HackedInnerConcat("And", xs) },
+  Many      Trans:x              -> { "Many", x },
+  Many1     Trans:x              -> { "Many1", x },
+  Set       :n Trans:v           -> { "Set", n, v },
+  Not       Trans:x              -> { "Not", x },
+  Lookahead Trans:x              -> { "Lookahead", x },
+  Form      Trans:x              -> { "Form", x },
+  Rule      :name :over :ls Trans:body -> { "Rule", name, over, ls, body }
+}

@@ -1,0 +1,4 @@
+﻿ometa OMetaOptimizer<HostExpression> : Parser<HostExpression> {
+  OptimizeGrammar = ["Grammar" :u :ns :n :gtd :sn :btd OptimizeRule*:rs] -> { Sugar.ConsWithFlatten("Grammar", u, ns, n, gtd, sn, btd, rs) },
+  OptimizeRule    = :r (Foreign(typeof(AndOrOptimization), "Optimize", r):r)* -> { r }
+}

@@ -1,0 +1,66 @@
+﻿COMPILER Label
+
+    public LabelDefinition ParsedLabelDefinition
+    {
+        get
+        {
+            return parsedLabelDefinition;
+        }
+    }
+
+    private LabelDefinition parsedLabelDefinition;
+
+CHARACTERS
+    letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_".
+    digit = "0123456789".
+    tagNameChar = letter + digit.
+    tagNameCharExtended = letter + digit + ":;$".
+    any = ANY.
+    anyButQuote = ANY - '"'.
+
+TOKENS
+    literal = '"' {anyButQuote} '"'.
+    tagName = tagNameChar {tagNameChar}.
+    tagNameQuoted = "[[" tagNameCharExtended {tagNameCharExtended} "]]".
+    functionName = '@' letter {letter | digit}.
+
+PRODUCTIONS
+
+Label                                               (. LabelDefinition labelDef; .)
+    = LabelDefinition<out labelDef>                 (. parsedLabelDefinition = labelDef; .).
+
+LabelDefinition<out LabelDefinition labelDef>       (. labelDef = new LabelDefinition(); ILabelPart part; .)
+    = "@none" 
+    | (
+    LabelPart<out part>                             (. labelDef.AddPart(part); .)
+    {
+    LabelPart<out part>                             (. labelDef.AddPart(part); .)
+    }).
+
+LabelPart<out ILabelPart part>                      (. part = null; .)
+    = LiteralText<out part> 
+    | TagReference<out part> 
+    | FunctionCall<out part>.
+
+LiteralText<out ILabelPart part>
+    = literal                                       (. part = new Literal(t.val.Substring(1, t.val.Length-2)); .).
+
+TagReference<out ILabelPart part>                   (. part = null; .)
+    = tagName                                       (. part = new TagReference(t.val); .)
+    | tagNameQuoted                                 (. part = new TagReference(t.val.Substring(2, t.val.Length - 4)); .).
+
+FunctionCall<out ILabelPart part>                   (. FunctionCall func = new FunctionCall(); .)
+    = functionName                                  (. func.FunctionName = t.val.Substring(1); .)  
+    '('
+    {FunctionArgs<func>}                            (. part = func; .)
+    ')'.
+
+FunctionArgs<FunctionCall func>                     (. FunctionArgument arg; .)
+    = FunctionArg<out arg>                          (. func.AddArgument(arg); .)
+    {',' FunctionArg<out arg>                       (. func.AddArgument(arg); .)
+    }.
+              
+FunctionArg<out FunctionArgument arg>               (. LabelDefinition labelDef; .)
+    = LabelDefinition<out labelDef>                 (. arg = new FunctionArgument (labelDef); .).
+
+END Label.

@@ -1,0 +1,155 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OMetaCS", "HostLanguages\OMetaCS\OMetaCS\OMetaCS.csproj", "{4F41F7F6-74F9-49D4-BDBE-C364B0898260}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OMetaSharp", "Runtime\OMetaSharp\OMetaSharp.csproj", "{108173F3-B9D6-43E5-8049-8F50A38466F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OMetaSharpUnitTests", "Runtime\OMetaSharpUnitTests\OMetaSharpUnitTests.csproj", "{303ADE24-E992-498D-B1BF-0BEB1666F086}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OMetaCSUnitTests", "HostLanguages\OMetaCS\OMetaCSUnitTests\OMetaCSUnitTests.csproj", "{0275BA07-5DBC-4C39-BA4B-BAF66005B9D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrologLibrary", "Examples\Prolog\PrologLibrary\PrologLibrary.csproj", "{06E2AC9E-B350-4C95-8C62-C77E26179C7E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrologLibraryUnitTests", "Examples\Prolog\PrologLibraryUnitTests\PrologLibraryUnitTests.csproj", "{0945A915-B764-4A56-A36C-8FC3C5F124D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prolog", "Examples\Prolog\Prolog\Prolog.csproj", "{95805D19-D2DE-4A98-AA2E-A8511F5EA5CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Factorial", "Examples\Factorial\Factorial\Factorial.csproj", "{6388D9A4-6D8E-480F-8A95-993EF9BDAE86}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator", "Examples\Calculator\Calculator\Calculator.csproj", "{DECE3FFD-F72A-4665-97D7-57DEAE9ACC53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LittleTypeChecker", "Examples\LittleTypeChecker\LittleTypeChecker\LittleTypeChecker.csproj", "{DB5169BD-75CF-4212-9481-733A3481362A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaFizzBuzz", "Examples\MetaFizzBuzz\MetaFizzBuzz\MetaFizzBuzz.csproj", "{0AB70D75-9D8F-4213-AC6C-BFBEC2D412B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumberParser", "Examples\NumberParser\NumberParser\NumberParser.csproj", "{16330283-E759-446D-9903-2FEB4852C52B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "README", "README\README.csproj", "{5CC3003A-4633-466D-9D90-A975EFC827B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalculatorParser", "Examples\Calculator\CalculatorParser\CalculatorParser.csproj", "{8B97D36D-E223-44BF-8099-305B0218A709}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Markup", "Examples\Markup\Markup\Markup.csproj", "{299769E0-3457-4B07-9197-B08FF004EE48}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 16
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs02.codeplex.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = HostLanguages\\OMetaCS\\OMetaCS\\OMetaCS.csproj
+		SccProjectName1 = HostLanguages/OMetaCS/OMetaCS
+		SccLocalPath1 = HostLanguages\\OMetaCS\\OMetaCS
+		SccProjectUniqueName2 = Runtime\\OMetaSharp\\OMetaSharp.csproj
+		SccProjectName2 = Runtime/OMetaSharp
+		SccLocalPath2 = Runtime\\OMetaSharp
+		SccProjectUniqueName3 = Runtime\\OMetaSharpUnitTests\\OMetaSharpUnitTests.csproj
+		SccProjectName3 = Runtime/OMetaSharpUnitTests
+		SccLocalPath3 = Runtime\\OMetaSharpUnitTests
+		SccProjectUniqueName4 = HostLanguages\\OMetaCS\\OMetaCSUnitTests\\OMetaCSUnitTests.csproj
+		SccProjectName4 = HostLanguages/OMetaCS/OMetaCSUnitTests
+		SccLocalPath4 = HostLanguages\\OMetaCS\\OMetaCSUnitTests
+		SccProjectUniqueName5 = Examples\\Prolog\\PrologLibrary\\PrologLibrary.csproj
+		SccProjectName5 = Examples/Prolog/PrologLibrary
+		SccLocalPath5 = Examples\\Prolog\\PrologLibrary
+		SccProjectUniqueName6 = Examples\\Prolog\\PrologLibraryUnitTests\\PrologLibraryUnitTests.csproj
+		SccProjectName6 = Examples/Prolog/PrologLibraryUnitTests
+		SccLocalPath6 = Examples\\Prolog\\PrologLibraryUnitTests
+		SccProjectUniqueName7 = Examples\\Prolog\\Prolog\\Prolog.csproj
+		SccProjectName7 = Examples/Prolog/Prolog
+		SccLocalPath7 = Examples\\Prolog\\Prolog
+		SccProjectUniqueName8 = Examples\\Factorial\\Factorial\\Factorial.csproj
+		SccProjectName8 = Examples/Factorial/Factorial
+		SccLocalPath8 = Examples\\Factorial\\Factorial
+		SccProjectUniqueName9 = Examples\\Calculator\\Calculator\\Calculator.csproj
+		SccProjectName9 = Examples/Calculator/Calculator
+		SccLocalPath9 = Examples\\Calculator\\Calculator
+		SccProjectUniqueName10 = Examples\\LittleTypeChecker\\LittleTypeChecker\\LittleTypeChecker.csproj
+		SccProjectName10 = Examples/LittleTypeChecker/LittleTypeChecker
+		SccLocalPath10 = Examples\\LittleTypeChecker\\LittleTypeChecker
+		SccProjectUniqueName11 = Examples\\MetaFizzBuzz\\MetaFizzBuzz\\MetaFizzBuzz.csproj
+		SccProjectName11 = Examples/MetaFizzBuzz/MetaFizzBuzz
+		SccLocalPath11 = Examples\\MetaFizzBuzz\\MetaFizzBuzz
+		SccProjectUniqueName12 = Examples\\NumberParser\\NumberParser\\NumberParser.csproj
+		SccProjectName12 = Examples/NumberParser/NumberParser
+		SccLocalPath12 = Examples\\NumberParser\\NumberParser
+		SccProjectUniqueName13 = README\\README.csproj
+		SccProjectName13 = README
+		SccLocalPath13 = README
+		SccProjectUniqueName14 = Examples\\Calculator\\CalculatorParser\\CalculatorParser.csproj
+		SccProjectName14 = Examples/Calculator/CalculatorParser
+		SccLocalPath14 = Examples\\Calculator\\CalculatorParser
+		SccProjectUniqueName15 = Examples\\Markup\\Markup\\Markup.csproj
+		SccProjectName15 = Examples/Markup/Markup
+		SccLocalPath15 = Examples\\Markup\\Markup
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F41F7F6-74F9-49D4-BDBE-C364B0898260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F41F7F6-74F9-49D4-BDBE-C364B0898260}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F41F7F6-74F9-49D4-BDBE-C364B0898260}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F41F7F6-74F9-49D4-BDBE-C364B0898260}.Release|Any CPU.Build.0 = Release|Any CPU
+		{108173F3-B9D6-43E5-8049-8F50A38466F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{108173F3-B9D6-43E5-8049-8F50A38466F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{108173F3-B9D6-43E5-8049-8F50A38466F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{108173F3-B9D6-43E5-8049-8F50A38466F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{303ADE24-E992-498D-B1BF-0BEB1666F086}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{303ADE24-E992-498D-B1BF-0BEB1666F086}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{303ADE24-E992-498D-B1BF-0BEB1666F086}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{303ADE24-E992-498D-B1BF-0BEB1666F086}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0275BA07-5DBC-4C39-BA4B-BAF66005B9D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0275BA07-5DBC-4C39-BA4B-BAF66005B9D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0275BA07-5DBC-4C39-BA4B-BAF66005B9D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0275BA07-5DBC-4C39-BA4B-BAF66005B9D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06E2AC9E-B350-4C95-8C62-C77E26179C7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06E2AC9E-B350-4C95-8C62-C77E26179C7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06E2AC9E-B350-4C95-8C62-C77E26179C7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06E2AC9E-B350-4C95-8C62-C77E26179C7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0945A915-B764-4A56-A36C-8FC3C5F124D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0945A915-B764-4A56-A36C-8FC3C5F124D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0945A915-B764-4A56-A36C-8FC3C5F124D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0945A915-B764-4A56-A36C-8FC3C5F124D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95805D19-D2DE-4A98-AA2E-A8511F5EA5CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95805D19-D2DE-4A98-AA2E-A8511F5EA5CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95805D19-D2DE-4A98-AA2E-A8511F5EA5CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95805D19-D2DE-4A98-AA2E-A8511F5EA5CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6388D9A4-6D8E-480F-8A95-993EF9BDAE86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6388D9A4-6D8E-480F-8A95-993EF9BDAE86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6388D9A4-6D8E-480F-8A95-993EF9BDAE86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6388D9A4-6D8E-480F-8A95-993EF9BDAE86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DECE3FFD-F72A-4665-97D7-57DEAE9ACC53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DECE3FFD-F72A-4665-97D7-57DEAE9ACC53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DECE3FFD-F72A-4665-97D7-57DEAE9ACC53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DECE3FFD-F72A-4665-97D7-57DEAE9ACC53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB5169BD-75CF-4212-9481-733A3481362A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB5169BD-75CF-4212-9481-733A3481362A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB5169BD-75CF-4212-9481-733A3481362A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB5169BD-75CF-4212-9481-733A3481362A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AB70D75-9D8F-4213-AC6C-BFBEC2D412B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AB70D75-9D8F-4213-AC6C-BFBEC2D412B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AB70D75-9D8F-4213-AC6C-BFBEC2D412B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AB70D75-9D8F-4213-AC6C-BFBEC2D412B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16330283-E759-446D-9903-2FEB4852C52B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16330283-E759-446D-9903-2FEB4852C52B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16330283-E759-446D-9903-2FEB4852C52B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16330283-E759-446D-9903-2FEB4852C52B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CC3003A-4633-466D-9D90-A975EFC827B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CC3003A-4633-466D-9D90-A975EFC827B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CC3003A-4633-466D-9D90-A975EFC827B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CC3003A-4633-466D-9D90-A975EFC827B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B97D36D-E223-44BF-8099-305B0218A709}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B97D36D-E223-44BF-8099-305B0218A709}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B97D36D-E223-44BF-8099-305B0218A709}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B97D36D-E223-44BF-8099-305B0218A709}.Release|Any CPU.Build.0 = Release|Any CPU
+		{299769E0-3457-4B07-9197-B08FF004EE48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{299769E0-3457-4B07-9197-B08FF004EE48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{299769E0-3457-4B07-9197-B08FF004EE48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{299769E0-3457-4B07-9197-B08FF004EE48}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

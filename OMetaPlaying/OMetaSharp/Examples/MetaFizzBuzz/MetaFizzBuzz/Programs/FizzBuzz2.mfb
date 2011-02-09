@@ -1,0 +1,12 @@
+﻿for every number from 1 to 100                               
+begin
+  if the number is divisible by 3 then  
+    write "Fizz"        
+  if it is divisible by 5 then
+    write "Buzz"
+  if it is not divisible by 3 and it is not divisible by 5 then    
+    write the number
+  
+  print ""
+end
+  

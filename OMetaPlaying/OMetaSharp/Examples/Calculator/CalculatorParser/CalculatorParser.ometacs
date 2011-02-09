@@ -1,0 +1,14 @@
+﻿ometa OMetaSharp.Examples.CalculatorParser<char> {
+   Digit   ^= Super(Digit):d<int>        -> { d },
+   Number  ^= Number:n<int> Digit:d<int> -> { n * 10 + d }
+            | Digit,
+   AddExpr  = AddExpr:x '+' MulExpr:y    -> { "add", x, y }
+            | AddExpr:x '-' MulExpr:y    -> { "sub", x, y }
+            | MulExpr,
+   MulExpr  = MulExpr:x '*' PrimExpr:y   -> { "mul", x, y }
+            | MulExpr:x '/' PrimExpr:y   -> { "div", x, y }
+            | PrimExpr,
+   PrimExpr = '(' Expr:x ')'             -> { x }
+            | Number:n                   -> { "num", n },
+   Expr     = AddExpr
+}

@@ -1,0 +1,106 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BD6F0C5A-3FC6-4E37-8A92-FA5D8452C14A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GnuCashUtils.Test</RootNamespace>
+    <AssemblyName>GnuCashUtils.Test</AssemblyName>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>GnuCashUtils.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\log4net-1.2.10\bin\net\2.0\release\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="MbUnit.Framework, Version=1.0.2700.29885, Culture=neutral, PublicKeyToken=5e72ecd30bc408d5">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\MbUnit\MbUnit.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Rhino.Mocks, Version=3.1.0.584, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Rhino.Mocks-3.1.0\Rhino.Mocks.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="CommodityTests.cs" />
+    <Compile Include="ConsoleTests.cs" />
+    <Compile Include="ExpressionCalculatorTests.cs" />
+    <Compile Include="FrameworkTests\XmlReaderTests.cs" />
+    <Compile Include="GnuCashFileTests.cs" />
+    <Compile Include="PriceTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PriceMinersTests.cs" />
+    <Compile Include="ReportingTests\AssetsPiechartTests.cs" />
+    <Compile Include="ReportingTests\PriceOverTimeTests.cs" />
+    <Compile Include="WebTests\ControllerTests\AccountsTests.cs" />
+    <Compile Include="WebTests\FluentHtmlTests.cs" />
+    <Compile Include="WebTests\RepositoryTests\BalancesCalculatorTests.cs" />
+    <Compile Include="WebTests\RepositoryTests\TransactionFiltersTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GnuCashUtils.Console\GnuCashUtils.Console.csproj">
+      <Project>{7A92B1AC-F3AE-412A-967F-589930CB6BF5}</Project>
+      <Name>GnuCashUtils.Console</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GnuCashUtils.Framework\GnuCashUtils.Framework.csproj">
+      <Project>{10A4DB97-E045-4817-AA3D-FDF8E2432822}</Project>
+      <Name>GnuCashUtils.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GnuCashUtils.Web\GnuCashUtils.Web.csproj">
+      <Project>{A8660324-A66F-423B-A059-6D3C899C9E33}</Project>
+      <Name>GnuCashUtils.Web</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="GnuCashUtils.snk" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

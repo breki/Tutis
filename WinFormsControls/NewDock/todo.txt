@@ -1,0 +1,6 @@
+﻿- tabs
+- close button on tabs
+- dock panes
+- toolbox
+- the ability to organize desktop into panes
+- the ability to persist the pane sizes

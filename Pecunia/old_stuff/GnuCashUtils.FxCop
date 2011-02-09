@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FxCopProject Version="1.36" Name="My FxCop Project">
+ <ProjectOptions>
+  <SharedProject>True</SharedProject>
+  <Stylesheet Apply="False">d:\mystuff\projects\gnucashutils\trunk\lib\microsoft fxcop 1.36\Xml\FxCopReport.xsl</Stylesheet>
+  <SaveMessages>
+   <Project Status="Active, Excluded" NewOnly="False" />
+   <Report Status="Active" NewOnly="False" />
+  </SaveMessages>
+  <ProjectFile Compress="True" DefaultTargetCheck="True" DefaultRuleCheck="True" SaveByRuleGroup="" Deterministic="True" />
+  <EnableMultithreadedLoad>True</EnableMultithreadedLoad>
+  <EnableMultithreadedAnalysis>True</EnableMultithreadedAnalysis>
+  <SourceLookup>True</SourceLookup>
+  <AnalysisExceptionsThreshold>10</AnalysisExceptionsThreshold>
+  <RuleExceptionsThreshold>1</RuleExceptionsThreshold>
+  <Spelling Locale="en-US" />
+  <OverrideRuleVisibilities>False</OverrideRuleVisibilities>
+  <CustomDictionaries SearchFxCopDir="True" SearchUserProfile="True" SearchProjectDir="True" />
+  <SearchGlobalAssemblyCache>False</SearchGlobalAssemblyCache>
+  <DeadlockDetectionTimeout>120</DeadlockDetectionTimeout>
+  <IgnoreGeneratedCode>False</IgnoreGeneratedCode>
+ </ProjectOptions>
+ <Targets>
+  <AssemblyReferenceDirectories>
+   <Directory>$(ProjectDir)/Criticality.WinApp/bin/Release/</Directory>
+  </AssemblyReferenceDirectories>
+  <Target Name="$(ProjectDir)/GnuCashUtils.Console/bin/Release/GnuCashUtils.Console.exe" Analyze="True" AnalyzeAllChildren="True" />
+  <Target Name="$(ProjectDir)/GnuCashUtils.Framework/bin/Release/GnuCashUtils.Framework.dll" Analyze="True" AnalyzeAllChildren="True" />
+ </Targets>
+ <Rules>
+  <RuleFiles>
+   <RuleFile Name="$(FxCopDir)\Rules\DesignRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\GlobalizationRules.dll" Enabled="True" AllRulesEnabled="False">
+    <Rule Name="AvoidDuplicateAccelerators" Enabled="True" />
+    <Rule Name="DoNotHardcodeLocaleSpecificStrings" Enabled="True" />
+    <Rule Name="SetLocaleForDataTypes" Enabled="True" />
+    <Rule Name="SpecifyCultureInfo" Enabled="True" />
+    <Rule Name="SpecifyIFormatProvider" Enabled="True" />
+    <Rule Name="SpecifyMessageBoxOptions" Enabled="True" />
+   </RuleFile>
+   <RuleFile Name="$(FxCopDir)\Rules\InteroperabilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\MobilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\NamingRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\PerformanceRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\PortabilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\SecurityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\UsageRules.dll" Enabled="True" AllRulesEnabled="True" />
+  </RuleFiles>
+  <Groups />
+  <Settings />
+ </Rules>
+ <FxCopReport Version="1.36">
+  <Namespaces>
+   <Namespace Name="GnuCashUtils.Framework.DataMiners">
+    <Messages>
+     <Message TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020" Status="Excluded" Created="2007-08-05 20:45:17Z">
+      <Issue>
+       <Item>GnuCashUtils.Framework.DataMiners</Item>
+      </Issue>
+     </Message>
+    </Messages>
+   </Namespace>
+   <Namespace Name="GnuCashUtils.Framework.Reporting">
+    <Messages>
+     <Message TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020" Status="Excluded" Created="2007-08-09 19:42:25Z">
+      <Issue>
+       <Item>GnuCashUtils.Framework.Reporting</Item>
+      </Issue>
+     </Message>
+    </Messages>
+   </Namespace>
+  </Namespaces>
+  <Targets>
+   <Target Name="$(ProjectDir)/GnuCashUtils.Console/bin/Release/GnuCashUtils.Console.exe">
+    <Modules>
+     <Module Name="gnucashutils.console.exe">
+      <Namespaces>
+       <Namespace Name="GnuCashUtils.Console">
+        <Types>
+         <Type Name="DailyReportCommand">
+          <Members>
+           <Member Name="#PrepareParameters(System.String,GnuCashUtils.Framework.Commodity)">
+            <Messages>
+             <Message TypeName="MarkMembersAsStatic" Category="Microsoft.Performance" CheckId="CA1822" Status="Excluded" Created="2007-08-25 18:05:13Z" FixCategory="NonBreaking">
+              <Issue>
+               <Item>'DailyReportCommand.PrepareParameters(string, Commodity)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+      </Namespaces>
+     </Module>
+    </Modules>
+   </Target>
+   <Target Name="$(ProjectDir)/GnuCashUtils.Framework/bin/Release/GnuCashUtils.Framework.dll">
+    <Modules>
+     <Module Name="gnucashutils.framework.dll">
+      <Namespaces>
+       <Namespace Name="GnuCashUtils.Framework">
+        <Types>
+         <Type Name="DecimalValue">
+          <Members>
+           <Member Name="#.ctor(System.Int32,System.Int32)">
+            <Messages>
+             <Message Id="0#" TypeName="IdentifiersShouldNotContainTypeNames" Category="Microsoft.Naming" CheckId="CA1720" Status="Excluded" Created="2007-08-05 20:45:17Z">
+              <Issue>
+               <Item>integerValue</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#op_Equality(GnuCashUtils.Framework.DecimalValue,GnuCashUtils.Framework.DecimalValue)">
+            <Messages>
+             <Message Id="0#a" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2007-08-05 20:54:59Z">
+              <Issue Name="ParameterOneLetter">
+               <Item>DecimalValue.op_Equality(DecimalValue, DecimalValue):Boolean</Item>
+               <Item>a</Item>
+              </Issue>
+             </Message>
+             <Message Id="1#b" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2007-08-05 20:54:59Z">
+              <Issue Name="ParameterOneLetter">
+               <Item>DecimalValue.op_Equality(DecimalValue, DecimalValue):Boolean</Item>
+               <Item>b</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#op_Inequality(GnuCashUtils.Framework.DecimalValue,GnuCashUtils.Framework.DecimalValue)">
+            <Messages>
+             <Message Id="0#a" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2007-08-05 20:54:59Z">
+              <Issue Name="ParameterOneLetter">
+               <Item>DecimalValue.op_Inequality(DecimalValue, DecimalValue):Boolean</Item>
+               <Item>a</Item>
+              </Issue>
+             </Message>
+             <Message Id="1#b" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2007-08-05 20:54:59Z">
+              <Issue Name="ParameterOneLetter">
+               <Item>DecimalValue.op_Inequality(DecimalValue, DecimalValue):Boolean</Item>
+               <Item>b</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="GnuCashFile">
+          <Members>
+           <Member Name="#XmlDocument">
+            <Messages>
+             <Message Id="System.Xml.XmlNode" TypeName="MembersShouldNotExposeCertainConcreteTypes" Category="Microsoft.Design" CheckId="CA1059" Status="Excluded" Created="2007-08-05 20:45:17Z">
+              <Issue Name="Xml">
+               <Item>'GnuCashFile.XmlDocument'</Item>
+               <Item>'XmlDocument'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="TransactionSplit">
+          <Members>
+           <Member Name="#account">
+            <Messages>
+             <Message TypeName="AvoidUnusedPrivateFields" Category="Microsoft.Performance" CheckId="CA1823" Status="Excluded" Created="2007-08-08 17:44:20Z">
+              <Issue>
+               <Item>TransactionSplit.account</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#action">
+            <Messages>
+             <Message TypeName="AvoidUnusedPrivateFields" Category="Microsoft.Performance" CheckId="CA1823" Status="Excluded" Created="2007-08-08 17:44:20Z">
+              <Issue>
+               <Item>TransactionSplit.action</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#id">
+            <Messages>
+             <Message TypeName="AvoidUnusedPrivateFields" Category="Microsoft.Performance" CheckId="CA1823" Status="Excluded" Created="2007-08-08 17:44:20Z">
+              <Issue>
+               <Item>TransactionSplit.id</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#quantity">
+            <Messages>
+             <Message TypeName="AvoidUnusedPrivateFields" Category="Microsoft.Performance" CheckId="CA1823" Status="Excluded" Created="2007-08-08 17:44:20Z">
+              <Issue>
+               <Item>TransactionSplit.quantity</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#reconciledState">
+            <Messages>
+             <Message TypeName="AvoidUnusedPrivateFields" Category="Microsoft.Performance" CheckId="CA1823" Status="Excluded" Created="2007-08-08 17:44:20Z">
+              <Issue>
+               <Item>TransactionSplit.reconciledState</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#value">
+            <Messages>
+             <Message TypeName="AvoidUnusedPrivateFields" Category="Microsoft.Performance" CheckId="CA1823" Status="Excluded" Created="2007-08-08 17:44:20Z">
+              <Issue>
+               <Item>TransactionSplit.value</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+       <Namespace Name="GnuCashUtils.Framework.DataMiners">
+        <Types>
+         <Type Name="VzajemciDataMiner">
+          <Members>
+           <Member Name="#log">
+            <Messages>
+             <Message TypeName="AvoidUnusedPrivateFields" Category="Microsoft.Performance" CheckId="CA1823" Status="Excluded" Created="2007-08-08 17:44:20Z">
+              <Issue>
+               <Item>'VzajemciDataMiner.log'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+       <Namespace Name="GnuCashUtils.Framework.Reporting.ReportGenerators">
+        <Types>
+         <Type Name="BalancePiechartReportGenerator">
+          <Members>
+           <Member Name="#AddPieSlice(ZedGraph.ZedGraphControl,System.Nullable`1&lt;System.Decimal&gt;,System.Int32,System.String,GnuCashUtils.Framework.Reporting.ReportParameters)">
+            <Messages>
+             <Message Id="parameters" TypeName="ReviewUnusedParameters" Category="Microsoft.Usage" CheckId="CA1801" Status="Excluded" Created="2007-08-13 21:02:40Z" FixCategory="Breaking">
+              <Issue>
+               <Item>'parameters'</Item>
+               <Item>'BalancePiechartReportGenerator.AddPieSlice(ZedGraphControl, decimal?, int, string, ReportParameters)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Generate(GnuCashUtils.Framework.Book,GnuCashUtils.Framework.Reporting.ReportParameters,System.String,System.String,GnuCashUtils.Framework.AccountType,System.Nullable`1&lt;System.DateTime&gt;,System.Nullable`1&lt;System.DateTime&gt;)">
+            <Messages>
+             <Message TypeName="MarkMembersAsStatic" Category="Microsoft.Performance" CheckId="CA1822" Status="Excluded" Created="2007-08-13 21:02:40Z" FixCategory="Breaking">
+              <Issue>
+               <Item>'BalancePiechartReportGenerator.Generate(Book, ReportParameters, string, string, AccountType, DateTime?, DateTime?)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+      </Namespaces>
+     </Module>
+    </Modules>
+   </Target>
+  </Targets>
+  <Rules>
+   <Rule TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020">
+    <Resolution Name="Default">Consider merging the types defined in '{0}' with another namespace.</Resolution>
+   </Rule>
+   <Rule TypeName="AvoidUnusedPrivateFields" Category="Microsoft.Performance" CheckId="CA1823">
+    <Resolution Name="Default">It appears that field {0} is never used or is only ever assigned to. Use this field or remove it.</Resolution>
+   </Rule>
+   <Rule TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704">
+    <Resolution Name="Type">Correct the spelling of '{0}' in type name {1}.</Resolution>
+   </Rule>
+   <Rule TypeName="IdentifiersShouldNotContainTypeNames" Category="Microsoft.Naming" CheckId="CA1720">
+    <Resolution Name="LanguageIndependentMemberParameter">In member {0}, consider replacing the data type identifier '{1}' in parameter name {2} with a more generic term, such as 'value'.</Resolution>
+    <Resolution Name="LanguageSpecificMember">Consider replacing the language-specific data type identifier '{0}' in member name {1} with either a language-independent equivalent or a more generic term, such as 'value'.</Resolution>
+    <Resolution Name="LanguageSpecificMemberParameter">In member {0}, consider replacing the language-specific data type identifier '{1}' in parameter name {2} with a more generic term, such as 'value'.</Resolution>
+   </Rule>
+   <Rule TypeName="MarkMembersAsStatic" Category="Microsoft.Performance" CheckId="CA1822">
+    <Resolution Name="Default">The 'this' parameter (or 'Me' in Visual Basic) of {0} is never used. Mark the member as static (or Shared in Visual Basic) or use 'this'/'Me' in the method body or at least one property accessor, if appropriate.</Resolution>
+   </Rule>
+   <Rule TypeName="MembersShouldNotExposeCertainConcreteTypes" Category="Microsoft.Design" CheckId="CA1059">
+    <Resolution Name="Xml">Modify member {0} so that it no longer exposes the concrete type {1}. Use IXPathNavigable to represent XML data sources.</Resolution>
+   </Rule>
+   <Rule TypeName="ReviewUnusedParameters" Category="Microsoft.Usage" CheckId="CA1801">
+    <Resolution Name="Default">Parameter {0} of {1} is never used. Remove the parameter or use it in the method body.</Resolution>
+   </Rule>
+  </Rules>
+ </FxCopReport>
+</FxCopProject>

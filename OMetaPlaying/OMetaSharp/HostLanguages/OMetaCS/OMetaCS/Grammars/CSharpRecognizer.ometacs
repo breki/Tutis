@@ -1,0 +1,64 @@
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
+
+ometa CSharpRecognizer : Parser {
+    ParenExpr = EverythingInside("(", ")"),
+    Block = SugaryList | EverythingInside("{", "}"),
+    SugaryPiece = Spaces (IgnoredChunk | BasicName),
+    SugaryList = "{" SugaryPiece:first ("," SugaryPiece)+:rest "}" -> { "Sugar.Cons(" + Sugar.Join(",", first, rest) + ")" },
+    BlockWithSubst :v = !{ Set("HostVars", v.As<VariableSet>()) } Block,
+    Expr = ParenExpr | Spaces (StringLiteral | FunctionCall | BasicName),
+    ExprWithSubst :v = !{ Set("HostVars", v.As<VariableSet>()) } Expr,
+
+	EverythingInside :x :y = Token(x) (~Seq(y) (IgnoredChunk | EverythingMetaInside(x,y)))*:xs Seq(y) -> { Sugar.Implode(xs) },
+    EverythingMetaInside :x :y = EverythingInside(x, y):xs  -> { Sugar.Implode(x, xs, y) }
+                               | (~IgnoredChunk ~Seq(x) ~Seq(y) Anything)+:xs 
+												-> {
+													  Sugar.Statement(() =>{
+																var inputText = Sugar.Implode(xs).As<string>();
+                                                                var hv = Get<VariableSet>("HostVars", null);
+                                                                if((hv == null) || (hv.Count == 0))
+                                                                {
+                                                                    return inputText;
+                                                                }
+                                                                var varArray = hv.ToArray();
+                                                                var re = @"\b(?<varName>" + string.Join("|", varArray) + @")\b(?!\.As\<)";
+                                                                var replaceResult = varArray.Length > 0 ?
+                                                                       Regex.Replace(inputText, re, currentMatch =>{
+                                                                           var varName = currentMatch.Groups["varName"].Value;
+                                                                           var varType = hv.GetType(varName);
+                                                                           var currentReplaceResult = currentMatch.Groups["varName"].Value;
+                                                                           if (!string.IsNullOrEmpty(varType)){
+                                                                               currentReplaceResult += ".As<" + hv.GetType(varName) + ">()";
+                                                                           }
+                                                                           return currentReplaceResult;
+                                                                       }) : inputText;
+                                                                return replaceResult;																										   
+														})
+												   },
+
+	IgnoredChunk  = RegularString
+                  | VerbatimString
+                  | LiteralChar
+                  | Comment,
+                            
+	EscapedChar = '\\' Character:c -> { Sugar.Implode("\\", c) }
+		        | Character:c -> { c },
+
+    LiteralChar = '\'' EscapedChar:x '\'' -> { "'" + x.As<string>() + "'" },		        
+       
+    VerbatimStringChar = (~'""' ~'"' Character:c) -> { c }
+                       | '""':x -> { "\"" },                                               
+                       
+    RegularString = '"' (~'"' EscapedChar)*:xs '"' -> { "\"" + xs.ToLiteralString() + "\""},        
+    VerbatimString = '@' '"' VerbatimStringChar*:xs '"' ->  { "@\"" + xs.ToLiteralString().Replace("\"", "\"\"") + "\"" },    
+    
+    StringLiteral = RegularString | VerbatimString,
+    
+    BasicName = LetterOrDigit+:lod -> { lod.As<string>() },
+    FunctionCall = BasicName:n ParenExpr:pe -> { n.As<string>() + "(" + pe.As<string>() + ")" },
+    
+    Comment = FromTo("/*", "*/") | FromTo("//", "\n"),    
+    FromTo :x :y   = Seq(x):a (~Seq(y) Character)*:bs Seq(y):c -> { a.As<string>() + bs.As<string>() + c.As<string>() }
+}

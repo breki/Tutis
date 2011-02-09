@@ -1,0 +1,6 @@
+﻿using OMetaSharp;
+
+ometa SpatialSpecTests.SpatialSpecParserUsingOMetaSharp : Parser {
+FileStats = Number '\t' Number
+    
+}

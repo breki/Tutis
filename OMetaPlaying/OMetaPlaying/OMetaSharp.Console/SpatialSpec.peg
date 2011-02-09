@@ -1,0 +1,10 @@
+﻿start = SpatialSpecParservalue = stringdebug = bothignore-case = truevisibility = publicSpatialSpecParser := S ((Specification S)+ / ConditionExpression) S;Specification := SpecificationPart (S '.' S SpecificationPart)*;SpecificationPart := (Target)? S '[' S (ConditionExpression)? S ']';Target := Identifier;ConditionExpression := NotConditionExpression (S AdditionalConditionExpression)*;AdditionalConditionExpression := NotConditionExpression / (S ('and')? S NotConditionExpression)     / (S 'or' S NotConditionExpression);NotConditionExpression := ('not')? S (('(' S ConditionExpression S ')') / Condition);Condition := ComparisonCondition / EqualityCondition / ExistenceCondition;ComparisonCondition := TagName S (ComparisonOperatorDouble / ComparisonOperatorSingle) S TagNumericValue;EqualityCondition := TagName S EqualityOperator S TagStringValue;ExistenceCondition := TagName;TagName := Identifier / Literal;EqualityOperator := '=' / '!=';
+ComparisonOperatorSingle := '=' / '<' / '>' ;
+ComparisonOperatorDouble := '!=' / '<=' / '>=';
+TagStringValue := Identifier / Literal;
+TagNumericValue := [0-9]+ ('.' [0-9]*)?;
+
+Identifier := [a-z:] [a-z0-9:]*;
+Literal := '"' [^"]* '"';
+
+S := [ ]*;
