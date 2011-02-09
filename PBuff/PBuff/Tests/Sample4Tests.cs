@@ -25,8 +25,8 @@ namespace PBuff.Tests
             {
                 foreach (ITrackPoint trackPoint in segment.Points)
                 {
-                    track.X.Add(((long) (Math.Round(trackPoint.X/GpsTrack.Nanodegree*GpsTrack.HGranularity))));
-                    track.Y.Add(((long) (Math.Round(trackPoint.Y/GpsTrack.Nanodegree*GpsTrack.HGranularity))));
+                    track.X.Add(((long) (Math.Round(trackPoint.X/GpsTrack.HGranularity))));
+                    track.Y.Add(((long) (Math.Round(trackPoint.Y/GpsTrack.HGranularity))));
 
                     float elevation = (float) (trackPoint.Elevation.HasValue
                                                    ? trackPoint.Elevation.Value
@@ -49,7 +49,7 @@ namespace PBuff.Tests
             string protoDef = Serializer.GetProto<GpsTrack>();
             File.WriteAllText("Sample4.proto", protoDef);
 
-            Assert.AreEqual(1420, len);
+            Assert.AreEqual(1100, len);
 
             using (Stream inputStream = File.Open("Sample4.dat", FileMode.Open))
             {
