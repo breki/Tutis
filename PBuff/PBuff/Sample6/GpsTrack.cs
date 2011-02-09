@@ -26,7 +26,7 @@ namespace PBuff.Sample6
         public double GetPointX(int point)
         {
             long x = 0;
-            for (int i = 0; i < point; i++)
+            for (int i = 0; i <= point; i++)
                 x += X[i];
 
             return x * HGranularity;
@@ -35,7 +35,7 @@ namespace PBuff.Sample6
         public double GetPointY(int point)
         {
             long y = 0;
-            for (int i = 0; i < point; i++)
+            for (int i = 0; i <= point; i++)
                 y += Y[i];
 
             return y * HGranularity;
@@ -44,7 +44,7 @@ namespace PBuff.Sample6
         public double? GetPointElevation(int point)
         {
             int ele = 0;
-            for (int i = 0; i < point; i++)
+            for (int i = 0; i <= point; i++)
                 ele += Elevation[i];
 
             float elevation = ele * VGranularity;
@@ -57,7 +57,7 @@ namespace PBuff.Sample6
         public DateTime? GetPointTime(int point)
         {
             long milliseconds = 0;
-            for (int i = 0; i < point; i++)
+            for (int i = 0; i <= point; i++)
                 milliseconds += Time[i];
 
             return new DateTime(milliseconds * TimeSpan.TicksPerMillisecond);
