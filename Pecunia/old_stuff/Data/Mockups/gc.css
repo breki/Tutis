@@ -1,0 +1,93 @@
+body
+{
+}
+
+a.BalancePlusLink:link
+{
+	color: #000000;
+	text-decoration: none;
+} 
+
+a.BalancePlusLink:visited 
+{
+	color: #000000;
+	text-decoration: none;
+} 
+
+a.BalancePlusLink:hover 
+{
+	color: #000000;
+	color:Blue;
+	font-weight: bold;
+	text-decoration:underline;
+} 
+
+a.BalancePlusLink:active 
+{
+	color: #000000;
+	color:Blue;
+	font-weight: bold;
+} 
+
+a.BalanceMinusLink:link
+{
+	color: red;
+	text-decoration: none;
+} 
+
+a.BalanceMinusLink:visited 
+{
+	color: red;
+	text-decoration: none;
+} 
+
+a.BalanceMinusLink:hover 
+{
+	color: #000000;
+	color:Blue;
+	font-weight: bold;
+	text-decoration:underline;
+} 
+
+a.BalanceMinusLink:active 
+{
+	color: #000000;
+	color:Blue;
+	font-weight: bold;
+} 
+
+.Accounts
+{
+}
+
+.AccountsTable
+{
+	padding: 5px;
+}
+
+.AccountAsset th
+{
+	padding-left: 15px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-right: 15px;
+}
+
+.AccountAsset td
+{
+	padding-left: 15px;
+	padding-top: 0px;
+	padding-bottom: 3px;
+	padding-right: 15px;
+}
+
+.BalancePlusLink
+{
+	text-align: right;
+}
+
+.BalanceMinusLink
+{
+	color: #FF0000;
+	text-align: right;
+}

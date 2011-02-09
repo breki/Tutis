@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Dictionary>
+  <Words>
+    <Unrecognized>
+      <Word>cb</Word>
+    </Unrecognized>
+    <Recognized>
+      <Word>barchart</Word>
+      <Word>Bhwr</Word>
+      <Word>Brk</Word>
+      <Word>conn</Word>
+      <Word>configurator</Word>
+      <Word>contravariant</Word>
+      <Word>Dal</Word>
+      <Word>Eai</Word>
+      <Word>Ebsy</Word>
+      <Word>Ecma</Word>
+      <Word>eof</Word>
+      <Word>exc</Word>
+      <Word>Firefox</Word>
+      <Word>Ganesha</Word>
+      <Word>Gfx</Word>
+      <Word>Hsl</Word>
+      <Word>Imei</Word>
+      <Word>Imeis</Word>
+      <Word>infos</Word>
+      <Word>Msisdn</Word>
+      <Word>Msmq</Word>
+      <Word>multiculture</Word>
+      <Word>optionality</Word>
+      <Word>parseable</Word>
+      <Word>piechart</Word>
+      <Word>renderer</Word>
+      <Word>renderers</Word>
+      <Word>retrier</Word>
+      <Word>retriers</Word>
+      <Word>rgb</Word>
+      <Word>Skladi</Word>
+      <Word>Slo</Word>
+      <Word>Slovenije</Word>
+      <Word>unpause</Word>
+      <Word>Vzajemci</Word>
+      <Word>Qif</Word>
+      <Word>MetaData</Word>
+      <Word>Asmx</Word>
+      <Word>Sms</Word>
+      <Word>Mms</Word>
+      <Word>Euid</Word>
+      <Word>pushable</Word>
+      <Word>umts</Word>
+      <Word>Utils</Word>
+    </Recognized>
+    <Deprecated>
+      <!-- Be sure to pascal-case deprecated terms and preferred alternates     -->
+      <!-- Note that terms consisting of one or two tokens only will be flagged -->
+      <!-- eg, ComPlus can be checked for but NewComPlus will not be detected   -->
+      <Term PreferredAlternate="EnterpriseServices">ComPlus</Term>
+    </Deprecated>
+    <Inappropriate />
+  </Words>
+  <Acronyms>
+    <CasingExceptions>
+      <Acronym>CJK</Acronym>
+      <Acronym>Pi</Acronym>
+      <Acronym>NESW</Acronym>
+      <Acronym>NWSE</Acronym>
+    </CasingExceptions>
+  </Acronyms>
+</Dictionary>

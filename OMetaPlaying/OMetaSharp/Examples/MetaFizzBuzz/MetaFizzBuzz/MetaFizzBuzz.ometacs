@@ -1,0 +1,113 @@
+﻿using System;
+// Since we use expressions (functions returning an object) and 
+// Actions (statements with no args and no return) a few times, we shorten them to 
+// E and A to make the code less verbose
+using E = System.Func<object>;
+using A = System.Action;
+
+ometa OMetaSharp.Examples.MetaFizzBuzz : Parser {    
+	// Basic literals come first:
+
+	// We override the Parser's version of "Number" which returns a string 
+	// to instead return the integer value of the string.
+    Number ^= Spaces ('+' | '-' | Empty):prefix Digit+:ds<string> -> { int.Parse((prefix.IsEmpty ? "" : prefix.As<string>()) + ds) },
+    
+    // Allow literal strings surrounded by quotes (e.g. "FizzBuzz")
+    QuotedString = Spaces '"' (~'"' :c)*:inner '"' -> { inner.IsEmpty ? "" : inner.As<string>() },
+    
+    // For more natural sounding code, we allow "the" in front of a variable name.
+    // In addition, we keep track of the last variable name used so that we can refer to
+    // it as "it" later on.
+    VariableName = ("the" | Empty) Spaces
+				   FirstAndRest("Letter", "LetterOrDigit"):n<string> !{ Set("_it", n) } -> { n },
+    
+    // Expressions are functions that evaluate to some object. 
+    // We don't return the value directly since expressions can depend on 
+    // global variables that could be change while executing.
+    Exp = AndExp
+		| BinExp
+        | NumExp        
+        | QuotedString:qs<string> -> { (E) (() => qs) },
+    
+    // An "and" expression is the highest level of a function that returns
+    // a boolean value. This left-recursive definition allows for an arbitrary
+    // number of boolean expressions to be and-ed together.
+    AndExp = AndExp:l<E> "and" BoolExp:r<E> -> { (E)(() => ((bool)l() && (bool)r())) }
+		   | BoolExp,
+    
+    // This rule looks at what the expression returns and then tries to
+    // convert non-boolean values by declaring that non-zero values and
+    // non-empty strings are true and everything else is false.
+    BoolExp = Exp:e<E> -> { (E)(
+								() => {
+										object o = e();
+										return o is bool ? (bool)o 
+											 : o is int  ? ((int)o) != 0
+											 : !string.IsNullOrEmpty(o as string) && (o != OMetaList<HostExpression>.Nil);
+									  })							  
+								},        
+    
+    // Binary expressions take two arguments (left and right).
+    // Here we just have the one that is relevant to FizzBuzz
+    BinExp = NumExp:left<E>
+			"is" ("not" | Empty):not
+			("a" "multiple" "of" | "divisible" "by")
+			NumExp:right<E> -> { (E)( 
+							   () => { var l = (int)left();
+									   var r = (int)right();
+									   var isNot = !not.IsEmpty;
+									   return isNot ? (l%r) != 0 : (l%r) == 0;
+									 })
+							},       			 						  
+
+    // Number expressions are functions that just return an integer.
+    // Note that "it" resolves to the *value* of the variable that was last referenced by name.
+    NumExp = Number:n<int>           -> { (E)(() => n) }        
+           | "it"                    -> { (E)(() => Get<int>(Get<string>("_it"))) }
+           | VariableName:vn<string> -> { (E)(() => Get<int>(vn)) },
+        
+    // Statements are the things that actually do work in this language.
+    Stmt = "print" Exp:e<E> -> { (A) (() => { Console.WriteLine(e()); }) }       
+		 | "write" Exp:e<E> -> { (A) (() => { Console.Write(e()); }) }       
+         | "if" AndExp:b<E> "then" Stmt:t<Action>
+           ("else" Stmt | Empty):f -> { (A) (
+											() => { 
+													if((bool)b()) 
+														t(); 
+													else if(!f.IsEmpty) 
+														f.As<A>()(); 
+												  }) 
+									  }
+         | "for" "every" VariableName:n<string>
+           ("from" | Empty) 
+           Number:low<int> "to" Number:high<int>
+           Stmt:s<A> -> { (A) (
+								() => {
+										int lowerBound = low;
+										int upperBound = high;							        
+										string iterationVar = n;
+										A iterationStmt = s;
+										for(int i = lowerBound; i <= upperBound; i++)
+										{
+											Set(iterationVar, i);
+											iterationStmt();																				
+										}
+									  }							
+								)
+     					 }
+         | "begin" Block:block "end" -> { block },
+
+    // A "block" is zero or more statements.     
+    Block = Stmt*:s -> { (A) (
+							    () => {
+										 foreach(var currentStatement in s)
+										 {
+											currentStatement.As<A>()();
+										 }
+									  }
+							  ) 
+						},
+						
+    // And finally, a "program" is just a series of statements, which is a "block"
+    Program = Block
+}

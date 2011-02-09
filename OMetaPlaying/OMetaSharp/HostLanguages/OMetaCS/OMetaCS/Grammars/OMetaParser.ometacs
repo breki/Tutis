@@ -1,0 +1,67 @@
+﻿using System.Text.RegularExpressions;
+using System;
+
+ometa OMetaParser : Parser {
+  FromTo :x :y   = Seq(x) (~Seq(y) Character)* Seq(y),
+  Space         ^= Super(Space) | FromTo("//", "\n") | FromTo("/*", "*/"),
+  NameFirst      = '_' | '$' | Letter,
+  NameRest       = NameFirst | Digit,
+  TSName         = FirstAndRest("NameFirst", "NameRest"):xs              -> { xs.As<string>() },
+  Name           = Spaces TSName,
+  EscapedChar    = '\\' Character:c                                         -> { Regex.Unescape("\\" + c.As<string>())[0] }
+                 | Character,
+  TSString       = '\'' (~'\'' EscapedChar)*:xs '\''                         -> { xs.As<string>() },
+  Characters     = '`' '`' (~('\'' '\'') EscapedChar)*:xs '\'' '\''          -> { Sugar.Cons("App", "Seq", xs.ToProgramString()) },
+  SCharacters    = '"'     (~'"'    EscapedChar)*:xs '"'                -> { Sugar.Cons("App", "Token",  xs.ToProgramString() ) },
+  String        ^= (('#' | '`') TSName | TSString):xs                  -> { Sugar.Cons("App", "Exactly", xs.ToProgramString() ) },
+  Number        ^= ('-' | Empty -> { "" }):sign Digit+:ds -> { Sugar.Cons("App", "Exactly", (sign != OMetaList<HostExpression>.Nil ? sign.As<string>() : "") + ds.As<string>()) },
+  Keyword :xs    = Token(xs) ~LetterOrDigit                            -> { xs },
+  HostExpr       = Foreign(typeof(CSharpRecognizer), "ExprWithSubst", (Get<VariableSet>("Locals",new VariableSet()))),
+  AtomicHostExpr = Foreign(typeof(CSharpRecognizer), "BlockWithSubst", (Get<VariableSet>("Locals",new VariableSet()) )),
+  Args           = '(' ListOf("HostExpr", ","):xs ")"                   -> { xs }
+                 | Empty                                               -> { OMetaList<HostExpression>.Nil },
+  Application    = Name:rule Args:ags                                  -> { "App", rule, ags },
+  SemAction      = ("!" | "->") AtomicHostExpr:x                       -> { "Act",  x },
+  SemPred        = "?" HostExpr:x                       -> { Sugar.Cons("Pred", x) },
+  Expr           = ListOf("Expr4", "|"):xs                         -> { Sugar.HackedInnerConcat("Or", xs) },
+  Expr4          = Expr3*:xs                                           -> { Sugar.HackedInnerConcat("And", xs) },
+  OptIter :x     = "*"                                                 -> { "Many",  x }
+                 | "+"                                                 -> { "Many1", x }
+                 | Empty                                               -> { x },
+  TypeName       = Name:n ('<' TypeName:t '>' | Empty:t) -> { n.As<string>() + (t.Count > 0 ? "<" + t.As<string>() + ">" : "") },
+  VarName		 = Name:n ('<' TypeName:inner '>' | Empty:inner) -> { Sugar.StatementCons( () => Get<VariableSet>("Locals").Add(n.As<string>(), inner.Count > 0 ? inner.As<string>() : null), n.As<string>()) },                 
+  Expr3          = Expr2:x OptIter(x):x ( ':' VarName:n                   -> { "Set", n, x }
+                                          | Empty                        -> { x }
+                                          )
+                 | ":" VarName:n                                          -> { Sugar.Cons("Set", n, Sugar.Cons("App", "Anything")) },                 
+  Expr2          = "~" Expr2:x                                         -> { "Not", x }
+                 | "&" Expr1:x                                         -> { "Lookahead", x }
+                 | Expr1,
+  Expr1          = Application | SemAction | SemPred
+                 | ( Keyword("undefined") | Keyword("nil")
+                 |   Keyword("true")      | Keyword("false") ):x       -> { "App", "Exactly", x }
+                 | Spaces (Characters | SCharacters | String | Number)
+                 | "[" Expr:x "]"                                      -> { "Form", x }
+                 | "(" Expr:x ")"                                      -> { x },
+  RuleName       = Name
+                 | Spaces TSString,
+  Rule           = &(RuleName:n ("^" | Empty):over) !{Set("Locals", new VariableSet(Get<string>("DefaultType", null)))}
+					RulePart(n):x ("," RulePart(n))*:xs           -> { Sugar.Cons("Rule", n, over.Count > 0, Get<VariableSet>("Locals"), Sugar.ConsWithFlatten("Or", x, xs)) },
+  RulePart :rn   = RuleName:n ("^" | Empty):over ?(n.Equals(rn)) Expr4:b1 ( "=" Expr:b2        -> { Sugar.Cons("And", b1, b2) }
+                                                  | Empty              -> { b1 }
+                                                  ),
+  Using			 = "using" Spaces (~';' Character)+:usingStatement ';' -> { "using " + Sugar.Implode(usingStatement) + ";" },
+  Usings		 = Using+:u -> { u }
+                 | Empty -> { "using System;" },                                                  
+  NamespacePart  = TSName+:part '.' -> { part.As<string>() },                 
+  Namespace      = NamespacePart+:parts -> { parts.Join(".") }
+                 | Empty -> { "OMetaSharp" },
+  GrammarTypeDef = "<" Spaces TypeName:inType "," Spaces TypeName:defaultType ">"  !{ Set("DefaultType", defaultType.As<string>()) } -> { inType, defaultType }
+                 | "<" Spaces TypeName:inType ">" -> {inType, "" }
+                 | Empty -> { Sugar.Cons("", "") },
+  BaseTypeDef    = "<" Spaces TypeName:baseType ">" -> { baseType }
+                 | Empty -> {""},
+  Grammar        = Usings:u Keyword("ometa") Spaces Namespace:ns TSName:n GrammarTypeDef:gtd
+                     ( ":" Name | Empty -> { "OMeta" } ):sn BaseTypeDef:btd
+                     "{" ListOf("Rule", ","):rs "}"                -> { Sugar.ConsWithFlatten("Grammar", u, ns, n, gtd, sn, btd, rs) }
+}

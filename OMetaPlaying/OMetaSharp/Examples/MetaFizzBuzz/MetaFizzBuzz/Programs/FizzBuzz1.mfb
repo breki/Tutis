@@ -1,0 +1,10 @@
+﻿for every number from 1 to 100                               
+  if the number is a multiple of 3 and it is a multiple of 5 then  
+    print "FizzBuzz"        
+  else if it is a multiple of 3 then
+    print "Fizz"
+  else if it is a multiple of 5 then
+    print "Buzz"
+  else
+    print the number
+    

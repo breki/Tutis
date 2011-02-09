@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OMetaSharp.Console", "OMetaSharp.Console\OMetaSharp.Console.csproj", "{CA649027-2A7A-4E7E-A3DD-2C65D6F78F25}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpatialSpecTests", "SpatialSpecTests\SpatialSpecTests.csproj", "{299F8217-566F-443C-8F03-D412562D2672}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CA649027-2A7A-4E7E-A3DD-2C65D6F78F25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA649027-2A7A-4E7E-A3DD-2C65D6F78F25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA649027-2A7A-4E7E-A3DD-2C65D6F78F25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA649027-2A7A-4E7E-A3DD-2C65D6F78F25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{299F8217-566F-443C-8F03-D412562D2672}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{299F8217-566F-443C-8F03-D412562D2672}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{299F8217-566F-443C-8F03-D412562D2672}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{299F8217-566F-443C-8F03-D412562D2672}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

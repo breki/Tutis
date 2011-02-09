@@ -1,0 +1,10 @@
+﻿ometa AndOrOptimization<HostExpression> : NullOptimization {
+  And^ Trans:x End          SetHelped -> { x },
+  And  TransInside("And"):xs           -> { Sugar.HackedInnerConcat("And", xs) },
+  Or^  Trans:x End          SetHelped -> { x },
+  Or   TransInside("Or"):xs            -> { Sugar.HackedInnerConcat("Or", xs) },
+
+  TransInside :t = [Exactly(t) TransInside(t):xs] TransInside(t):ys SetHelped -> { Sugar.ConsWithFlatten(xs, ys) }
+                 | Trans:x                        TransInside(t):xs           -> { Sugar.ConsWithFlatten(x, xs) }
+                 |                                                            -> { Sugar.Cons() }
+}

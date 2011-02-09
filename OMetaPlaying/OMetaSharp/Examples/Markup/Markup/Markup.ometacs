@@ -1,0 +1,36 @@
+﻿// Grammar came from nblumhardt on Codeplex.
+// See http://www.codeplex.com/ometasharp/Thread/View.aspx?ThreadId=36146
+
+ometa OMetaSharp.Examples.Markup<char, string> : Parser<char> {
+	// Insert the body into a body tag
+	MarkedUpText = Body:t End -> { "<html><body>" + t + "</body></html>" },
+		
+	Body = Block:p Body:b -> { p + b }
+		 | Block, 
+		 
+	Block = Heading 
+		  | Para, 
+
+	// Here we're saying that we must have an expression like "==Hello=="
+	// Note that we're making an assertion via a semantic action (e.g !{ ... })
+	Heading = HDelim:hStart Text:t HDelim:hEnd !{ hStart == hEnd } NewLine -> { "<" + hStart + ">" + t + "</" + hEnd + ">" },
+
+	// We allow for an arbitrary number of equal sign captured to 'h'. This grammar's default output
+	// is a string, so the output of this rule is 'h' plus the length of the captured string
+	// (which is the number of equal signs)
+	HDelim = "="+:h -> { "h" + h.Length }, 
+
+	Para = Text:t NewLine* -> { "<p>" + t + "</p>" }, 
+
+	// This is what we allow inside a paragraph
+	Text = Item+:i,
+		 
+	Item = LetterOrDigit
+		 | Space+ -> { " " }, 
+
+	// By default, OMeta treats whitespace as whatever returns true for
+	// Char.IsWhiteSpace(...). This overrides that by only allowing space or tab
+	Space ^= (' ' | '\t'),
+
+	NewLine = '\n'
+}

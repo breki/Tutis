@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E4834D63-68F0-4D9A-9391-1EF68999D09F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NewDock</RootNamespace>
+    <AssemblyName>NewDock</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DockAlignment.cs" />
+    <Compile Include="DockAreas.cs" />
+    <Compile Include="DockContentCollection.cs" />
+    <Compile Include="DockPane.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DockPaneAppearanceStyle.cs" />
+    <Compile Include="DockPaneCaptionBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DockPaneHitTestArea.cs" />
+    <Compile Include="DockPaneHitTestResult.cs" />
+    <Compile Include="DockPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DockPaneStripBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DockPaneStripTabBase.cs" />
+    <Compile Include="DockState.cs" />
+    <Compile Include="DocumentStyle.cs" />
+    <Compile Include="DocumentTabStripLocation.cs" />
+    <Compile Include="IDockContent.cs" />
+    <Compile Include="InertButtonBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Strings.Designer.cs">
+      <DependentUpon>Strings.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="VS2005DockPaneCaption.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="VS2005DockPaneStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="VS2005DockPaneStripInertButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="VS2005DockPaneStripTab.cs" />
+    <Compile Include="Win32\Enums.cs" />
+    <Compile Include="Win32\NativeMethods.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DockIndicator_PaneDiamond.bmp" />
+    <None Include="Resources\DockIndicator_PaneDiamond_Bottom.bmp" />
+    <None Include="Resources\Dockindicator_PaneDiamond_Fill.bmp" />
+    <None Include="Resources\DockIndicator_PaneDiamond_Hotspot.bmp" />
+    <None Include="Resources\DockIndicator_PaneDiamond_HotspotIndex.bmp" />
+    <None Include="Resources\DockIndicator_PaneDiamond_Left.bmp" />
+    <None Include="Resources\DockIndicator_PaneDiamond_Right.bmp" />
+    <None Include="Resources\DockIndicator_PaneDiamond_Top.bmp" />
+    <None Include="Resources\DockIndicator_PanelBottom.bmp" />
+    <None Include="Resources\DockIndicator_PanelBottom_Active.bmp" />
+    <None Include="Resources\DockIndicator_PanelFill.bmp" />
+    <None Include="Resources\DockIndicator_PanelFill_Active.bmp" />
+    <None Include="Resources\DockIndicator_PanelLeft.bmp" />
+    <None Include="Resources\DockIndicator_PanelLeft_Active.bmp" />
+    <None Include="Resources\DockIndicator_PanelRight.bmp" />
+    <None Include="Resources\DockIndicator_PanelRight_Active.bmp" />
+    <None Include="Resources\DockIndicator_PanelTop.bmp" />
+    <None Include="Resources\DockIndicator_PanelTop_Active.bmp" />
+    <None Include="Resources\DockPane_AutoHide.bmp" />
+    <None Include="Resources\DockPane_Close.bmp" />
+    <None Include="Resources\DockPane_Dock.bmp" />
+    <None Include="Resources\DockPane_Option.bmp" />
+    <None Include="Resources\DockPane_OptionOverflow.bmp" />
+    <Content Include="todo.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

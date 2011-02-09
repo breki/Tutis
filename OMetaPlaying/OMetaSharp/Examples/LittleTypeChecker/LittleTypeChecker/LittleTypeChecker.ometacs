@@ -1,0 +1,14 @@
+﻿ometa OMetaSharp.Examples.LittleTypeChecker<char, Type> : Parser<char> {
+    TypeCheck = Term:t Spaces End     -> { t },
+    Term      = "0"                   -> { typeof(int) }
+              | "1"                   -> { typeof(int) }
+              | "true"                -> { typeof(bool) }
+              | "false"               -> { typeof(bool) }
+              | "isZero" Term:t
+                 ?(t == typeof(int))  -> { typeof(bool) }
+              | "if" Term:t1 
+                "then" Term:t2 
+                "else" Term:t3
+                ?(t1 == typeof(bool))
+                ?(t2.Equals(t3))      -> { t2 }
+}

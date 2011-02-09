@@ -1,0 +1,13 @@
+﻿using System;
+
+ometa OMetaSharp.Examples.Prolog.PrologTranslator : Parser {
+  Variable = Spaces FirstAndRest("Upper", "LetterOrDigit"):name -> { new Var(name.As<string>()) },
+  Symbol   = Spaces FirstAndRest("Lower", "LetterOrDigit"):name -> { new Sym(name.As<string>()) },
+  Clause   = Symbol:sym "(" ListOf("Expr", ","):args ")"       -> { new Clause(sym.As<Sym>(), new PrologItems(args.ToIEnumerable<IPrologItem>())) },
+  Expr     = Clause | Variable | Symbol,
+  Clauses  = ListOf("Clause", ","),
+  Rule     = Clause:head ":-" Clauses:body "."                -> { new Rule(head.As<IPrologItem>(), new PrologItems(body.ToIEnumerable<IPrologItem>())) }
+           | Clause:head                   "."                -> { new Rule(head.As<IPrologItem>(), new PrologItems()) },
+  Rules    = Rule*:rs Spaces End                              -> { rs },
+  Query    = Clause:c Spaces End                              -> { c }
+}

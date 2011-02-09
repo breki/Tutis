@@ -1,0 +1,4 @@
+﻿ometa NumberParser<char, int> {
+	Number ^= Number:n Digit:d -> { n * 10 + d }
+		    | Digit:d          -> { d }
+}

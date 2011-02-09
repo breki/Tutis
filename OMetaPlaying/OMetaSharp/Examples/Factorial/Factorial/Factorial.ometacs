@@ -1,0 +1,4 @@
+﻿ometa OMetaSharp.Examples.Factorial<int, int> : OMeta<int> {
+	Fact 0                           -> { 1 },
+    Fact :n ?(n > 0) Fact((n - 1)):m -> { n*m }
+}
