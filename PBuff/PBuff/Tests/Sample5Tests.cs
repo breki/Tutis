@@ -72,7 +72,9 @@ namespace PBuff.Tests
                 Assert.AreApproximatelyEqual(15.604103, track2.GetPointX(10), 0.000001);
                 Assert.AreApproximatelyEqual(45.896726, track2.GetPointY(10), 0.000001);
                 Assert.AreApproximatelyEqual(128.47f, track2.GetPointElevation(10).Value, 0.1);
-                Assert.LessThanOrEqualTo(new DateTime(2010, 06, 17, 8, 32, 44) - track2.GetPointTime(10).Value, new TimeSpan(0, 0, 0, 0, 1));
+                Assert.LessThanOrEqualTo(
+                    Math.Abs((new DateTime(2010, 06, 17, 8, 32, 44) - track2.GetPointTime(10).Value).TotalSeconds),
+                    1);
 
                 Assert.AreEqual(170.8f, track2.MaxElevation);
 
