@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using TreasureChest.Policies;
 
 namespace TreasureChest
@@ -20,7 +21,8 @@ namespace TreasureChest
         /// <typeparam name="T">The type of the returned instance.</typeparam>
         /// <param name="registration">The service registration to use for fetching.</param>
         /// <returns>A lease to the instance.</returns>
-        Lease<T> FetchFromServiceRegistration<T>(ServiceRegistration registration);
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        Lease<T> FetchFromServiceRegistration<T> (ServiceRegistration registration);
         Type GetImplementationType(Type serviceType);
     }
 }

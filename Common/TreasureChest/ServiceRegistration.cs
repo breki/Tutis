@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using TreasureChest.Policies;
 using TreasureChest.Policies.ServicePolicies;
@@ -44,7 +45,6 @@ namespace TreasureChest
         public IDictionary<string, object> Args
         {
             get { return args; }
-            set { args = value; }
         }
 
         public Type FirstServiceType
@@ -66,7 +66,6 @@ namespace TreasureChest
         public HashSet<Type> ServiceTypes
         {
             get { return serviceTypes; }
-            set { serviceTypes = value; }
         }
 
         public Type ImplType
@@ -119,7 +118,8 @@ namespace TreasureChest
             return clone;
         }
 
-        public object CreateInstanceUsingCustomCreationMethod(IChest chest)
+        [SuppressMessage ("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "chest")]
+        public object CreateInstanceUsingCustomCreationMethod (IChest chest)
         {
             IComponentCreationMethod creationMethod = FindPolicyOf<IComponentCreationMethod>();
             return creationMethod.Create();

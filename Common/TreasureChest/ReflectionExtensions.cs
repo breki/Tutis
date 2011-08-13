@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TreasureChest
 {
     public static class ReflectionExtensions
     {
-        public static bool IsGenericEnumerable(this Type type, out Type innerType)
+        [SuppressMessage ("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#")]
+        public static bool IsGenericEnumerable (this Type type, out Type innerType)
         {
             var genArgs = type.GetGenericArguments();
             if (genArgs.Length == 1 &&

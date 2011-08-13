@@ -1,16 +1,17 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace TreasureChest.Policies
 {
-    public class PropertyInjectionPolicy : ChestExtensionBase, 
-        IAfterComponentCreatedPolicy
+    public class PropertyInjectionPolicy : ChestExtensionBase, IAfterComponentCreatedPolicy
     {
-        public void AfterCreated(object instance, IRegistrationHandler registrationHandler)
+        [SuppressMessage ("Microsoft.Usage", "CA2200:RethrowToPreserveStackDetails")]
+        public void AfterCreated (object instance, IRegistrationHandler registrationHandler)
         {
             IAutowiringConstructorArgumentTypesPolicy autowiringPolicy = Chest.ChestPolicies.FindPolicyOf<IAutowiringConstructorArgumentTypesPolicy>();
 
-            foreach (PropertyInfo property in Chest.ReflectionExplorer.GetPublicInstancePropertiesForType(
+            foreach (PropertyInfo property in ReflectionExplorer.GetPublicInstancePropertiesForType(
                 registrationHandler.Registration.ImplType))
             {
                 // only read-write properties can be injected

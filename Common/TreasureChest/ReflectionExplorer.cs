@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace TreasureChest
@@ -11,7 +12,8 @@ namespace TreasureChest
             assemblies.Add(assembly);
         }
 
-        public void RegisterAssemblyOf<T>()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public void RegisterAssemblyOf<T> ()
         {
             assemblies.Add(typeof(T).Assembly);
         }
@@ -85,7 +87,7 @@ namespace TreasureChest
             }
         }
 
-        public IEnumerable<PropertyInfo> GetPublicInstancePropertiesForType(Type type)
+        public static IEnumerable<PropertyInfo> GetPublicInstancePropertiesForType(Type type)
         {
             return type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
         }

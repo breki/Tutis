@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using TreasureChest.Policies;
 
 namespace TreasureChest
@@ -38,13 +39,13 @@ namespace TreasureChest
             }
         }
 
-        [Obsolete]
-        public void DestroyAllInstances()
-        {
-            foreach (List<ServiceRegistration> list in registrations.Values)
-                foreach (ServiceRegistration registration in list)
-                    registration.RegistrationHandler.DestroyAllInstances(chestPolicies);
-        }
+        //[Obsolete]
+        //public void DestroyAllInstances()
+        //{
+        //    foreach (List<ServiceRegistration> list in registrations.Values)
+        //        foreach (ServiceRegistration registration in list)
+        //            registration.RegistrationHandler.DestroyAllInstances(chestPolicies);
+        //}
 
         public ServiceRegistration GetFirstRegistrationForService(Type serviceType)
         {
@@ -76,12 +77,14 @@ namespace TreasureChest
                    && registrations[serviceType].Count > 0;
         }
 
+        [SuppressMessage ("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         protected Dictionary<Type, List<ServiceRegistration>> Registrations
         {
             get { return registrations; }
         }
 
         private readonly PolicyCollection chestPolicies;
-        private Dictionary<Type, List<ServiceRegistration>> registrations = new Dictionary<Type, List<ServiceRegistration>>();
+        [SuppressMessage ("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        private Dictionary<Type, List<ServiceRegistration>> registrations = new Dictionary<Type, List<ServiceRegistration>> ();
     }
 }

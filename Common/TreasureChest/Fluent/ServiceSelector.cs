@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using TreasureChest.Policies;
 
 namespace TreasureChest.Fluent
@@ -15,12 +16,14 @@ namespace TreasureChest.Fluent
             this.servicesRegistry = servicesRegistry;
         }
 
-        public IServiceAction<T> Service<T>()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IServiceAction<T> Service<T> ()
         {
             return new ServiceAction<T>(chest, chestPolicies, servicesRegistry);
         }
 
-        public ServiceMultiImplementationsAction<T> AllImplementationsOf<T>()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public ServiceMultiImplementationsAction<T> AllImplementationsOf<T> ()
         {
             return new ServiceMultiImplementationsAction<T>(chest, chestPolicies, servicesRegistry);
         }

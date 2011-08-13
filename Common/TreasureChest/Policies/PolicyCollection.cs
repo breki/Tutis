@@ -1,21 +1,32 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace TreasureChest.Policies
 {
+    [SuppressMessage ("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
     public interface IPolicyCollection
     {
         void AddPolicy(IPolicy policy);
-        void AddPolicy<T>() where T : IPolicy, new();
+
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        void AddPolicy<T> () where T : IPolicy, new ();
         IEnumerable<IPolicy> EnumerateAllPolicies();
-        T FindPolicyOf<T>() where T : class, ISingleInstancePolicy;
-        IEnumerable FindAllPoliciesOf<T>() where T : IMultipleInstancePolicy;
-        bool HasPoliciesOf<T>() where T : IPolicy;
+
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        T FindPolicyOf<T> () where T : class, ISingleInstancePolicy;
+
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        IEnumerable FindAllPoliciesOf<T> () where T : IMultipleInstancePolicy;
+
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        bool HasPoliciesOf<T> () where T : IPolicy;
         bool HasPoliciesOf(Type policyType);
     }
 
+    [SuppressMessage ("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
     public class PolicyCollection : IPolicyCollection
     {
         public virtual void AddPolicy(IPolicy policy)
@@ -41,7 +52,8 @@ namespace TreasureChest.Policies
             }
         }
 
-        public void AddPolicy<T>() where T : IPolicy, new()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public void AddPolicy<T> () where T : IPolicy, new ()
         {
             AddPolicy(new T());
         }
@@ -60,7 +72,8 @@ namespace TreasureChest.Policies
             }
         }
 
-        public T FindPolicyOf<T>() where T : class, ISingleInstancePolicy
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public T FindPolicyOf<T> () where T : class, ISingleInstancePolicy
         {
             lock (this)
             {
@@ -78,7 +91,8 @@ namespace TreasureChest.Policies
             }
         }
 
-        public IEnumerable FindAllPoliciesOf<T>() where T : IMultipleInstancePolicy
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IEnumerable FindAllPoliciesOf<T> () where T : IMultipleInstancePolicy
         {
             lock (this)
             {
@@ -98,7 +112,8 @@ namespace TreasureChest.Policies
             }
         }
 
-        public bool HasPoliciesOf<T>() where T : IPolicy
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public bool HasPoliciesOf<T> () where T : IPolicy
         {
             lock (this)
                 return policies.Find(x => x is T) != null;

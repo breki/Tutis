@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
+using System.Security.Permissions;
 
 namespace TreasureChest.Factories
 {
@@ -16,7 +18,9 @@ namespace TreasureChest.Factories
             this.typeToProxy = typeToProxy;
         }
 
-        public override IMessage Invoke(IMessage msg)
+        [SuppressMessage ("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        [SecurityPermission (SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)]
+        public override IMessage Invoke (IMessage msg)
         {
             ReturnMessage responseMessage;
             object response = null;
@@ -158,7 +162,8 @@ namespace TreasureChest.Factories
             return argsWithValues;
         }
 
-        private Type HandleGenericMethod(
+        [SuppressMessage ("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "excludeFirstParameter")]
+        private Type HandleGenericMethod (
             MethodInfo method,
             Type[] genericArgs,
             ref bool excludeFirstParameter)

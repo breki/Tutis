@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using TreasureChest.Policies;
 
@@ -86,7 +87,8 @@ namespace TreasureChest
             }
         }
 
-        public void DestroyAllInstances(IServicesRegistry servicesRegistry)
+        [SuppressMessage ("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "servicesRegistry")]
+        public void DestroyAllInstances (IServicesRegistry servicesRegistry)
         {
             lock (this)
             {

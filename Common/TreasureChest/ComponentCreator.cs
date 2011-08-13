@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using TreasureChest.Policies;
 using TreasureChest.Policies.ServicePolicies;
 
@@ -18,19 +19,20 @@ namespace TreasureChest
         }
 
         public object CreateInstance(
-            ServiceRegistration serviceRegistration,
+            ServiceRegistration registration,
             ResolvingContext context)
         {
             object instance = chestPolicies.FindPolicyOf<IConstructionPolicy>()
-                .CreateInstance(serviceRegistration, context);
+                .CreateInstance(registration, context);
 
-            foreach (IAfterComponentCreatedAction policy in serviceRegistration.FindAllPoliciesOf<IAfterComponentCreatedAction>())
+            foreach (IAfterComponentCreatedAction policy in registration.FindAllPoliciesOf<IAfterComponentCreatedAction>())
                 policy.AfterCreated(instance);
 
             return instance;
         }
 
         private readonly PolicyCollection chestPolicies;
+        [SuppressMessage ("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
         private readonly ILogger logger;
     }
 }
