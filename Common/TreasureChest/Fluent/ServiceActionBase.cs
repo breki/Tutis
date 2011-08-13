@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using TreasureChest.Policies;
 using TreasureChest.Policies.ServicePolicies;
@@ -19,7 +20,8 @@ namespace TreasureChest.Fluent
             return this;
         }
 
-        public IServiceAction<TService> ImplementedBy<TImpl>()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IServiceAction<TService> ImplementedBy<TImpl> ()
         {
             return ImplementedBy(typeof(TImpl));
         }
@@ -63,7 +65,8 @@ namespace TreasureChest.Fluent
             return this;
         }
 
-        public abstract IServiceAction<TService> AlsoRegisterFor<TService2>();
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public abstract IServiceAction<TService> AlsoRegisterFor<TService2> ();
 
         public IServiceAction<TService> Arg(string key, object value)
         {
@@ -71,7 +74,8 @@ namespace TreasureChest.Fluent
             return this;
         }
 
-        public virtual IServiceAction<TService> WithLifestyle<TLifestyle>() where TLifestyle : IRegistrationHandler
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public virtual IServiceAction<TService> WithLifestyle<TLifestyle> () where TLifestyle : IRegistrationHandler
         {
             lifestyleType = typeof(TLifestyle);
             return this;

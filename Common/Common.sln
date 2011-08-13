@@ -9,6 +9,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clavis", "Clavis\Clavis.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clavis.Tests", "Clavis.Tests\Clavis.Tests.csproj", "{3F9D7C46-2C62-4F31-8BD3-AC9143AC8273}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildScripts", "BuildScripts\BuildScripts.csproj", "{A086C4A5-FA62-4F51-9CF0-2DD417084154}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{E0F6CA31-64EF-4BB1-98FB-786F5EAF867A}"
+	ProjectSection(SolutionItems) = preProject
+		Build.bat = Build.bat
+		Common.ProjectVersion.txt = Common.ProjectVersion.txt
+		CustomDictionary.xml = CustomDictionary.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +40,10 @@ Global
 		{3F9D7C46-2C62-4F31-8BD3-AC9143AC8273}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F9D7C46-2C62-4F31-8BD3-AC9143AC8273}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F9D7C46-2C62-4F31-8BD3-AC9143AC8273}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A086C4A5-FA62-4F51-9CF0-2DD417084154}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A086C4A5-FA62-4F51-9CF0-2DD417084154}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A086C4A5-FA62-4F51-9CF0-2DD417084154}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A086C4A5-FA62-4F51-9CF0-2DD417084154}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

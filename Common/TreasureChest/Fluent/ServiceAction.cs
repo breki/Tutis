@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using TreasureChest.Policies;
 
 namespace TreasureChest.Fluent
@@ -44,7 +45,8 @@ namespace TreasureChest.Fluent
             }
         }
 
-        public override IServiceAction<TService> AlsoRegisterFor<TService2>()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public override IServiceAction<TService> AlsoRegisterFor<TService2> ()
         {
             serviceTypes.Add(typeof(TService2));
             return this;

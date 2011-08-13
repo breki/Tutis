@@ -1,0 +1,417 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FxCopProject Version="1.36" Name="My FxCop Project">
+ <ProjectOptions>
+  <SharedProject>True</SharedProject>
+  <Stylesheet Apply="False">d:\hg\tutis\common\lib\microsoft fxcop 1.36\Xml\FxCopReport.xsl</Stylesheet>
+  <SaveMessages>
+   <Project Status="Active, Excluded" NewOnly="False" />
+   <Report Status="Active" NewOnly="False" />
+  </SaveMessages>
+  <ProjectFile Compress="True" DefaultTargetCheck="True" DefaultRuleCheck="True" SaveByRuleGroup="" Deterministic="True" />
+  <EnableMultithreadedLoad>True</EnableMultithreadedLoad>
+  <EnableMultithreadedAnalysis>True</EnableMultithreadedAnalysis>
+  <SourceLookup>True</SourceLookup>
+  <AnalysisExceptionsThreshold>10</AnalysisExceptionsThreshold>
+  <RuleExceptionsThreshold>1</RuleExceptionsThreshold>
+  <Spelling Locale="en-US" />
+  <OverrideRuleVisibilities>False</OverrideRuleVisibilities>
+  <CustomDictionaries SearchFxCopDir="True" SearchUserProfile="True" SearchProjectDir="True" />
+  <SearchGlobalAssemblyCache>False</SearchGlobalAssemblyCache>
+  <DeadlockDetectionTimeout>120</DeadlockDetectionTimeout>
+  <IgnoreGeneratedCode>False</IgnoreGeneratedCode>
+ </ProjectOptions>
+ <Targets>
+  <Target Name="$(ProjectDir)/Clavis/bin/Release/Clavis.dll" Analyze="True" AnalyzeAllChildren="True" />
+  <Target Name="$(ProjectDir)/TreasureChest/bin/Release/TreasureChest.dll" Analyze="True" AnalyzeAllChildren="True" />
+ </Targets>
+ <Rules>
+  <RuleFiles>
+   <RuleFile Name="$(FxCopDir)\Rules\DesignRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\GlobalizationRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\InteroperabilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\MobilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\NamingRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\PerformanceRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\PortabilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\SecurityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\UsageRules.dll" Enabled="True" AllRulesEnabled="True" />
+  </RuleFiles>
+  <Groups />
+  <Settings />
+ </Rules>
+ <FxCopReport Version="1.36">
+  <Namespaces>
+   <Namespace Name="TreasureChest.Factories">
+    <Messages>
+     <Message TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020" Status="Excluded" Created="2011-08-13 18:34:06Z">
+      <Issue>
+       <Item>TreasureChest.Factories</Item>
+      </Issue>
+     </Message>
+    </Messages>
+   </Namespace>
+  </Namespaces>
+  <Targets>
+   <Target Name="$(ProjectDir)/Clavis/bin/Release/Clavis.dll">
+    <Modules>
+     <Module Name="clavis.dll">
+      <Namespaces>
+       <Namespace Name="Clavis">
+        <Types>
+         <Type Name="ClavisFile">
+          <Members>
+           <Member Name="#DeleteStore`1(System.String)">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'ClavisFile.DeleteStore&lt;TStoreImpl&gt;(string)'</Item>
+               <Item>'TStoreImpl'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#OpenStore`1(System.String,System.Boolean)">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'ClavisFile.OpenStore&lt;TStoreImpl&gt;(string, bool)'</Item>
+               <Item>'TStoreImpl'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="IClavisFile">
+          <Members>
+           <Member Name="#DeleteStore`1(System.String)">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'IClavisFile.DeleteStore&lt;TStoreImpl&gt;(string)'</Item>
+               <Item>'TStoreImpl'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#OpenStore`1(System.String,System.Boolean)">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'IClavisFile.OpenStore&lt;TStoreImpl&gt;(string, bool)'</Item>
+               <Item>'TStoreImpl'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+      </Namespaces>
+     </Module>
+    </Modules>
+   </Target>
+   <Target Name="$(ProjectDir)/TreasureChest/bin/Release/TreasureChest.dll">
+    <Modules>
+     <Module Name="treasurechest.dll">
+      <Namespaces>
+       <Namespace Name="TreasureChest">
+        <Types>
+         <Type Name="Chest">
+          <Members>
+           <Member Name="#Add`1()">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'Chest.Add&lt;T&gt;()'</Item>
+               <Item>'T'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Add`2()">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'Chest.Add&lt;TService, TImpl&gt;()'</Item>
+               <Item>'TImpl'</Item>
+              </Issue>
+              <Issue>
+               <Item>'Chest.Add&lt;TService, TImpl&gt;()'</Item>
+               <Item>'TService'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Add`3()">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'Chest.Add&lt;TService1, TService2, TImpl&gt;()'</Item>
+               <Item>'TImpl'</Item>
+              </Issue>
+              <Issue>
+               <Item>'Chest.Add&lt;TService1, TService2, TImpl&gt;()'</Item>
+               <Item>'TService1'</Item>
+              </Issue>
+              <Issue>
+               <Item>'Chest.Add&lt;TService1, TService2, TImpl&gt;()'</Item>
+               <Item>'TService2'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Add`4()">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'Chest.Add&lt;TService1, TService2, TService3, TImpl&gt;()'</Item>
+               <Item>'TImpl'</Item>
+              </Issue>
+              <Issue>
+               <Item>'Chest.Add&lt;TService1, TService2, TService3, TImpl&gt;()'</Item>
+               <Item>'TService1'</Item>
+              </Issue>
+              <Issue>
+               <Item>'Chest.Add&lt;TService1, TService2, TService3, TImpl&gt;()'</Item>
+               <Item>'TService2'</Item>
+              </Issue>
+              <Issue>
+               <Item>'Chest.Add&lt;TService1, TService2, TService3, TImpl&gt;()'</Item>
+               <Item>'TService3'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#AddFactory`1()">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'Chest.AddFactory&lt;T&gt;()'</Item>
+               <Item>'T'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#AddInstance`2(!!0)">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'Chest.AddInstance&lt;TService1, TService2&gt;(TService1)'</Item>
+               <Item>'TService2'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#AddTransient`3()">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'Chest.AddTransient&lt;TService1, TService2, TImpl&gt;()'</Item>
+               <Item>'TImpl'</Item>
+              </Issue>
+              <Issue>
+               <Item>'Chest.AddTransient&lt;TService1, TService2, TImpl&gt;()'</Item>
+               <Item>'TService1'</Item>
+              </Issue>
+              <Issue>
+               <Item>'Chest.AddTransient&lt;TService1, TService2, TImpl&gt;()'</Item>
+               <Item>'TService2'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Fetch`1()">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'Chest.Fetch&lt;T&gt;()'</Item>
+               <Item>'T'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+       <Namespace Name="TreasureChest.Factories">
+        <Types>
+         <Type Name="FactoryProxy">
+          <Members>
+           <Member Name="#HandleGenericMethod(System.Reflection.MethodInfo,System.Type[],System.Boolean&amp;)">
+            <Messages>
+             <Message Id="excludeFirstParameter" TypeName="ReviewUnusedParameters" Category="Microsoft.Usage" CheckId="CA1801" Created="2011-08-13 18:34:06Z" FixCategory="NonBreaking">
+              <Issue>
+               <Item>'excludeFirstParameter'</Item>
+               <Item>'FactoryProxy.HandleGenericMethod(MethodInfo, Type[], ref bool)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Invoke(System.Runtime.Remoting.Messaging.IMessage)">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'FactoryProxy.Invoke(IMessage)'</Item>
+               <Item>'Exception'</Item>
+              </Issue>
+             </Message>
+             <Message TypeName="OverrideLinkDemandsShouldBeIdenticalToBase" Category="Microsoft.Security" CheckId="CA2123" Created="2011-08-13 18:34:06Z">
+              <Issue Name="BaseOnly">
+               <Item>'FactoryProxy.Invoke(IMessage)'</Item>
+               <Item>'RealProxy.Invoke(IMessage)'</Item>
+               <Item>[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)]</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+       <Namespace Name="TreasureChest.Fluent">
+        <Types>
+         <Type Name="IForEachClass">
+          <Members>
+           <Member Name="#Do(System.Action`2&lt;TreasureChest.IChestMaster,System.Type&gt;)">
+            <Messages>
+             <Message Id="Do" TypeName="IdentifiersShouldNotMatchKeywords" Category="Microsoft.Naming" CheckId="CA1716" Created="2011-08-13 18:34:06Z">
+              <Issue Name="Member">
+               <Item>'IForEachClass.Do(Action&lt;IChestMaster, Type&gt;)'</Item>
+               <Item>Do</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="IServiceSelector">
+          <Members>
+           <Member Name="#AllImplementationsOf`1()">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'IServiceSelector.AllImplementationsOf&lt;T&gt;()'</Item>
+               <Item>'T'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Service`1()">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'IServiceSelector.Service&lt;T&gt;()'</Item>
+               <Item>'T'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="ServiceAction`1">
+          <Members>
+           <Member Name="#AlsoRegisterFor`1()">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'ServiceAction&lt;TService&gt;.AlsoRegisterFor&lt;TService2&gt;()'</Item>
+               <Item>'TService2'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="ServiceMultiImplementationsAction`1">
+          <Messages>
+           <Message Id="Multi" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2011-08-13 18:34:06Z">
+            <Issue Name="Type">
+             <Item>Multi</Item>
+             <Item>'ServiceMultiImplementationsAction&lt;TService&gt;'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+          <Members>
+           <Member Name="#chestPolicies">
+            <Messages>
+             <Message TypeName="AvoidUnusedPrivateFields" Category="Microsoft.Performance" CheckId="CA1823" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'ServiceMultiImplementationsAction&lt;TService&gt;.chestPolicies'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#WithLifestyle`1()">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'ServiceMultiImplementationsAction&lt;TService&gt;.WithLifestyle&lt;TLifestyle&gt;()'</Item>
+               <Item>'TLifestyle'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="ServiceSelector">
+          <Members>
+           <Member Name="#AllImplementationsOf`1()">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'ServiceSelector.AllImplementationsOf&lt;T&gt;()'</Item>
+               <Item>'T'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Service`1()">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2011-08-13 18:34:06Z">
+              <Issue>
+               <Item>'ServiceSelector.Service&lt;T&gt;()'</Item>
+               <Item>'T'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+      </Namespaces>
+     </Module>
+    </Modules>
+   </Target>
+  </Targets>
+  <Rules>
+   <Rule TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020">
+    <Resolution Name="Default">Consider merging the types defined in '{0}' with another namespace.</Resolution>
+   </Rule>
+   <Rule TypeName="AvoidUnusedPrivateFields" Category="Microsoft.Performance" CheckId="CA1823">
+    <Resolution Name="Default">It appears that field {0} is never used or is only ever assigned to. Use this field or remove it.</Resolution>
+   </Rule>
+   <Rule TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031">
+    <Resolution Name="Default">Modify {0} to catch a more specific exception than {1} or rethrow the exception.</Resolution>
+   </Rule>
+   <Rule TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004">
+    <Resolution Name="Default">Consider a design where {0} doesn't require explicit type parameter {1} in any call to it.</Resolution>
+   </Rule>
+   <Rule TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704">
+    <Resolution Name="Type">Correct the spelling of '{0}' in type name {1}.</Resolution>
+   </Rule>
+   <Rule TypeName="IdentifiersShouldNotMatchKeywords" Category="Microsoft.Naming" CheckId="CA1716">
+    <Resolution Name="Member">Rename virtual/interface member {0} so that it no longer conflicts with the reserved language keyword '{1}'. Using a reserved keyword as the name of a virtual/interface member makes it harder for consumers in other languages to override/implement the member.</Resolution>
+   </Rule>
+   <Rule TypeName="OverrideLinkDemandsShouldBeIdenticalToBase" Category="Microsoft.Security" CheckId="CA2123">
+    <Resolution Name="BaseOnly">Add the following security attribute to {0} in order to match a LinkDemand on base method {1}:  {2}.</Resolution>
+   </Rule>
+   <Rule TypeName="ReviewUnusedParameters" Category="Microsoft.Usage" CheckId="CA1801">
+    <Resolution Name="Default">Parameter {0} of {1} is never used. Remove the parameter or use it in the method body.</Resolution>
+   </Rule>
+  </Rules>
+ </FxCopReport>
+</FxCopProject>

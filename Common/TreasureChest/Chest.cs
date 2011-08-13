@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using TreasureChest.Factories;
@@ -77,7 +78,8 @@ namespace TreasureChest
             get { return servicesRegistry; }
         }
 
-        public IChestFilling Add<T>() 
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IChestFilling Add<T> () 
         {
             return Add(typeof(T));
         }
@@ -110,7 +112,8 @@ namespace TreasureChest
             }
         }
 
-        public IChestFilling Add<TService, TImpl>()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IChestFilling Add<TService, TImpl> ()
             where TImpl : class, TService
         {
             Type serviceType = typeof(TService);
@@ -124,7 +127,8 @@ namespace TreasureChest
             return this;
         }
 
-        public IChestFilling Add<TService1, TService2, TImpl>()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IChestFilling Add<TService1, TService2, TImpl> ()
             where TImpl : class, TService1, TService2
         {
             Type service1Type = typeof(TService1);
@@ -140,7 +144,8 @@ namespace TreasureChest
             return this;
         }
 
-        public IChestFilling Add<TService1, TService2, TService3, TImpl>() 
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IChestFilling Add<TService1, TService2, TService3, TImpl> () 
             where TImpl : class, TService1, TService2, TService3
         {
             Type service1Type = typeof(TService1);
@@ -157,7 +162,8 @@ namespace TreasureChest
             return this;
         }
 
-        public IChestFilling AddFactory<T>()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IChestFilling AddFactory<T> ()
         {
             Type factoryType = typeof(T);
             FactoryProxy proxy = new FactoryProxy(this, factoryType);
@@ -207,7 +213,8 @@ namespace TreasureChest
             }
         }
 
-        public IChestFilling AddInstance<TService1, TService2>(TService1 instance)
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IChestFilling AddInstance<TService1, TService2> (TService1 instance)
         {
             Type serviceType1 = typeof(TService1);
             Type serviceType2 = typeof(TService2);
@@ -250,7 +257,8 @@ namespace TreasureChest
             return this;
         }
 
-        public IChestFilling AddTransient<T>()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IChestFilling AddTransient<T> ()
         {
             Type serviceType = typeof(T);
 
@@ -282,7 +290,8 @@ namespace TreasureChest
             }
         }
 
-        public IChestFilling AddTransient<TService, TImpl>() where TImpl : class, TService
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IChestFilling AddTransient<TService, TImpl> () where TImpl : class, TService
         {
             Type serviceType = typeof(TService);
             Type implType = typeof(TImpl);
@@ -291,7 +300,8 @@ namespace TreasureChest
             return this;
         }
 
-        public IChestFilling AddTransient<TService1, TService2, TImpl>() 
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IChestFilling AddTransient<TService1, TService2, TImpl> () 
             where TImpl : class, TService1, TService2
         {
             Type service1Type = typeof(TService1);
@@ -328,7 +338,8 @@ namespace TreasureChest
             }
         }
 
-        public Lease<T> Fetch<T>()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public Lease<T> Fetch<T> ()
         {
             Type serviceType = typeof(T);
 
@@ -366,7 +377,8 @@ namespace TreasureChest
             throw new ChestException(message);
         }
 
-        public Lease<T> FetchFromServiceRegistration<T>(ServiceRegistration registration)
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public Lease<T> FetchFromServiceRegistration<T> (ServiceRegistration registration)
         {
             logger.Log (LogEventType.Fetch, "serviceType", typeof(T));
 
@@ -378,7 +390,8 @@ namespace TreasureChest
             return new Lease<T>(this, (T)instance);
         }
 
-        public IEnumerable<T> FetchAll<T>()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IEnumerable<T> FetchAll<T> ()
         {
             Type type = typeof(T);
 
@@ -461,7 +474,8 @@ namespace TreasureChest
             }
         }
 
-        public bool HasService<T>()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public bool HasService<T> ()
         {
             Type serviceType = typeof(T);
             return HasService(serviceType);
@@ -472,7 +486,8 @@ namespace TreasureChest
             return servicesRegistry.IsServiceRegistered(serviceType);
         }
 
-        public IChestFilling InstallExtension<TExtension>() where TExtension : IChestExtension, new()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IChestFilling InstallExtension<TExtension> () where TExtension : IChestExtension, new ()
         {
             return InstallExtension(new TExtension());
         }
@@ -484,7 +499,8 @@ namespace TreasureChest
             return this;
         }
 
-        public void AssertExtensionIsInstalled<TExtension>() where TExtension : IChestExtension
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public void AssertExtensionIsInstalled<TExtension> () where TExtension : IChestExtension
         {
             if (false == chestPolicies.HasPoliciesOf<TExtension>())
             {
@@ -500,7 +516,8 @@ namespace TreasureChest
             return this;
         }
 
-        public IChestFilling RegisterAssemblyOf<T>()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IChestFilling RegisterAssemblyOf<T> ()
         {
             reflectionExplorer.RegisterAssemblyOf<T>();
             return this;
@@ -520,14 +537,16 @@ namespace TreasureChest
             }
         }
 
-        public IChestFilling SetDefaultLifestyle<T>()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IChestFilling SetDefaultLifestyle<T> ()
             where T : IRegistrationHandler
         {
             defaultLifestyle = typeof(T);
             return this;
         }
 
-        public IChestFilling SetPolicy<T>() where T : IGlobalChestPolicy, new()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IChestFilling SetPolicy<T> () where T : IGlobalChestPolicy, new ()
         {
             T policy = new T();
             policy.Initialize(this);

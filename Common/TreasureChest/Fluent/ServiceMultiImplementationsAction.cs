@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using TreasureChest.Policies;
 
 namespace TreasureChest.Fluent
@@ -32,7 +33,8 @@ namespace TreasureChest.Fluent
             }
         }
 
-        public ServiceMultiImplementationsAction<TService> WithLifestyle<TLifestyle>() 
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public ServiceMultiImplementationsAction<TService> WithLifestyle<TLifestyle> () 
             where TLifestyle : IRegistrationHandler
         {
             lifestyleType = typeof(TLifestyle);
@@ -72,6 +74,7 @@ namespace TreasureChest.Fluent
         }
 
         private readonly IChestMaster chest;
+        [SuppressMessage ("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
         private readonly PolicyCollection chestPolicies;
         private readonly IServicesRegistry servicesRegistry;
         private Type lifestyleType;

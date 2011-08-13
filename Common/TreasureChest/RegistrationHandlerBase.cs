@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using TreasureChest.Policies;
 using TreasureChest.Policies.ServicePolicies;
 
@@ -35,7 +36,8 @@ namespace TreasureChest
 
         public abstract bool MarkInstanceAsReleased(object instance, PolicyCollection chestPolicies);
 
-        public void DestroyInstance(object instance, PolicyCollection chestPolicies)
+        [SuppressMessage ("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]
+        public void DestroyInstance (object instance, PolicyCollection chestPolicies)
         {
             if (instance is IChest)
                 return;
@@ -51,7 +53,8 @@ namespace TreasureChest
                 (instance as IDisposable).Dispose();
         }
 
-        protected object GetInstancePrivate(
+        [SuppressMessage ("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
+        protected object GetInstancePrivate (
             IChestMaster chest,
             ResolvingContext context,
             IComponentCreator componentCreator)

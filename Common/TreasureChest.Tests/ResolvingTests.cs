@@ -5,7 +5,7 @@ namespace TreasureChest.Tests
 {
     public class ResolvingTests : ChestTestFixtureBase
     {
-        [Test, ExpectedException(typeof(ChestException), "Looks like there is a cycle in the dependency tree. Service TreasureChest.Tests.SampleModule.DependentComponentA has been visited for the second time: TreasureChest.Tests.SampleModule.IServiceX -> TreasureChest.Tests.SampleModule.DependentComponentA -> TreasureChest.Tests.SampleModule.IServiceY -> TreasureChest.Tests.SampleModule.ServiceImplYThatDependsOnServiceX -> TreasureChest.Tests.SampleModule.IServiceX -> TreasureChest.Tests.SampleModule.DependentComponentA.")]
+        [Test, ExpectedException (typeof(ChestException), "Singleton service implementation TreasureChest.Tests.SampleModule.DependentComponentA instantiation is already in progress, looks like you have a dependency cycle somewhere.")]
         public void PreventCycles()
         {
             Chest

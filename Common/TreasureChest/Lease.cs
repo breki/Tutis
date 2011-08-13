@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TreasureChest
 {
@@ -15,7 +16,8 @@ namespace TreasureChest
             get { return instance; }
         }
 
-        public static implicit operator T(Lease<T> lease)
+        [SuppressMessage ("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates")]
+        public static implicit operator T (Lease<T> lease)
         {
             return lease.instance;
         }

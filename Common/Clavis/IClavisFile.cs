@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 
@@ -11,10 +12,12 @@ namespace Clavis
         string FileName { get; }
         ITimeService TimeService { get; }
 
-        TStoreImpl OpenStore<TStoreImpl>(string storeName, bool createNew)
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        TStoreImpl OpenStore<TStoreImpl> (string storeName, bool createNew)
             where TStoreImpl : IClavisStore, new();
 
-        void DeleteStore<TStoreImpl>(string storeName) where TStoreImpl : IClavisStore, new();
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        void DeleteStore<TStoreImpl> (string storeName) where TStoreImpl : IClavisStore, new ();
         bool HasStore(string storeName);
     }
 
@@ -62,7 +65,8 @@ namespace Clavis
                 File.Delete(fileName);
         }
 
-        public TStoreImpl OpenStore<TStoreImpl>(string storeName, bool createNew) where TStoreImpl : IClavisStore, new()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public TStoreImpl OpenStore<TStoreImpl> (string storeName, bool createNew) where TStoreImpl : IClavisStore, new ()
         {
             if (createNew)
                 DeleteStore<TStoreImpl>(storeName);
@@ -84,7 +88,8 @@ namespace Clavis
             return store;
         }
 
-        public void DeleteStore<TStoreImpl>(string storeName) where TStoreImpl : IClavisStore, new()
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public void DeleteStore<TStoreImpl> (string storeName) where TStoreImpl : IClavisStore, new ()
         {
             TStoreImpl store = new TStoreImpl();
 
