@@ -126,7 +126,7 @@ namespace BuildScripts
 
             FilterCollection mainFilter = new FilterCollection ();
             mainFilter
-                .Add (new NegativeFilter (new RegexFileFilter (@"(.*\.(dll|exe|exe.config|config|sh|ico))$")))
+                .Add (new NegativeFilter (new RegexFileFilter (@"(.*\.(dll|exe|exe.config|config|sh|ico|xml|pdb))$")))
                 .Add (new RegexFileFilter (@".*vshost.exe.*"));
             packageDef.AddFolderSource ("main", new FullPath ("TreasureChest/bin/Release"), true, mainFilter);
 
