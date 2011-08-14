@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Reflection;
 using TreasureChest.Factories;
 using TreasureChest.Fluent;
+using TreasureChest.Logging;
 using TreasureChest.Policies;
 
 namespace TreasureChest
@@ -19,7 +20,7 @@ namespace TreasureChest
         public Chest(ILogger logger)
         {
             this.logger = logger;
-            servicesRegistry = new ServicesRegistry(chestPolicies);
+            servicesRegistry = new ServicesRegistry(chestPolicies, logger);
             dependencyGraph = new ObjectDependencyGraph(chestPolicies);
             componentCreator = new ComponentCreator(chestPolicies, logger);
 
@@ -76,6 +77,11 @@ namespace TreasureChest
         public IServicesRegistry ServicesRegistry
         {
             get { return servicesRegistry; }
+        }
+
+        public ILogger Logger
+        {
+            get { return logger; }
         }
 
         [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
@@ -521,6 +527,11 @@ namespace TreasureChest
         {
             reflectionExplorer.RegisterAssemblyOf<T>();
             return this;
+        }
+
+        public void RegisterDependency(object dependencyInstance, object dependentInstance)
+        {
+            dependencyGraph.RegisterDependency(dependencyInstance, dependentInstance);
         }
 
         public void Return(object instance)

@@ -57,6 +57,8 @@ namespace TreasureChest
         [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
         IChestFilling RegisterAssemblyOf<T> ();
 
+        void RegisterDependency(object dependencyInstance, object dependentInstance);
+
         [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
         IChestFilling SetDefaultLifestyle<T> () where T : IRegistrationHandler;
         [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]

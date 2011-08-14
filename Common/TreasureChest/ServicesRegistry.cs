@@ -7,9 +7,10 @@ namespace TreasureChest
 {
     public class ServicesRegistry : IServicesRegistry
     {
-        public ServicesRegistry(PolicyCollection chestPolicies)
+        public ServicesRegistry(PolicyCollection chestPolicies, ILogger logger)
         {
             this.chestPolicies = chestPolicies;
+            this.logger = logger;
         }
 
         // todo slow
@@ -35,6 +36,8 @@ namespace TreasureChest
                         registrations.Add(serviceType, new List<ServiceRegistration>());
 
                     registrations[serviceType].Add(registration);
+
+                    logger.Log(LogEventType.RegisterService, "serviceType", serviceType, "implType", registration.ImplType, "regHandlerType", registration.RegistrationHandler.GetType());
                 }
             }
         }
@@ -84,6 +87,8 @@ namespace TreasureChest
         }
 
         private readonly PolicyCollection chestPolicies;
+        private readonly ILogger logger;
+
         [SuppressMessage ("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         private Dictionary<Type, List<ServiceRegistration>> registrations = new Dictionary<Type, List<ServiceRegistration>> ();
     }

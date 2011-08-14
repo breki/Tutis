@@ -1,4 +1,5 @@
 using MbUnit.Framework;
+using Rhino.Mocks;
 using TreasureChest.Tests.SampleModule;
 
 namespace TreasureChest.Tests
@@ -18,5 +19,19 @@ namespace TreasureChest.Tests
                 .InstallExtension<SampleExtension>()
                 .AssertExtensionIsInstalled<SampleExtension>();            
         }
+
+        //[Test]
+        //public void ExtensionShouldBeDisposedByChestDisposeMethod()
+        //{
+        //    IChestExtension extension = MockRepository.GenerateMock<IChestExtension>();
+        //    extension.Expect(x => x.Dispose());
+
+        //    Chest.InstallExtension(extension);
+
+        //    Chest.Dispose();
+        //    Chest = null;
+
+        //    extension.VerifyAllExpectations();
+        //}
     }
 }

@@ -1,5 +1,3 @@
-using System;
-
 namespace TreasureChest
 {
     public enum LogEventType
@@ -7,18 +5,12 @@ namespace TreasureChest
         CreateInstance,
         Fetch,
         FetchAll,
-        FetchDependency
+        FetchDependency,
+        RegisterService,
     }
 
     public interface ILogger
     {
         void Log(LogEventType eventType, params object[] args);
-    }
-
-    public class NullLogger : ILogger
-    {
-        public void Log(LogEventType eventType, params object[] args)
-        {
-        }
     }
 }

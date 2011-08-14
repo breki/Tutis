@@ -1,6 +1,7 @@
 using System;
 using MbUnit.Framework;
 using Rhino.Mocks;
+using TreasureChest.Logging;
 using TreasureChest.Policies;
 using TreasureChest.Policies.ServicePolicies;
 using TreasureChest.Tests.SampleModule;

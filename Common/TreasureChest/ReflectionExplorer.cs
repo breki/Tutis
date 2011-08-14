@@ -73,6 +73,7 @@ namespace TreasureChest
                 }
             }
 
+            implementingTypes.Sort((a, b) => String.Compare(a.FullName, b.FullName, StringComparison.Ordinal));
             return implementingTypes;
         }
 
