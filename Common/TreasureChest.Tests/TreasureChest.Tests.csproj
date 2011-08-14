@@ -75,6 +75,7 @@
     <Compile Include="ExtensionTests.cs" />
     <Compile Include="FactoriesTests.cs" />
     <Compile Include="Log4NetLogger.cs" />
+    <Compile Include="ManualDependenciesRegistrationTests.cs" />
     <Compile Include="MultiRegistrationTests.cs" />
     <Compile Include="PoliciesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="ReleasingTests.cs" />
     <Compile Include="ResolvingTests.cs" />
     <Compile Include="SampleModule\ComponentWithEnumerableConstructorArg.cs" />
+    <Compile Include="SampleModule\SampleManualDependencyRegistrationPolicy.cs" />
     <Compile Include="SampleModule\ComponentWithMultipleConstructors.cs" />
     <Compile Include="SampleModule\ComponentWithMultipleServices.cs" />
     <Compile Include="SampleModule\ComponentWithNonWiredConstructorParameters.cs" />
