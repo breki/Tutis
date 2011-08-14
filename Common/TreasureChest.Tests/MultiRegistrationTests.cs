@@ -7,7 +7,7 @@ namespace TreasureChest.Tests
 {
     public class MultiRegistrationTests : ChestTestFixtureBase
     {
-        [Test, ExpectedException(typeof(ChestException), "Service TreasureChest.Tests.SampleModule.IServiceY is not registered (TreasureChest.Tests.SampleModule.IServiceX -> TreasureChest.Tests.SampleModule.DependentComponentA -> TreasureChest.Tests.SampleModule.IServiceY).")]
+        [Test, ExpectedException(typeof(ChestException), "Service TreasureChest.Tests.SampleModule.IServiceY is not registered")]
         public void TryToFetchAllWhenSomeServicesAreNotRegistered()
         {
             //Chest

@@ -80,6 +80,9 @@
     <Compile Include="IChestExtension.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="IServicesRegistry.cs" />
+    <Compile Include="Logging\ConsoleLogger.cs" />
+    <Compile Include="Logging\LoggingHelper.cs" />
+    <Compile Include="Logging\NullLogger.cs" />
     <Compile Include="ObjectDependencyGraph.cs" />
     <Compile Include="Policies\IAfterComponentCreatedPolicy.cs" />
     <Compile Include="Policies\IAfterComponentRegisteredPolicy.cs" />
@@ -163,6 +166,11 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="History.txt" />
+    <Content Include="Todo.txt" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\lib\Microsoft StyleCop\Microsoft.StyleCop.Targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

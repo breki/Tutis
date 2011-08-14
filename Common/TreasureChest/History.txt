@@ -1,0 +1,8 @@
+﻿14.08.
+	- added more logging to Chest
+	- fixed some fragile tests
+	- added Log4Net logging to tests
+13.08.11
+	- added the functionality to manually specify dependency between objects using RegisterDependency method
+	- extensions are no longer disposable (because they weren't disposed anyway)
+	- migrated TC code to bitbucket

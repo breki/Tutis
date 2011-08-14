@@ -95,7 +95,7 @@ namespace TreasureChest.Tests
         [Test]
         public void DisposingOfChestShouldReleaseEverything()
         {
-            DestroyedComponentCounterPolicy policy = new DestroyedComponentCounterPolicy();
+            DestroyedComponentTrackingPolicy policy = new DestroyedComponentTrackingPolicy();
             Chest.SetPolicy(policy);
 
             DisposableComponentA obj = new DisposableComponentA();
@@ -108,6 +108,46 @@ namespace TreasureChest.Tests
             Assert.IsTrue(obj.Disposed);
 
             Assert.AreEqual(1, policy.Counter);
+        }
+
+        [Test]
+        public void ManuallyRegisteringDependencyShouldAffectOrderOfDisposingComponents1()
+        {
+            DestroyedComponentTrackingPolicy policy = new DestroyedComponentTrackingPolicy ();
+            Chest.SetPolicy (policy);
+
+            DisposableComponentA obj1 = new DisposableComponentA ();
+            IndependentComponentA obj2 = new IndependentComponentA();
+
+            Chest.AddInstance (obj1);
+            Chest.AddInstance (obj2);
+            Chest.RegisterDependency (obj2, obj1);
+
+            Chest.Dispose ();
+
+            Assert.AreEqual (2, policy.Counter);
+            Assert.AreEqual ("TreasureChest.Tests.SampleModule.DisposableComponentA", policy.DestroyedComponents[0]);
+            Assert.AreEqual ("TreasureChest.Tests.SampleModule.IndependentComponentA", policy.DestroyedComponents[1]);
+        }
+
+        [Test]
+        public void ManuallyRegisteringDependencyShouldAffectOrderOfDisposingComponents2 ()
+        {
+            DestroyedComponentTrackingPolicy policy = new DestroyedComponentTrackingPolicy ();
+            Chest.SetPolicy (policy);
+
+            DisposableComponentA obj1 = new DisposableComponentA ();
+            IndependentComponentA obj2 = new IndependentComponentA ();
+
+            Chest.AddInstance (obj1);
+            Chest.AddInstance (obj2);
+            Chest.RegisterDependency (obj1, obj2);
+
+            Chest.Dispose ();
+
+            Assert.AreEqual (2, policy.Counter);
+            Assert.AreEqual ("TreasureChest.Tests.SampleModule.IndependentComponentA", policy.DestroyedComponents[0]);
+            Assert.AreEqual ("TreasureChest.Tests.SampleModule.DisposableComponentA", policy.DestroyedComponents[1]);
         }
     }
 }

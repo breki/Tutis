@@ -51,6 +51,39 @@ namespace TreasureChest
                 return objectsMap[instance];
         }
 
+        public void RegisterDependency(object dependencyInstance, object dependentInstance)
+        {
+            lock (this)
+            {
+                if (!objectsMap.ContainsKey(dependentInstance))
+                {
+                    string message = string.Format(
+                        CultureInfo.InvariantCulture,
+                        "Dependency instance of type {0} is not registered in the object dependency graph so the dependency from {1} cannot be registered.",
+                        dependencyInstance.GetType().FullName,
+                        dependentInstance.GetType().FullName);
+                    throw new ChestException(message);     
+                }
+
+                if (!objectsMap.ContainsKey (dependentInstance))
+                {
+                    string message = string.Format (
+                        CultureInfo.InvariantCulture,
+                        "Dependent instance of type {0} is not registered in the object dependency graph so the dependency to {1} cannot be registered.",
+                        dependentInstance.GetType ().FullName,
+                        dependencyInstance.GetType ().FullName);
+                    throw new ChestException (message);
+                }
+
+                if (isDependentOn[dependentInstance] == null)
+                    isDependentOn[dependentInstance] = new List<object>();
+
+                isDependentOn[dependentInstance].Add(dependencyInstance);
+
+                AddIsNecessaryForRelation (dependencyInstance, dependentInstance);
+            }
+        }
+
         public void RemoveInstance (object instance, bool destroyIt)
         {
             lock (this)

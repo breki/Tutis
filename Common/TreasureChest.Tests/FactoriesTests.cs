@@ -122,7 +122,7 @@ namespace TreasureChest.Tests
         public void FactoryReleaseMethod()
         {
             Chest
-                .AddCustom.AllImplementationsOf<IServiceX>().Done
+                .Add<IServiceX, IndependentComponentA>()
                 .AddFactory<ISampleFactory>();
 
             using (var lease = Chest.Fetch<ISampleFactory>())

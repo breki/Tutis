@@ -3,7 +3,7 @@ using TreasureChest.Policies;
 
 namespace TreasureChest
 {
-    public interface IChestExtension : IGlobalChestPolicy, IDisposable
+    public interface IChestExtension : IGlobalChestPolicy
     {
     }
 }
