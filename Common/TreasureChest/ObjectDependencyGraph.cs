@@ -30,8 +30,6 @@ namespace TreasureChest
             lock (this)
             {
                 objectsMap.Add(instance, registrationHandler);
-                foreach (IAfterComponentCreatedPolicy policy in chestPolicies.FindAllPoliciesOf<IAfterComponentCreatedPolicy>())
-                    policy.AfterCreated(instance, registrationHandler);
 
                 AddIsNecessaryForRelation(instance, null);
                 if (dependencies != null)
@@ -42,6 +40,9 @@ namespace TreasureChest
                 }
                 else
                     isDependentOn.Add(instance, null);
+
+                foreach (IAfterComponentCreatedPolicy policy in chestPolicies.FindAllPoliciesOf<IAfterComponentCreatedPolicy> ())
+                    policy.AfterCreated (instance, registrationHandler);
             }
         }
 
