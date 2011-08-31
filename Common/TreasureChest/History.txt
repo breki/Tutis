@@ -1,4 +1,6 @@
-﻿14.08.
+﻿31.08.
+	- added more detailed exception info in ReflectionExplorer.GetAssemblyTypes() when ReflectionTypeLoadException occurs.
+14.08.
 	- fixed some issues with using manual dependency registration in the IAfterComponentCreatedPolicy
 	- TC now produced doc XML file and PDB is included in the release package
 	- added more logging to Chest

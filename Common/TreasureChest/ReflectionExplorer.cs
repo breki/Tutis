@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Reflection;
+using System.Text;
 
 namespace TreasureChest
 {
@@ -81,8 +83,26 @@ namespace TreasureChest
         {
             lock (this)
             {
-                if (!assembliesTypes.ContainsKey(assembly))
-                    assembliesTypes[assembly] = assembly.GetTypes();
+                if (!assembliesTypes.ContainsKey (assembly))
+                {
+                    try
+                    {
+                        assembliesTypes[assembly] = assembly.GetTypes();
+                    }
+                    catch (ReflectionTypeLoadException ex)
+                    {
+                        StringBuilder message = new StringBuilder();
+                        message.AppendFormat(
+                            CultureInfo.InvariantCulture,
+                            "ReflectionExplorer.GetAssemblyTypes (assembly = {0}) failed. List of loader exception follows: ",
+                            assembly.FullName);
+
+                        foreach (Exception loaderException in ex.LoaderExceptions)
+                            message.AppendLine(loaderException.ToString());
+
+                        throw new ChestException(message.ToString(), ex);
+                    }
+                }
 
                 return assembliesTypes[assembly];
             }

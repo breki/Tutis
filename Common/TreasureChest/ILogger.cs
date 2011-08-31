@@ -6,6 +6,7 @@ namespace TreasureChest
         Fetch,
         FetchAll,
         FetchDependency,
+        Reflection,
         RegisterService,
     }
 
