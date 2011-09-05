@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineByLine.Console", "LineByLine.Console\LineByLine.Console.csproj", "{74738F33-30D4-408E-BBE4-77FD05696FA4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildScripts", "BuildScripts\BuildScripts.csproj", "{303AD294-6CAD-4610-BC85-C3A881F068DA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{F548B622-8185-4658-922E-26A28E32C9E3}"
+	ProjectSection(SolutionItems) = preProject
+		Build.bat = Build.bat
+		CustomDictionary.xml = CustomDictionary.xml
+		EditStyleCopRules.bat = EditStyleCopRules.bat
+		LineByLine.FxCop = LineByLine.FxCop
+		LineByLine.ProjectVersion.txt = LineByLine.ProjectVersion.txt
+		Settings.StyleCop = Settings.StyleCop
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{74738F33-30D4-408E-BBE4-77FD05696FA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74738F33-30D4-408E-BBE4-77FD05696FA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74738F33-30D4-408E-BBE4-77FD05696FA4}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{74738F33-30D4-408E-BBE4-77FD05696FA4}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{74738F33-30D4-408E-BBE4-77FD05696FA4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{74738F33-30D4-408E-BBE4-77FD05696FA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74738F33-30D4-408E-BBE4-77FD05696FA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74738F33-30D4-408E-BBE4-77FD05696FA4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{74738F33-30D4-408E-BBE4-77FD05696FA4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{74738F33-30D4-408E-BBE4-77FD05696FA4}.Release|x86.ActiveCfg = Release|Any CPU
+		{303AD294-6CAD-4610-BC85-C3A881F068DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{303AD294-6CAD-4610-BC85-C3A881F068DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{303AD294-6CAD-4610-BC85-C3A881F068DA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{303AD294-6CAD-4610-BC85-C3A881F068DA}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{303AD294-6CAD-4610-BC85-C3A881F068DA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{303AD294-6CAD-4610-BC85-C3A881F068DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{303AD294-6CAD-4610-BC85-C3A881F068DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{303AD294-6CAD-4610-BC85-C3A881F068DA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{303AD294-6CAD-4610-BC85-C3A881F068DA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{303AD294-6CAD-4610-BC85-C3A881F068DA}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
