@@ -28,7 +28,7 @@ namespace LineByLine.Console.Metrics
         protected LocMetricsBase(string fileName)
         {
             this.fileName = fileName;
-            this.fileType = Path.GetExtension(fileName);
+            fileType = Path.GetExtension(fileName);
         }
 
         /// <summary>
@@ -45,8 +45,8 @@ namespace LineByLine.Console.Metrics
         public void WriteXml(XmlWriter writer)
         {
             writer.WriteStartElement("Item");
-            writer.WriteAttributeString("FileName", this.FileName);
-            writer.WriteAttributeString("FileType", this.FileType);
+            writer.WriteAttributeString("FileName", FileName);
+            writer.WriteAttributeString("FileType", FileType);
 
             LocStatsData locStatsData = GetLocStatsData();
 

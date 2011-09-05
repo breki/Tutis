@@ -66,7 +66,7 @@ namespace LineByLine.Console.Metrics
                 xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                 xmlWriter.WriteStartElement("Root");
 
-                this.WriteXml(xmlWriter);
+                WriteXml(xmlWriter);
 
                 xmlWriter.WriteEndElement();
             }

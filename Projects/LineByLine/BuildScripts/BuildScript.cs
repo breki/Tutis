@@ -28,17 +28,17 @@ namespace BuildScripts
             targetTree.AddTarget("rebuild")
                 .SetAsDefault()
                 .SetDescription("Rebuilds the whole project")
-                .DependsOn("compile", "fxcop", "unit.tests", "integ.tests", "package");
+                .DependsOn("compile", "fxcop", "tests", "package");
 
             targetTree.GetTarget("fetch.build.version")
                 .Do(TargetFetchBuildVersion);
 
-            //targetTree.AddTarget("tests")
-            //    .SetDescription("Runs unit tests")
-            //    .Do(r => 
-            //        {
-            //            BuildTargets.TargetRunTests(r, "SimpleX.UnitTests", null, ref testsRunCounter);
-            //        }).DependsOn("load.solution");
+            targetTree.AddTarget("tests")
+                .SetDescription("Runs unit tests")
+                .Do(r =>
+                    {
+                        BuildTargets.TargetRunTests(r, "LineByLine.Tests", null, ref testsRunCounter);
+                    }).DependsOn("load.solution");
 
             targetTree.AddTarget("package")
                 .SetDescription("Packages the build")
