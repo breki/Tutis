@@ -149,5 +149,11 @@ namespace TreasureChest.Tests
             Assert.AreEqual ("TreasureChest.Tests.SampleModule.IndependentComponentA", policy.DestroyedComponents[0]);
             Assert.AreEqual ("TreasureChest.Tests.SampleModule.DisposableComponentA", policy.DestroyedComponents[1]);
         }
+
+        [Test]
+        public void TryingToReturnAnObjectWhichIsNotInContainerShouldNotCauseError()
+        {
+            Chest.Return("test");
+        }
     }
 }
