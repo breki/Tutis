@@ -541,6 +541,10 @@ namespace TreasureChest
 
             lock (this)
             {
+                // 27.09.2011: this allows calling factory release methods transparently, even on objects that are not in the container
+                if (!dependencyGraph.HandlesInstance (instance))
+                    return;
+
                 IRegistrationHandler instanceHandler = dependencyGraph.GetRegistrationHandlerForInstance(
                     instance);
                 if (instanceHandler.MarkInstanceAsReleased(instance, chestPolicies))

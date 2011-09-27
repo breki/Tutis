@@ -1,4 +1,7 @@
-﻿31.08.
+﻿27.09.
+	- Chest.Return() method will now not fail if it is supplied with an object that is not in the container.
+		This allows calling factory release methods transparently, even on objects that are not in the container.
+31.08.
 	- added more detailed exception info in ReflectionExplorer.GetAssemblyTypes() when ReflectionTypeLoadException occurs.
 14.08.
 	- fixed some issues with using manual dependency registration in the IAfterComponentCreatedPolicy

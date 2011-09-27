@@ -46,6 +46,12 @@ namespace TreasureChest
             }
         }
 
+        public bool HandlesInstance (object instance)
+        {
+            lock (this)
+                return objectsMap.ContainsKey(instance);
+        }
+
         public IRegistrationHandler GetRegistrationHandlerForInstance (object instance)
         {
             lock (this)
