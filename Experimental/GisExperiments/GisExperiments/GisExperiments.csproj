@@ -32,25 +32,41 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Brejc.Common.Library">
+      <HintPath>..\..\lib\BrekiLibs\Brejc.Common.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="Brejc.Geospatial">
+      <HintPath>..\..\lib\BrekiLibs\Brejc.Geospatial.dll</HintPath>
+    </Reference>
     <Reference Include="DotSpatial.Projections">
       <HintPath>..\lib\DotSpatial\DotSpatial.Projections.dll</HintPath>
     </Reference>
     <Reference Include="Gallio">
       <HintPath>..\..\lib\Gallio\bin\Gallio.dll</HintPath>
     </Reference>
+    <Reference Include="Karta">
+      <HintPath>..\..\lib\BrekiLibs\Karta.dll</HintPath>
+    </Reference>
     <Reference Include="MbUnit">
       <HintPath>..\..\lib\Gallio\bin\MbUnit.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Curves\CardinalSplineInterpolator.cs" />
+    <Compile Include="Curves\CurveInterpolationParameters.cs" />
+    <Compile Include="Curves\ICurveInterpolator.cs" />
+    <Compile Include="Curves\LineStringInfo.cs" />
     <Compile Include="DotSpatialProjectionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Spline.cs" />
+    <Compile Include="SplineTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
