@@ -41,7 +41,6 @@ namespace GisExperiments.Curves
                 r = new PointF2 (v1.X - vector1.X * tension, v1.Y - vector1.Y * tension);
                 s = v1;
 
-                lineStringInfo.AddPoint (p);
                 InterpolateBezierArc (p, q, r, s, lineStringInfo, smoothnessSquare);
             }
 
@@ -50,7 +49,6 @@ namespace GisExperiments.Curves
             r = new PointF2 ((v1.X - pom.X) * tension + pom.X, (v1.Y - pom.Y) * tension + pom.Y);
             s = pom;
 
-            lineStringInfo.AddPoint (p);
             InterpolateBezierArc (p, q, r, s, lineStringInfo, smoothnessSquare);
             lineStringInfo.AddPoint (s);
 
@@ -67,11 +65,7 @@ namespace GisExperiments.Curves
         {
             double arcLengthSquare = ArcLengthSquare (p, s);
             if (arcLengthSquare <= smoothnessSquare)
-            {
                 lineStringInfo.AddPoint(p);
-                //if (interpolationMode == InterpolationMode.AfterPoint)
-                //    lineStringInfo.InsertSegment(pointIndex1, pointIndex2, p, s);
-            }
             else
             {
                 IPointF2 pq = Midpoint (p, q);
