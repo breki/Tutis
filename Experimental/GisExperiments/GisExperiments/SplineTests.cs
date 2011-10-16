@@ -142,7 +142,6 @@ namespace GisExperiments
                     stringFormat.LineAlignment = StringAlignment.Center;
                     stringFormat.Alignment = StringAlignment.Center;
 
-                    pa.MoveTo(0);
                     for (int i = 0; i < text.Length; i++)
                     {
                         float angle = pa.CurrentAngle;
@@ -162,7 +161,7 @@ namespace GisExperiments
                             g.DrawString(chars[i].ToString(), font, brush, 0, 0, stringFormat);
                         }
 
-                        pa.MoveBy (charWidths[i] + 10);
+                        pa.MoveBy (charWidths[i]);
                     }
                 });
         }
