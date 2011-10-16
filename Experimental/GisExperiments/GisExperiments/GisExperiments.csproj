@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CellularAutomata\Tests.cs" />
     <Compile Include="Curves\CardinalSplineInterpolator.cs" />
     <Compile Include="Curves\CurveInterpolationParameters.cs" />
     <Compile Include="Curves\ICurveInterpolator.cs" />
