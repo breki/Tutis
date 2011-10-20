@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GisExperiments</RootNamespace>
     <AssemblyName>GisExperiments</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -38,9 +38,6 @@
     <Reference Include="Brejc.Geospatial">
       <HintPath>..\..\lib\BrekiLibs\Brejc.Geospatial.dll</HintPath>
     </Reference>
-    <Reference Include="DotSpatial.Projections">
-      <HintPath>..\lib\DotSpatial\DotSpatial.Projections.dll</HintPath>
-    </Reference>
     <Reference Include="Gallio">
       <HintPath>..\..\lib\Gallio\bin\Gallio.dll</HintPath>
     </Reference>
@@ -53,6 +50,9 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Threading">
+      <HintPath>..\..\lib\Microsoft Reactive Extensions\System.Threading.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
@@ -64,7 +64,7 @@
     <Compile Include="Curves\CurveInterpolationParameters.cs" />
     <Compile Include="Curves\ICurveInterpolator.cs" />
     <Compile Include="Curves\LineStringInfo.cs" />
-    <Compile Include="DotSpatialProjectionTests.cs" />
+    <None Include="DotSpatialProjectionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spline.cs" />
     <Compile Include="SplineTests.cs" />
