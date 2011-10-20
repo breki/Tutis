@@ -138,30 +138,36 @@ namespace GisExperiments
                     char[] chars = text.ToCharArray();
 
                     Brush brush = new SolidBrush(Color.Black);
-                    StringFormat stringFormat = new StringFormat(StringFormat.GenericDefault);
+                    StringFormat stringFormat = new StringFormat();
                     stringFormat.LineAlignment = StringAlignment.Center;
                     stringFormat.Alignment = StringAlignment.Center;
 
+                    pa.MoveBy(100);
                     for (int i = 0; i < text.Length; i++)
                     {
+                        if (i > 0)
+                            pa.MoveBy (charWidths[i] / 2.0f);
+
                         float angle = pa.CurrentAngle;
                         
                         //IPointF2 point = lineStringInfo.CalculatePointAtLength(position, out angle);
 
-                        foreach (TextRenderingHint hint in Enum.GetValues (typeof (TextRenderingHint)))
-                        {
+                        TextRenderingHint hint = TextRenderingHint.AntiAlias;
+                        //foreach (TextRenderingHint hint in Enum.GetValues (typeof (TextRenderingHint)))
+                        //{
                             g.TextRenderingHint = hint;
 
                             g.ResetTransform ();
-                            g.TranslateTransform(pa.CurrentPoint.X, pa.CurrentPoint.Y + ((int)hint) * 50);
+                            g.TranslateTransform(pa.CurrentPoint.X, pa.CurrentPoint.Y);
 
                             if (angle != 0)
                                 g.RotateTransform(angle);
 
                             g.DrawString(chars[i].ToString(), font, brush, 0, 0, stringFormat);
-                        }
+                        //}
 
-                        pa.MoveBy (charWidths[i]);
+                        // NOTE: this half is because we show the letter at the center
+                        pa.MoveBy (charWidths[i] / 2.0f);
                     }
                 });
         }
