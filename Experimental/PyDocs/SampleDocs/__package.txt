@@ -1,0 +1,7 @@
+---package SamplePackage
+SamplePackage description.
+
+Third line.
+---module SampleModule
+---
+---
