@@ -60,6 +60,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CellularAutomata\Tests.cs" />
+    <Compile Include="ContoursLabeling\ContourLabel.cs" />
+    <Compile Include="ContoursLabeling\ContourOpenSimulatedAnnealing.cs" />
+    <Compile Include="ContoursLabeling\ContoursLabelingParameters.cs" />
+    <Compile Include="ContoursLabeling\ContoursLabelingTests.cs" />
+    <Compile Include="ContoursLabeling\ContoursLabels.cs" />
+    <Compile Include="ContoursLabeling\IContourLine.cs" />
+    <Compile Include="ContoursLabeling\IContoursForElevation.cs" />
+    <Compile Include="ContoursLabeling\IContoursLabelingAlgorithm.cs" />
+    <Compile Include="ContoursLabeling\IContoursSet.cs" />
+    <Compile Include="ContoursLabeling\GridBasedContoursLabelingAlgorithm.cs" />
+    <Compile Include="ContoursLabeling\Igor1AlgoTests.cs" />
+    <Compile Include="ContoursLabeling\Igor1ContoursLabelingAlgorithm.cs" />
+    <Compile Include="ContoursLabeling\IntervalSet.cs" />
+    <Compile Include="ContoursLabeling\IntervalSetTests.cs" />
+    <Compile Include="ContoursLabeling\SimulatedAnnealing.cs" />
     <Compile Include="Curves\CardinalSplineInterpolator.cs" />
     <Compile Include="Curves\CurveInterpolationParameters.cs" />
     <Compile Include="Curves\ICurveInterpolator.cs" />
