@@ -21,6 +21,12 @@ namespace GisExperiments.ContoursLabeling
             get { return location; }
         }
 
+        public ContourLabel CloneDeep()
+        {
+            ContourLabel clone = new ContourLabel(linePosition, (Point2<float>)location.Clone());
+            return clone;
+        }
+
         private readonly float linePosition;
         private readonly Point2<float> location;
     }

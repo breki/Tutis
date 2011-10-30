@@ -58,6 +58,12 @@ namespace GisExperiments.ContoursLabeling
             this.stepsPerTemperature = stepsPerTemperature;
         }
 
+        public Random Rnd
+        {
+            get { return rnd; }
+            set { rnd = value; }
+        }
+
         protected abstract double GenerateRandomTransition();
         protected abstract double InitializeSolution();
         protected abstract void UseTransitionAsSolution();
@@ -67,7 +73,7 @@ namespace GisExperiments.ContoursLabeling
         private double currentValue;
         private double initialTemperature;
         private double k;
-        private Random rnd = new Random();
+        private Random rnd;
         private double startValue;
         private decimal stepsPerTemperature;
         private double temperature;

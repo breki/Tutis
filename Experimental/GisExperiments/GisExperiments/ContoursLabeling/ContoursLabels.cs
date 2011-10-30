@@ -15,6 +15,25 @@ namespace GisExperiments.ContoursLabeling
             get { return labels; }
         }
 
+        public void AddLabels(ContoursLabels contoursLabels)
+        {
+            labels.AddRange(contoursLabels.labels);
+        }
+
+        public ContoursLabels CloneDeep()
+        {
+            ContoursLabels clone = new ContoursLabels();
+            foreach (ContourLabel contourLabel in Labels)
+                clone.labels.Add(contourLabel.CloneDeep());
+
+            return clone;
+        }
+
+        public void RemoveLabel(int labelIndex)
+        {
+            labels.RemoveAt(labelIndex);
+        }
+
         private List<ContourLabel> labels = new List<ContourLabel>();
     }
 }

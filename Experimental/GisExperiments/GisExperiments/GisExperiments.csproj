@@ -47,6 +47,9 @@
     <Reference Include="MbUnit">
       <HintPath>..\..\lib\Gallio\bin\MbUnit.dll</HintPath>
     </Reference>
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\..\lib\Rhino.Mocks\Rhino.Mocks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -68,6 +71,7 @@
     <Compile Include="ContoursLabeling\IContourLine.cs" />
     <Compile Include="ContoursLabeling\IContoursForElevation.cs" />
     <Compile Include="ContoursLabeling\IContoursLabelingAlgorithm.cs" />
+    <Compile Include="ContoursLabeling\IContoursLabelMeasurer.cs" />
     <Compile Include="ContoursLabeling\IContoursSet.cs" />
     <Compile Include="ContoursLabeling\GridBasedContoursLabelingAlgorithm.cs" />
     <Compile Include="ContoursLabeling\Igor1AlgoTests.cs" />
