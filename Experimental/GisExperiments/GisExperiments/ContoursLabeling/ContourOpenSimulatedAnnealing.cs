@@ -1,4 +1,5 @@
 ﻿using System;
+using Brejc.Geometry;
 
 namespace GisExperiments.ContoursLabeling
 {
@@ -16,11 +17,42 @@ namespace GisExperiments.ContoursLabeling
             this.labelingParameters = labelingParameters;
         }
 
-        public IContourLine ContourLine { get; set; }
         public ContoursLabels Solution { get; set; }
+
+        public void InitializeProblem(IContourLine contourLine, float labelLength)
+        {
+            this.contourLine = contourLine;
+            this.labelLength = labelLength;
+            Rnd = new Random(labelingParameters.RandomSeed);
+        }
 
         protected override double GenerateRandomTransition()
         {
+            transition = Solution.CloneDeep();
+
+            double randomDecision = Rnd.NextDouble();
+            if (randomDecision < 0.1 && transition.Labels.Count > 1)
+                RemoveLabel();
+            else
+                MoveLabel();
+
+            return CalculatePlacementValue(transition);
+        }
+
+        private void RemoveLabel()
+        {
+            int labelToRemove = Rnd.Next(transition.Labels.Count);
+            transition.RemoveLabel(labelToRemove);
+        }
+
+        private void MoveLabel()
+        {
+            int labelToMove = Rnd.Next(transition.Labels.Count);
+            double movement = (Rnd.NextDouble() - 0.5) * 100;
+
+            // TODO: check that the label isn't too close to another one after the move
+            ContourLabel label = transition.Labels[labelToMove];
+
             throw new NotImplementedException();
         }
 
@@ -36,10 +68,10 @@ namespace GisExperiments.ContoursLabeling
             bool firstJump = true;
             while (true)
             {
-                if (linePosition + initialLabelSeparationDistance >= ContourLine.Length)
+                if (linePosition + initialLabelSeparationDistance >= contourLine.Length)
                     break;
 
-                ContourLine.PolylineAnalysis.MoveBy (initialLabelSeparationDistance);
+                contourLine.PolylineAnalysis.MoveBy (initialLabelSeparationDistance);
                 linePosition += initialLabelSeparationDistance;
 
                 if (firstJump)
@@ -48,13 +80,13 @@ namespace GisExperiments.ContoursLabeling
                     initialLabelSeparationDistance *= 2;
                 }
 
-                ContourLabel label = new ContourLabel (linePosition, ContourLine.PolylineAnalysis.CurrentPoint);
+                ContourLabel label = new ContourLabel (linePosition, contourLine.PolylineAnalysis.CurrentPoint);
                 Solution.AddLabel(label);
             }
 
             maximumNumberOfLabels = Solution.Labels.Count;
             // min number of labels needed to cover everything
-            minimumNumberOfLabelsNeeded = (int)Math.Ceiling (ContourLine.Length / (labelingParameters.LabelCoverageRange * 2));
+            minimumNumberOfLabelsNeeded = (int)Math.Ceiling (contourLine.Length / (labelingParameters.LabelCoverageRange * 2));
 
             return CalculatePlacementValue(Solution);
         }
@@ -75,17 +107,17 @@ namespace GisExperiments.ContoursLabeling
 
         private double CalculateLabelsCoverage(ContoursLabels placement)
         {
-            IntervalSet intervals = new IntervalSet(ContourLine.Length);
+            IntervalSet intervals = new IntervalSet(contourLine.Length);
 
             foreach (ContourLabel label in placement.Labels)
             {
                 float leftCoverage = Math.Max(label.LinePosition - labelingParameters.LabelCoverageRange, 0);
-                float rightCoverage = Math.Min (label.LinePosition + labelingParameters.LabelCoverageRange, ContourLine.Length);
+                float rightCoverage = Math.Min (label.LinePosition + labelingParameters.LabelCoverageRange, contourLine.Length);
                 intervals.AddInterval(leftCoverage, rightCoverage);
             }
 
             double totalLengthOfIntervals = intervals.TotalIntervalsLength;
-            return 1 - totalLengthOfIntervals/ContourLine.Length;
+            return 1 - totalLengthOfIntervals/contourLine.Length;
         }
 
         private double CalculateLabelsUsage(ContoursLabels placement)
@@ -118,7 +150,7 @@ namespace GisExperiments.ContoursLabeling
 
         private double CalculateNicetyOfLabel(ContourLabel label)
         {
-            float angle = ContourLine.PolylineAnalysis.GetAngleForPosition(label.LinePosition);
+            float angle = contourLine.PolylineAnalysis.GetAngleForPosition(label.LinePosition);
             // 0 = text is totally horizontal
             // 1 = text is totally vertical
 
@@ -127,10 +159,23 @@ namespace GisExperiments.ContoursLabeling
             double angleFactor = angle/180;
 
             // TODO: measure straightness
-            throw new NotImplementedException();
+            contourLine.PolylineAnalysis.MoveTo(label.LinePosition - labelLength / 2);
+            Point2<float> startSegmentPoint = contourLine.PolylineAnalysis.CurrentPoint;
+            contourLine.PolylineAnalysis.MoveBy(labelLength);
+            Point2<float> endSegmentPoint = contourLine.PolylineAnalysis.CurrentPoint;
+            double directLength = Math.Sqrt(
+                (startSegmentPoint.X - endSegmentPoint.X) * (startSegmentPoint.X - endSegmentPoint.X) 
+                + (startSegmentPoint.Y - endSegmentPoint.Y) * (startSegmentPoint.Y - endSegmentPoint.Y));
+
+            // 0 = directLength == labelLength
+            double straightness = Math.Min((labelLength - directLength) / directLength, 1);
+
+            return straightness*5 + angleFactor;
         }
 
+        private IContourLine contourLine;
         private readonly ContoursLabelingParameters labelingParameters;
+        private float labelLength;
         private int maximumNumberOfLabels;
         private int minimumNumberOfLabelsNeeded;
         private ContoursLabels transition;

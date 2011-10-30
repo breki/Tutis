@@ -2,6 +2,8 @@
 {
     public interface IContoursLabelingAlgorithm
     {
-        ContoursLabels LabelContours(IContoursSet contours, ContoursLabelingParameters parameters);
+        ContoursLabels LabelContours(
+            IContoursSet contours, 
+            ContoursLabelingParameters parameters);
     }
 }
