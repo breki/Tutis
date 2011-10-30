@@ -28,7 +28,7 @@ namespace GisExperiments.ContoursLabeling
             set { minimumContourLength = value; }
         }
 
-        public double MinimumSameLabelDistance
+        public float MinimumSameLabelDistance
         {
             get { return minimumSameLabelDistance; }
             set { minimumSameLabelDistance = value; }
@@ -49,7 +49,7 @@ namespace GisExperiments.ContoursLabeling
         private IContoursLabelMeasurer contoursLabelMeasurer;
         private double elevationInterval;
         private double minimumContourLength = 200;
-        private double minimumSameLabelDistance = 200;
+        private float minimumSameLabelDistance = 200;
         private float labelCoverageRange = 400;
         private Bounds2 processBounds;
         private int randomSeed;

@@ -1,5 +1,4 @@
-﻿using System;
-using Brejc.Geometry;
+﻿using Brejc.Geometry;
 
 namespace GisExperiments.ContoursLabeling
 {
@@ -14,6 +13,7 @@ namespace GisExperiments.ContoursLabeling
         public float LinePosition
         {
             get { return linePosition; }
+            set { linePosition = value; }
         }
 
         public Point2<float> Location
@@ -27,7 +27,7 @@ namespace GisExperiments.ContoursLabeling
             return clone;
         }
 
-        private readonly float linePosition;
+        private float linePosition;
         private readonly Point2<float> location;
     }
 }

@@ -36,8 +36,8 @@ namespace GisExperiments.ContoursLabeling
             WindowsFileSystem fileSystem = new WindowsFileSystem();
             ShapefileReader reader = new ShapefileReader(fileSystem, new DbaseFileReader(fileSystem));
             ShapefileFile file = reader.Read(
-                //@"D:\MyStuff\Dropbox\Work\Maperitive\Projects\SloveniaPy\artifacts\contours25_50.shp");
-                @"D:\MyStuff\My Dropbox\Work\Maperitive\Projects\SloveniaPy\artifacts\contours25_50.shp");
+                @"D:\MyStuff\Dropbox\Work\Maperitive\Projects\SloveniaPy\artifacts\contours25_50.shp");
+                //@"D:\MyStuff\My Dropbox\Work\Maperitive\Projects\SloveniaPy\artifacts\contours25_50.shp");
 
             ContoursSet set = new ContoursSet();
 

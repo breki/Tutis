@@ -78,6 +78,7 @@
     <Compile Include="ContoursLabeling\Igor1ContoursLabelingAlgorithm.cs" />
     <Compile Include="ContoursLabeling\IntervalSet.cs" />
     <Compile Include="ContoursLabeling\IntervalSetTests.cs" />
+    <Compile Include="ContoursLabeling\LabelsOnAContour.cs" />
     <Compile Include="ContoursLabeling\SimulatedAnnealing.cs" />
     <Compile Include="Curves\CardinalSplineInterpolator.cs" />
     <Compile Include="Curves\CurveInterpolationParameters.cs" />
