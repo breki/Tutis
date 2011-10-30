@@ -17,7 +17,7 @@ namespace GisExperiments.ContoursLabeling
             this.labelingParameters = labelingParameters;
         }
 
-        public ContoursLabels Solution { get; set; }
+        public LabelsOnAContour Solution { get; set; }
 
         public void InitializeProblem(IContourLine contourLine, float labelLength)
         {
@@ -31,7 +31,7 @@ namespace GisExperiments.ContoursLabeling
             transition = Solution.CloneDeep();
 
             double randomDecision = Rnd.NextDouble();
-            if (randomDecision < 0.1 && transition.Labels.Count > 1)
+            if (randomDecision < 0.1 && transition.LabelsCount > 1)
                 RemoveLabel();
             else
                 MoveLabel();
@@ -41,25 +41,73 @@ namespace GisExperiments.ContoursLabeling
 
         private void RemoveLabel()
         {
-            int labelToRemove = Rnd.Next(transition.Labels.Count);
+            int labelToRemove = Rnd.Next(transition.LabelsCount);
             transition.RemoveLabel(labelToRemove);
         }
 
         private void MoveLabel()
         {
-            int labelToMove = Rnd.Next(transition.Labels.Count);
+            int labelToMove = Rnd.Next(transition.LabelsCount);
             double movement = (Rnd.NextDouble() - 0.5) * 100;
 
-            // TODO: check that the label isn't too close to another one after the move
+            // check that the label isn't too close to another one after the move
+            // (or too close to the ends of the contour)
             ContourLabel label = transition.Labels[labelToMove];
+            float newLabelPosition = (float)(label.LinePosition + movement);
 
-            throw new NotImplementedException();
+            if (movement < 0)
+            {
+                // label is moving to the left
+                if (labelToMove > 0)
+                {
+                    // find a label that's to the left
+                    ContourLabel neighbourLabel = transition.Labels[labelToMove - 1];
+                    float distanceBetweenLabels = newLabelPosition - neighbourLabel.LinePosition;
+                    if (distanceBetweenLabels < labelingParameters.MinimumSameLabelDistance)
+                    {
+                        // the label has gone too far to the left, move it to the
+                        // absolute minimum distance
+                        newLabelPosition = neighbourLabel.LinePosition + distanceBetweenLabels;
+                    }
+                }
+                else
+                {
+                    // make sure the label is not too far to the start of the contour
+                    newLabelPosition = Math.Max(newLabelPosition, labelingParameters.MinimumSameLabelDistance/2);
+                }
+            }
+            else
+            {
+                // label is moving to the right
+                if (labelToMove < transition.LabelsCount-1)
+                {
+                    // find a label that's to the right
+                    ContourLabel neighbourLabel = transition.Labels[labelToMove + 1];
+                    float distanceBetweenLabels = neighbourLabel.LinePosition - newLabelPosition;
+                    if (distanceBetweenLabels < labelingParameters.MinimumSameLabelDistance)
+                    {
+                        // the label has gone too far to the left, move it to the
+                        // absolute minimum distance
+                        newLabelPosition = neighbourLabel.LinePosition - distanceBetweenLabels;
+                    }
+                }
+                else
+                {
+                    // make sure the label is not too far to the end of the contour
+                    newLabelPosition = Math.Max (
+                        newLabelPosition, 
+                        contourLine.Length - labelingParameters.MinimumSameLabelDistance / 2);
+                }
+            }
+
+            // mark the label movement
+            label.LinePosition = newLabelPosition;
         }
 
         protected override double InitializeSolution()
         {
             // we first spread out labels so that they are not too close and yet not too far (using a factor)
-            Solution = new ContoursLabels();
+            Solution = new LabelsOnAContour();
 
             double diff = (labelingParameters.LabelCoverageRange*2 - labelingParameters.MinimumSameLabelDistance);
             float initialLabelSeparationDistance = (float)((diff*0.85 + labelingParameters.MinimumSameLabelDistance) / 2);
@@ -96,7 +144,7 @@ namespace GisExperiments.ContoursLabeling
             Solution = transition;
         }
 
-        private double CalculatePlacementValue(ContoursLabels placement)
+        private double CalculatePlacementValue(LabelsOnAContour placement)
         {
             double coverage = CalculateLabelsCoverage(placement);
             double labelsUsage = CalculateLabelsUsage(placement);
@@ -105,7 +153,7 @@ namespace GisExperiments.ContoursLabeling
             return coverage + labelsUsage * 2 + averageNicety;
         }
 
-        private double CalculateLabelsCoverage(ContoursLabels placement)
+        private double CalculateLabelsCoverage(LabelsOnAContour placement)
         {
             IntervalSet intervals = new IntervalSet(contourLine.Length);
 
@@ -120,7 +168,7 @@ namespace GisExperiments.ContoursLabeling
             return 1 - totalLengthOfIntervals/contourLine.Length;
         }
 
-        private double CalculateLabelsUsage(ContoursLabels placement)
+        private double CalculateLabelsUsage(LabelsOnAContour placement)
         {
             // score:
             // 0 = the actual number is the minimal number (or less)
@@ -135,7 +183,7 @@ namespace GisExperiments.ContoursLabeling
             return value;
         }
 
-        private double CalculateNicetyOfLabels (ContoursLabels placement)
+        private double CalculateNicetyOfLabels (LabelsOnAContour placement)
         {
             double currentUgliestLabelValue = 0;
 
@@ -178,16 +226,6 @@ namespace GisExperiments.ContoursLabeling
         private float labelLength;
         private int maximumNumberOfLabels;
         private int minimumNumberOfLabelsNeeded;
-        private ContoursLabels transition;
+        private LabelsOnAContour transition;
     }
-
-    // quality of the solution:
-    // how much of the contour line is covered by labels (%, some value indicating how far each label "covers" the line)
-    // the number of labels (less is better if it satisfies the coverage)
-    // the average nicety of each label
-    // label nicety:
-    // text angle
-    // curvature
-    // hard constraints:
-    // there is an absolute minimum distance allowed for two labels which cannot be crossed
 }

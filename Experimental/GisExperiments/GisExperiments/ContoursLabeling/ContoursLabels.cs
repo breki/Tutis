@@ -20,6 +20,11 @@ namespace GisExperiments.ContoursLabeling
             labels.AddRange(contoursLabels.labels);
         }
 
+        public void AddLabels (LabelsOnAContour labelsOnAContour)
+        {
+            labels.AddRange (labelsOnAContour.Labels);
+        }
+
         public ContoursLabels CloneDeep()
         {
             ContoursLabels clone = new ContoursLabels();
