@@ -21,10 +21,13 @@ namespace GisExperiments
                     {
                         PointF[] points = new[] { new PointF (100, 500), new PointF (500, 400), new PointF (900, 700) };
 
-                        for (double tension = 0; tension <= 1; tension += 0.1)
+                        double tension = 0.8;
+                        //for (double tension = 0; tension <= 1; tension += 0.1)
                         {
                             Pen pen = new Pen (Color.FromArgb (150, Color.Blue), 1);
                             g.DrawCardinalSpline (pen, points, tension, 1);
+
+                            tension = 0.5;
                             pen = new Pen (Color.FromArgb (150, Color.Red), 1);
                             g.DrawCurve (pen, points, (float)tension);
                         }

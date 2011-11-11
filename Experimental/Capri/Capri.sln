@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Capri", "Capri\Capri.csproj", "{AE69B7A2-C34E-4014-A5AF-D02EA4C615CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Capri.Tests", "Capri.Tests\Capri.Tests.csproj", "{3289E757-371A-4698-88C1-6AA27A684F12}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AE69B7A2-C34E-4014-A5AF-D02EA4C615CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE69B7A2-C34E-4014-A5AF-D02EA4C615CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE69B7A2-C34E-4014-A5AF-D02EA4C615CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE69B7A2-C34E-4014-A5AF-D02EA4C615CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3289E757-371A-4698-88C1-6AA27A684F12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3289E757-371A-4698-88C1-6AA27A684F12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3289E757-371A-4698-88C1-6AA27A684F12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3289E757-371A-4698-88C1-6AA27A684F12}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
