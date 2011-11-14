@@ -8,6 +8,11 @@ namespace Capri.Tests.MetaTests
         [Test]
         public void Test()
         {
+            BuildModel();
+        }
+
+        public static EntityBuilder BuildModel()
+        {
             EntityBuilder builder = new EntityBuilder();
             builder
                 .Entity("BusinessArea")
@@ -37,6 +42,7 @@ namespace Capri.Tests.MetaTests
                     .Integer("Hours")
                     .Has("Project")
                     .Has("Employee");
+            return builder;
         }
     }
 }
