@@ -36,6 +36,18 @@
     <Reference Include="Iesi.Collections">
       <HintPath>..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
     </Reference>
+    <Reference Include="IronPython">
+      <HintPath>..\packages\IronPython.2.6.1\lib\Net40\IronPython.dll</HintPath>
+    </Reference>
+    <Reference Include="IronPython.Modules">
+      <HintPath>..\packages\IronPython.2.6.1\lib\Net40\IronPython.Modules.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>..\packages\IronPython.2.6.1\lib\Net40\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting">
+      <HintPath>..\packages\IronPython.2.6.1\lib\Net40\Microsoft.Scripting.dll</HintPath>
+    </Reference>
     <Reference Include="NHibernate">
       <HintPath>..\packages\NHibernate.3.2.0.4000\lib\Net35\NHibernate.dll</HintPath>
     </Reference>
@@ -58,9 +70,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MetaTests\EntityBuilderTests.cs" />
+    <Compile Include="NHibernateTests\MyGetter.cs" />
+    <Compile Include="NHibernateTests\MyPropertyAccessor.cs" />
+    <Compile Include="NHibernateTests\MyProxyFactory.cs" />
+    <Compile Include="NHibernateTests\MyProxyFactoryFactory.cs" />
+    <Compile Include="NHibernateTests\MyProxyValidator.cs" />
+    <Compile Include="NHibernateTests\MySetter.cs" />
+    <Compile Include="NHibernateTests\PythonEntityPersister.cs" />
     <Compile Include="NHibernateTests\SimpleClassTests.cs" />
     <Compile Include="NHibernateTests\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="NHibernateTests\PythonNHTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -75,6 +95,12 @@
     <Folder Include="PythonGeneratorTests\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="NHibernateTests\UserPy.hbm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NHibernateTests\Test.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="NHibernateTests\User.hbm.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
