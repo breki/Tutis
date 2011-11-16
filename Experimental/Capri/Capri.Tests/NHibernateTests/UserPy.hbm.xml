@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+    assembly="Capri.Tests"
+    namespace="Capri.Tests.NHibernateTests">
+  <class
+    table="Users"
+    entity-name="User"
+    persister="Capri.Tests.NHibernateTests.PythonEntityPersister, Capri.Tests">
+    <id name="Id" type="Int32">
+      <generator class="native" />
+    </id>
+    <property name="Name" type="String"/>
+  </class>
+</hibernate-mapping>

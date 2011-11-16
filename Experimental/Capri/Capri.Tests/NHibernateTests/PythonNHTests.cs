@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using IronPython.Hosting;
+using Microsoft.Scripting.Hosting;
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
@@ -9,30 +11,25 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace Capri.Tests.NHibernateTests
 {
-    public class SimpleClassTests
+    public class PythonNHTests
     {
         [Test]
         public void Test()
         {
-            //HbmMapping mapping = new HbmMapping();
-
-            //RootClass rootClass = new RootClass();
-            //rootClass.EntityName = "User";
-
             Configuration config = new Configuration();
             config
                 .DataBaseIntegration(
                 x =>
-                    {
-                        x.Dialect<SQLiteDialect>();
-                        x.Driver<SQLite20Driver>();
-                        x.ConnectionString = "Data Source=test.sqlite;Version=3;New=True;";
-                    })
+                {
+                    x.Dialect<SQLiteDialect>();
+                    x.Driver<SQLite20Driver>();
+                    x.ConnectionString = "Data Source=test.sqlite;Version=3;New=True;";
+                })
                 .Proxy(x => x.ProxyFactoryFactory<MyProxyFactoryFactory>())
                 .SetProperty(Environment.CurrentSessionContextClass, "thread_static");
 
             config
-                .AddFile("NHibernateTests/User.hbm.xml");
+                .AddFile("NHibernateTests/UserPy.hbm.xml");
 
             var props = config.Properties;
             if (props.ContainsKey(Environment.ConnectionStringName))
@@ -61,6 +58,10 @@ namespace Capri.Tests.NHibernateTests
                     Assert.AreEqual(1, users.Count);
                 }
             }
+
+            ScriptEngine scriptEngine = Python.CreateEngine();
+            ScriptSource scriptSource = scriptEngine.CreateScriptSourceFromFile("NHibernateTests/Test.py");
+            scriptSource.Execute();
         }
     }
 }
