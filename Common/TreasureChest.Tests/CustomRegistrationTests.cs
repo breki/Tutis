@@ -31,6 +31,19 @@ namespace TreasureChest.Tests
         }
 
         [Test]
+        public void OnCreateShouldHaveComponentAlreadyInTheContainer ()
+        {
+            Chest
+                .AddCustom.Service<ComponentWithNonWiredProperty> ()
+                    .OnCreateDo ((c, x) => c.Fetch<ComponentWithNonWiredProperty>()).Done
+                .Done ();
+
+            using (var lease = Chest.Fetch<ComponentWithNonWiredProperty> ())
+            {
+            }
+        }
+
+        [Test]
         public void OnRegisterDo()
         {
             Type implType = null;
