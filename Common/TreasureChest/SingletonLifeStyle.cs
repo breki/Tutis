@@ -64,11 +64,16 @@ namespace TreasureChest
 
                     instantiationInProgress = true;
                     instance = GetInstancePrivate (chest, context, componentCreator);
-                    instantiationInProgress = false;
                 }
 
                 return instance;
             }
+        }
+
+        public void MarkAsInstantiated (object instance)
+        {
+            instantiationInProgress = false;
+            this.instance = instance;
         }
 
         public override bool MarkInstanceAsReleased(object instance, PolicyCollection chestPolicies)

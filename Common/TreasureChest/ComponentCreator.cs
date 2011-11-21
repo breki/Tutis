@@ -25,6 +25,9 @@ namespace TreasureChest
             object instance = chestPolicies.FindPolicyOf<IConstructionPolicy>()
                 .CreateInstance(registration, context);
 
+            if (registration.RegistrationHandler is SingletonLifestyle)
+                ((SingletonLifestyle)registration.RegistrationHandler).MarkAsInstantiated (instance);
+
             foreach (IAfterComponentCreatedAction policy in registration.FindAllPoliciesOf<IAfterComponentCreatedAction>())
                 policy.AfterCreated(instance);
 

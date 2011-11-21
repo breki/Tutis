@@ -54,6 +54,7 @@ namespace TreasureChest
         }
 
         [SuppressMessage ("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
+        [SuppressMessage ("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]
         protected object GetInstancePrivate (
             IChestMaster chest,
             ResolvingContext context,
@@ -69,6 +70,9 @@ namespace TreasureChest
             {
                 instance = Registration.CreateInstanceUsingCustomCreationMethod(chest);
                 context.DependencyGraph.AddInstanceToMap(instance, this, null);
+                
+                if (this is SingletonLifestyle)
+                    ((SingletonLifestyle)this).MarkAsInstantiated(instance);
             }
 
             return instance;
