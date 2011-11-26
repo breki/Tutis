@@ -86,9 +86,12 @@
     <Compile Include="Curves\LineStringInfo.cs" />
     <None Include="DotSpatialProjectionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resampling\IBitmapResamplingAlgorithm.cs" />
+    <Compile Include="Resampling\ResampleImageTests.cs" />
     <Compile Include="Spline.cs" />
     <Compile Include="SplineTests.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
