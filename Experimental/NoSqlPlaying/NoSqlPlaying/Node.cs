@@ -7,8 +7,8 @@ namespace NoSqlPlaying
     {
         public ObjectId _id { get; set; }
         public int OsmId { get; set; }
-        public Point Loc { get; set; }
-        public Hashtable Tags { get; set; }
+        //public Point Loc { get; set; }
+        //public Hashtable Tags { get; set; }
     }
 
     public class Point
