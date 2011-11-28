@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Reflection;
 using Brejc.Common.FileSystem;
@@ -13,39 +12,17 @@ namespace NoSqlPlaying
     public class MongoDBTests
     {
         [Test]
-        public void FillNodes()
+        public void FillDatabase()
         {
             MongoDatabase osmMongoDb = ConnectToMongo();
 
-            InMemoryOsmDatabase osmDb = new InMemoryOsmDatabase();
             OsmXmlReader reader = new OsmXmlReader();
+            IOsmDataStorage osmDb = new MongoOsmDataStorage(osmMongoDb);
             reader.Read(
                 @"D:\brisi\nordrhein-westfalen.osm.bz2",
                 //@"..\..\..\..\samples\OSM\MariborPohorje.osm.bz2",
                 new WindowsFileSystem(),
                 osmDb);
-
-            osmMongoDb.DropCollection("nodes");
-            MongoCollection<Node> nodes = osmMongoDb.GetCollection<Node>("nodes");
-            nodes.EnsureIndex(IndexKeys.GeoSpatial("Loc"));
-
-            foreach (OsmNode osmNode in osmDb.Nodes)
-            {
-                Node node = new Node();
-                node.OsmId = osmNode.ObjectId;
-                node.Loc = new Point();
-                node.Loc.X = osmNode.X;
-                node.Loc.Y = osmNode.Y;
-
-                if (osmNode.Tags != null)
-                {
-                    node.Tags = new Hashtable();
-                    foreach (Tag tag in osmNode.Tags)
-                        node.Tags.Add(tag.Key, tag.Value);
-                }
-
-                nodes.Insert(node);
-            }
         }
 
         [Test]
