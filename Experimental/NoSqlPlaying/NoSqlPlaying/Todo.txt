@@ -1,1 +1,24 @@
 ﻿mongod --dbpath D:\data\MongoDB
+
+- easy to insert
+- support for spatial indexing (bbox)
+- support for querying on tags
+- indexing of common tag key-value combinations (highway=residential is 1, for example)
+- data structure
+    edge:
+        edge ID
+        mbr
+        start node
+        end node
+        geometry in between (just point coordinates)
+        tag? how to store them?
+            - separate into common tags and custom tags
+            - custom tags are encoded directly into edge blob
+            - common tags are stored in a separate table - edge tags (edge ID, tag ID)
+            - common tags could also be stored in a blob, to avoid joins
+- common tags could be dependent on actual rendering rules and/or some common tag combinations (defined in a file)
+
+
+http://en.wikipedia.org/wiki/Spatial_database
+http://en.wikipedia.org/wiki/R-tree
+
