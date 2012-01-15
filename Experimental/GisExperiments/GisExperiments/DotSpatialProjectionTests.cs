@@ -54,5 +54,55 @@ namespace GisExperiments
 
             TestLog.WriteLine("{0}, {1}", xy[0], xy[1]);
         }
+
+        [Test]
+        public void Wgs84ToOsgb()
+        {
+            ProjectionInfo p = new ProjectionInfo();
+
+            ProjectionInfo pStart = new ProjectionInfo("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs");
+            ProjectionInfo pEnd = new ProjectionInfo("+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.060,0.1502,0.2470,0.8421,-20.4894 +units=m +no_defs <>");
+              //ProjectionInfo pEnd = new ProjectionInfo("+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs");
+
+            //ProjectionInfo pEnd = KnownCoordinateSystems.Geographic.Europe.OSGB1936;
+//            ProjectionInfo pEnd = new ProjectionInfo();
+
+//            pEnd.ReadEsriString(@"PROJCS[""OSGB 1936 / British National Grid"",
+//    GEOGCS[""OSGB 1936"",
+//        DATUM[""OSGB_1936"",
+//            SPHEROID[""Airy 1830"",6377563.396,299.3249646,
+//                AUTHORITY[""EPSG"",""7001""]],
+//            AUTHORITY[""EPSG"",""6277""]],
+//        PRIMEM[""Greenwich"",0,
+//            AUTHORITY[""EPSG"",""8901""]],
+//        UNIT[""degree"",0.01745329251994328,
+//            AUTHORITY[""EPSG"",""9122""]],
+//        AUTHORITY[""EPSG"",""4277""]],
+//    UNIT[""metre"",1,
+//        AUTHORITY[""EPSG"",""9001""]],
+//    PROJECTION[""Transverse_Mercator""],
+//    PARAMETER[""latitude_of_origin"",49],
+//    PARAMETER[""central_meridian"",-2],
+//    PARAMETER[""scale_factor"",0.9996012717],
+//    PARAMETER[""false_easting"",400000],
+//    PARAMETER[""false_northing"",-100000],
+//    AUTHORITY[""EPSG"",""27700""],
+//    AXIS[""Easting"",EAST],
+//    AXIS[""Northing"",NORTH]]");
+
+            double[] xy = new double[2];
+            double[] z = new double[1];
+
+            xy[0] = -0.10322;
+            xy[1] = 51.52237;
+            //calls the reproject function and reprojects the points
+            Reproject.ReprojectPoints(xy, z, pStart, pEnd, 0, 1);
+
+            TestLog.WriteLine("{0}, {1}", xy[0], xy[1]);
+
+            // http://www.fieldenmaps.info/cconv/cconv_gb.html
+            Assert.AreEqual(531689.532, xy[0]);
+            Assert.AreEqual(182088.483, xy[1]);
+        }
     }
 }
