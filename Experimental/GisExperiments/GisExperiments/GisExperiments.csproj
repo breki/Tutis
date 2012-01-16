@@ -85,6 +85,7 @@
     <Compile Include="Curves\ICurveInterpolator.cs" />
     <Compile Include="Curves\LineStringInfo.cs" />
     <Compile Include="DotSpatialProjectionTests.cs" />
+    <Compile Include="Proj4\Proj4RipOff.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resampling\IBitmapResamplingAlgorithm.cs" />
     <Compile Include="Resampling\ResampleImageTests.cs" />
