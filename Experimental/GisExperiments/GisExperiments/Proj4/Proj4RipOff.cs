@@ -12,7 +12,7 @@ namespace GisExperiments.Proj4
             coords[1] = point.Y;
 
             // DGR, 2010/11/12
-            if (source.axis != "enu")
+            if (source.Axis != "enu")
                 adjust_axis(source, false, coords);
 
             // Transform source points to long/lat, if they aren't already.
@@ -23,25 +23,25 @@ namespace GisExperiments.Proj4
             //}
             //else
             //{
-                if (source.to_meter.HasValue)
+                if (source.ToMeter.HasValue)
                 {
-                    coords[0] *= source.to_meter.Value;
-                    coords[1] *= source.to_meter.Value;
+                    coords[0] *= source.ToMeter.Value;
+                    coords[1] *= source.ToMeter.Value;
                 }
 
-                source.inverse(coords); // Convert Cartesian to longlat
+                source.Inverse(coords); // Convert Cartesian to longlat
             //}
 
             // Adjust for the prime meridian if necessary
-            if (source.from_greenwich.HasValue)
-                coords[0] += source.from_greenwich.Value;
+            if (source.FromGreenwich.HasValue)
+                coords[0] += source.FromGreenwich.Value;
 
             // Convert datums if needed, and if possible.
             coords = datum_transform(source.Datum, dest.Datum, coords);
 
             // Adjust for the prime meridian if necessary
-            if (dest.from_greenwich.HasValue)
-                coords[0] -= dest.from_greenwich.Value;
+            if (dest.FromGreenwich.HasValue)
+                coords[0] -= dest.FromGreenwich.Value;
 
             //if (dest.Projection.ProjectionCode == "longlat")
             //{
@@ -52,16 +52,16 @@ namespace GisExperiments.Proj4
             //else
             //{
                 // else project
-                dest.forward(coords);
-                if (dest.to_meter.HasValue)
+                dest.Forward(coords);
+                if (dest.ToMeter.HasValue)
                 {
-                    coords[0] /= dest.to_meter.Value;
-                    coords[1] /= dest.to_meter.Value;
+                    coords[0] /= dest.ToMeter.Value;
+                    coords[1] /= dest.ToMeter.Value;
                 }
             //}
 
             // DGR, 2010/11/12
-            if (dest.axis != "enu")
+            if (dest.Axis != "enu")
                 adjust_axis(dest, true, coords);
 
             return new PointD2(coords[0].Value, coords[1].Value);
@@ -73,7 +73,7 @@ namespace GisExperiments.Proj4
             {
                 double? v = coords[i];
 
-                switch(crs.axis[i]) 
+                switch(crs.Axis[i]) 
                 {
                     case 'e':
                         coords[i]= v;
@@ -116,32 +116,32 @@ namespace GisExperiments.Proj4
                 return coords;
 
             // Do we need to go through geocentric coordinates?
-            if (source.es != dest.es || source.Ellipsoid.a != dest.Ellipsoid.a
+            if (source.Es != dest.Es || source.Ellipsoid.SemimajorRadius != dest.Ellipsoid.SemimajorRadius
                 || source.DatumType == DatumType.Param3
                 || source.DatumType == DatumType.Param7
                 || dest.DatumType == DatumType.Param3
                 || dest.DatumType == DatumType.Param7)
             {
                 // Convert to geocentric coordinates.
-                source.geodetic_to_geocentric(coords);
+                source.GeodeticToGeocentric(coords);
 
                 // CHECK_RETURN;
 
                 // Convert between datums
                 if (source.DatumType == DatumType.Param3 || source.DatumType == DatumType.Param7)
                 {
-                    source.geocentric_to_wgs84(coords);
+                    source.GeocentricToWgs84(coords);
                     // CHECK_RETURN;
                 }
 
                 if (dest.DatumType == DatumType.Param3 || dest.DatumType == DatumType.Param7)
                 {
-                    dest.geocentric_from_wgs84(coords);
+                    dest.GeocentricFromWgs84(coords);
                     // CHECK_RETURN;
                 }
 
                 // Convert back to geodetic coordinates
-                dest.geocentric_to_geodetic(coords);
+                dest.GeocentricToGeodetic(coords);
                 // CHECK_RETURN;
             }
 

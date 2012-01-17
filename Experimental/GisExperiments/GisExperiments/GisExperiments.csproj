@@ -90,7 +90,6 @@
     <Compile Include="Proj4\Ellipsoid.cs" />
     <Compile Include="Proj4\Ellipsoids.cs" />
     <Compile Include="Proj4\Datum.cs" />
-    <None Include="Proj4\GenericSrs.cs" />
     <Compile Include="Proj4\IDatum.cs" />
     <Compile Include="Proj4\IEllipsoid.cs" />
     <Compile Include="Proj4\IProjection.cs" />

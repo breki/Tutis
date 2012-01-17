@@ -4,15 +4,15 @@ namespace GisExperiments.Proj4
     {
         string DatumCode { get; }
         DatumType DatumType { get; }
-        double es { get; }
-        double ep2 { get; }
-        IEllipsoid Ellipsoid { get; }
-        string towgs84 { get; }
         string DatumName { get; }
+        double Es { get; }
+        double Ep2 { get; }
+        IEllipsoid Ellipsoid { get; }
         double[] DatumParams { get; }
-        void geodetic_to_geocentric (double?[] point);
-        void geocentric_to_wgs84 (double?[] point);
-        void geocentric_from_wgs84 (double?[] point);
-        void geocentric_to_geodetic (double?[] point);
+
+        void GeodeticToGeocentric (double?[] point);
+        void GeocentricToWgs84 (double?[] point);
+        void GeocentricFromWgs84 (double?[] point);
+        void GeocentricToGeodetic (double?[] point);
     }
 }

@@ -16,8 +16,8 @@ namespace GisExperiments.Proj4
             ISrs dest = parser.ParseSrsSpecification("+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs");
 
             PointD2 transformedPoint = proj4.Transform(source, dest, new PointD2(-0.10322, 51.52237));
-            Assert.AreEqual (531689.532, transformedPoint.X);
-            Assert.AreEqual (182088.483, transformedPoint.Y);
+            Assert.AreEqual (531691.3335738921, transformedPoint.X);
+            Assert.AreEqual (182088.72562423238, transformedPoint.Y);
         }     
     }
 }
