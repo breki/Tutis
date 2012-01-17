@@ -5,29 +5,29 @@ namespace GisExperiments.Proj4
         public abstract string ProjectionCode { get;  }
         public abstract string ProjectionName { get;  }
 
-        public double alpha { get; set; }
+        public double Alpha { get; set; }
         public IDatum Datum { get; set; }
-        public string axis { get; set; }
+        public string Axis { get; set; }
         public IEllipsoid Ellipsoid { get; set; }
-        public double? from_greenwich { get; set; }
-        public double? k0 { get; set; }
-        public double lat0 { get; set; }
-        public double lat1 { get; set; }
-        public double lat2 { get; set; }
-        public double lat_ts { get; set; }
-        public double long0 { get; set; }
-        public double longc { get; set; }
-        public string nagrids { get; set; }
-        public bool R_A { get; private set; }
-        public double? to_meter { get; set; }
-        public string units { get; set; }
-        public bool utmSouth { get; set; }
-        public string title { get; set; }
-        public double x0 { get; set; }
-        public double y0 { get; set; }
-        public int zone { get; set; }
-        public abstract void inverse(double?[] coords);
-        public abstract void forward(double?[] coords);
+        public double? FromGreenwich { get; set; }
+        public double? K0 { get; set; }
+        public double Lat0 { get; set; }
+        public double Lat1 { get; set; }
+        public double Lat2 { get; set; }
+        public double LatTs { get; set; }
+        public double Long0 { get; set; }
+        public double LongC { get; set; }
+        public string Nagrids { get; set; }
+        public bool RA { get; private set; }
+        public double? ToMeter { get; set; }
+        public string Units { get; set; }
+        public bool UtmSouth { get; set; }
+        public string Title { get; set; }
+        public double X0 { get; set; }
+        public double Y0 { get; set; }
+        public int Zone { get; set; }
+        public abstract void Inverse(double?[] coords);
+        public abstract void Forward(double?[] coords);
 
         public virtual void Initialize()
         {
@@ -77,11 +77,11 @@ namespace GisExperiments.Proj4
             //}
 
             //ep2 = (a2 - b2) / b2; // used in geocentric
-            if (!k0.HasValue)
-                k0 = 1.0;    //default value
+            if (!K0.HasValue)
+                K0 = 1.0;    //default value
             //DGR 2010-11-12: axis
-            if (axis == null)
-                axis = "enu";
+            if (Axis == null)
+                Axis = "enu";
 
             //datum = new Proj4js.datum (this);
         }

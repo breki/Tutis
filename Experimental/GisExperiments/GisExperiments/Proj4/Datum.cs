@@ -6,10 +6,6 @@ namespace GisExperiments.Proj4
 {
     public class Datum : IDatum
     {
-        public Datum ()
-        {
-        }
-
         public static Datum ToWgs84 (string datumCode, string ellipsoid, string toWgs84Params, string datumName)
         {
             Datum datum = new Datum ();
@@ -44,42 +40,6 @@ namespace GisExperiments.Proj4
             return datum;
         }
 
-        //public Datum (ISrs proj)
-        //{
-        //    DatumType = DatumType.Wgs84; //default setting
-
-        //    if (proj.Datum == null)
-        //        DatumType = DatumType.NoDatum;
-
-        //    if (proj != null && proj.datum_params != null)
-        //    {
-        //        if (proj.datum_params[0] != 0 || proj.datum_params[1] != 0 || proj.datum_params[2] != 0)
-        //            DatumType = DatumType.Param3;
-
-        //        if (proj.datum_params.Length > 3)
-        //        {
-        //            if (proj.datum_params[3] != 0 || proj.datum_params[4] != 0 ||
-        //                proj.datum_params[5] != 0 || proj.datum_params[6] != 0)
-        //            {
-        //                DatumType = DatumType.Param7;
-        //                proj.datum_params[3] *= 4.84813681109535993589914102357e-6;
-        //                proj.datum_params[4] *= 4.84813681109535993589914102357e-6;
-        //                proj.datum_params[5] *= 4.84813681109535993589914102357e-6;
-        //                proj.datum_params[6] = (proj.datum_params[6] / 1000000.0) + 1.0;
-        //            }
-        //        }
-        //    }
-
-        //    if (proj != null)
-        //    {
-        //        //a = proj.a;    //datum object also uses these values
-        //        //b = proj.b;
-        //        es = proj.es;
-        //        ep2 = proj.ep2;
-        //        DatumParams = proj.datum_params;
-        //    }
-        //}
-
         public static double[] ParseDatumParams (string datumParamsString)
         {
             string[] splits = datumParamsString.Split (',');
@@ -93,24 +53,24 @@ namespace GisExperiments.Proj4
 
         private void DeriveConstants()
         {
-            double a2 = Ellipsoid.a * Ellipsoid.a;          // used in geocentric
-            double b2 = Ellipsoid.b * Ellipsoid.b;          // used in geocentric
-            es = (a2 - b2) / a2;  // e ^ 2
-            e = Math.Sqrt (es);        // eccentricity            
-            ep2 = (a2 - b2) / b2; // used in geocentric
+            double a2 = Ellipsoid.SemimajorRadius * Ellipsoid.SemimajorRadius;          // used in geocentric
+            double b2 = Ellipsoid.SemiminorRadius * Ellipsoid.SemiminorRadius;          // used in geocentric
+            Es = (a2 - b2) / a2;  // e ^ 2
+            e = Math.Sqrt (Es);        // eccentricity            
+            Ep2 = (a2 - b2) / b2; // used in geocentric
         }
 
         public string DatumCode { get; private set; }
         public DatumType DatumType { get; private set; }
-        public double es { get; private set; }
+        public double Es { get; private set; }
         public double e { get; private set; }
         public string towgs84 { get; private set; }
         public IEllipsoid Ellipsoid { get; private set; }
         public string DatumName { get; private set; }
-        public double ep2 { get; private set; }
+        public double Ep2 { get; private set; }
         public double[] DatumParams { get; private set; }
 
-        public void geodetic_to_geocentric (double?[] point)
+        public void GeodeticToGeocentric (double?[] point)
         {
             double Longitude = point[0].Value;
             double Latitude = point[1].Value;
@@ -142,22 +102,22 @@ namespace GisExperiments.Proj4
             Sin_Lat = Math.Sin (Latitude);
             Cos_Lat = Math.Cos (Latitude);
             Sin2_Lat = Sin_Lat * Sin_Lat;
-            Rn = Ellipsoid.a / (Math.Sqrt (1.0e0 - es * Sin2_Lat));
+            Rn = Ellipsoid.SemimajorRadius / (Math.Sqrt (1.0e0 - Es * Sin2_Lat));
             X = (Rn + Height) * Cos_Lat * Math.Cos (Longitude);
             Y = (Rn + Height) * Cos_Lat * Math.Sin (Longitude);
-            Z = ((Rn * (1 - es)) + Height) * Sin_Lat;
+            Z = ((Rn * (1 - Es)) + Height) * Sin_Lat;
 
             point[0] = X;
             point[1] = Y;
             point[2] = Z;
         }
 
-        public void geocentric_to_wgs84 (double?[] point)
+        public void GeocentricToWgs84 (double?[] point)
         {
             throw new System.NotImplementedException ();
         }
 
-        public void geocentric_from_wgs84 (double?[] point)
+        public void GeocentricFromWgs84 (double?[] point)
         {
             if (DatumType == DatumType.Param3)
             {
@@ -184,7 +144,7 @@ namespace GisExperiments.Proj4
             }
         }
 
-        public void geocentric_to_geodetic (double?[] point)
+        public void GeocentricToGeodetic (double?[] point)
         {
             double genau = 1E-12;
             double genau2 = (genau * genau);
@@ -217,7 +177,7 @@ namespace GisExperiments.Proj4
             RR = Math.Sqrt (X * X + Y * Y + Z * Z);
 
             /*      special cases for latitude and longitude */
-            if (P / Ellipsoid.a < genau)
+            if (P / Ellipsoid.SemimajorRadius < genau)
             {
 
                 /*  special case, if P=0. (X=0., Y=0.) */
@@ -226,10 +186,10 @@ namespace GisExperiments.Proj4
 
                 /*  if (X,Y,Z)=(0.,0.,0.) then Height becomes semi-minor axis
                  *  of ellipsoid (=center of mass), Latitude becomes PI/2 */
-                if (RR / Ellipsoid.a < genau)
+                if (RR / Ellipsoid.SemimajorRadius < genau)
                 {
                     Latitude = MathExt.PI2;
-                    Height = -Ellipsoid.b;
+                    Height = -Ellipsoid.SemiminorRadius;
                     return;
                 }
             }
@@ -251,8 +211,8 @@ namespace GisExperiments.Proj4
              */
             CT = Z / RR;
             ST = P / RR;
-            RX = 1.0 / Math.Sqrt (1.0 - es * (2.0 - es) * ST * ST);
-            CPHI0 = ST * (1.0 - es) * RX;
+            RX = 1.0 / Math.Sqrt (1.0 - Es * (2.0 - Es) * ST * ST);
+            CPHI0 = ST * (1.0 - Es) * RX;
             SPHI0 = CT * RX;
             iter = 0;
 
@@ -261,12 +221,12 @@ namespace GisExperiments.Proj4
             do
             {
                 iter++;
-                RN = Ellipsoid.a / Math.Sqrt (1.0 - es * SPHI0 * SPHI0);
+                RN = Ellipsoid.SemimajorRadius / Math.Sqrt (1.0 - Es * SPHI0 * SPHI0);
 
                 /*  ellipsoidal (geodetic) height */
-                Height = P * CPHI0 + Z * SPHI0 - RN * (1.0 - es * SPHI0 * SPHI0);
+                Height = P * CPHI0 + Z * SPHI0 - RN * (1.0 - Es * SPHI0 * SPHI0);
 
-                RK = es * RN / (RN + Height);
+                RK = Es * RN / (RN + Height);
                 RX = 1.0 / Math.Sqrt (1.0 - RK * (2.0 - RK) * ST * ST);
                 CPHI = ST * (1.0 - RK) * RX;
                 SPHI = CT * RX;

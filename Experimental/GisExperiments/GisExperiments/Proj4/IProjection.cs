@@ -1,5 +1,3 @@
-using Brejc.Geometry;
-
 namespace GisExperiments.Proj4
 {
     public interface IProjection
@@ -7,7 +5,7 @@ namespace GisExperiments.Proj4
         string ProjectionCode { get; }
         string ProjectionName { get; }
 
-        void inverse (double?[] coords);
-        void forward (double?[] coords);
+        void Inverse (double?[] coords);
+        void Forward (double?[] coords);
     }
 }

@@ -6,9 +6,9 @@ namespace GisExperiments.Proj4
         {
             Ellipsoid ellipsoid = new Ellipsoid();
             ellipsoid.ellipsoidCode = ellipsoidCode;
-            ellipsoid._a = a;
-            ellipsoid._b = (1.0 - 1.0/rf)*a;
-            ellipsoid._rf = rf;
+            ellipsoid.semimajorRadius = a;
+            ellipsoid.semiminorRadius = (1.0 - 1.0/rf)*a;
+            ellipsoid.reciprocalFlattening = rf;
             ellipsoid.ellipsoidName = ellipsoidName;
 
             return ellipsoid;
@@ -18,9 +18,9 @@ namespace GisExperiments.Proj4
         {
             Ellipsoid ellipsoid = new Ellipsoid ();
             ellipsoid.ellipsoidCode = ellipsoidCode;
-            ellipsoid._a = a;
-            ellipsoid._b = b;
-            ellipsoid._rf = 1 / (1 - b / a);
+            ellipsoid.semimajorRadius = a;
+            ellipsoid.semiminorRadius = b;
+            ellipsoid.reciprocalFlattening = 1 / (1 - b / a);
             ellipsoid.ellipsoidName = ellipsoidName;
 
             return ellipsoid;
@@ -31,19 +31,19 @@ namespace GisExperiments.Proj4
             get { return ellipsoidCode; }
         }
 
-        public double a
+        public double SemimajorRadius
         {
-            get { return _a; }
+            get { return semimajorRadius; }
         }
 
-        public double b
+        public double SemiminorRadius
         {
-            get { return _b; }
+            get { return semiminorRadius; }
         }
 
-        public double rf
+        public double ReciprocalFlattening
         {
-            get { return _rf; }
+            get { return reciprocalFlattening; }
         }
 
         public string EllipsoidName
@@ -53,13 +53,13 @@ namespace GisExperiments.Proj4
 
         public bool IsSphere
         {
-            get { return _a == _b; }
+            get { return semimajorRadius == semiminorRadius; }
         }
 
         private string ellipsoidCode;
-        private double _a;
-        private double _b;
-        private double _rf;
+        private double semimajorRadius;
+        private double semiminorRadius;
+        private double reciprocalFlattening;
         private string ellipsoidName;
     }
 }
