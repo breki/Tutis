@@ -7,5 +7,6 @@ namespace GisExperiments.Proj4
         double b { get; }
         double rf { get; }
         string EllipsoidName { get; }
+        bool IsSphere { get; }
     }
 }

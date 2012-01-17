@@ -90,7 +90,7 @@
     <Compile Include="Proj4\Ellipsoid.cs" />
     <Compile Include="Proj4\Ellipsoids.cs" />
     <Compile Include="Proj4\Datum.cs" />
-    <Compile Include="Proj4\GenericSrs.cs" />
+    <None Include="Proj4\GenericSrs.cs" />
     <Compile Include="Proj4\IDatum.cs" />
     <Compile Include="Proj4\IEllipsoid.cs" />
     <Compile Include="Proj4\IProjection.cs" />
@@ -98,8 +98,11 @@
     <Compile Include="Proj4\LongLatProjection.cs" />
     <Compile Include="Proj4\Proj4RipOff.cs" />
     <Compile Include="Proj4\Proj4RipOffTests.cs" />
+    <Compile Include="Proj4\Proj4SpecParser.cs" />
     <Compile Include="Proj4\Projections.cs" />
     <Compile Include="Proj4\ProjectionUtils.cs" />
+    <Compile Include="Proj4\SrsBase.cs" />
+    <Compile Include="Proj4\SrsParameter.cs" />
     <Compile Include="Proj4\TransverseMercatorProjection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resampling\IBitmapResamplingAlgorithm.cs" />

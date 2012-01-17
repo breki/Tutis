@@ -14,3 +14,4 @@ StyleCop.Cache
 **/CustomDictionary.xml
 Builds/
 *.BuildNumber.txt
+*.user

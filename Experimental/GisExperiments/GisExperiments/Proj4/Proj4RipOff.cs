@@ -29,7 +29,7 @@ namespace GisExperiments.Proj4
                     coords[1] *= source.to_meter.Value;
                 }
 
-                source.Projection.inverse(coords); // Convert Cartesian to longlat
+                source.inverse(coords); // Convert Cartesian to longlat
             //}
 
             // Adjust for the prime meridian if necessary
@@ -52,7 +52,7 @@ namespace GisExperiments.Proj4
             //else
             //{
                 // else project
-                dest.Projection.forward(coords);
+                dest.forward(coords);
                 if (dest.to_meter.HasValue)
                 {
                     coords[0] /= dest.to_meter.Value;

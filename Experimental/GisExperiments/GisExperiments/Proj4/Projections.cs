@@ -14,20 +14,21 @@ namespace GisExperiments.Proj4
                 throw new InvalidOperationException (message);
             }
 
-            return projections[projectionCode];
+            Type type = projections[projectionCode];
+            return (IProjection)Activator.CreateInstance(type);
         }
 
-        public static void AddProjection (IProjection projection)
+        public static void AddProjection<TProjection> (string projectionCode) where TProjection : IProjection
         {
-            projections.Add (projection.ProjectionCode, projection);
+            projections.Add (projectionCode, typeof(TProjection));
         }
 
         static Projections ()
         {
-            AddProjection(new LongLatProjection());
-            AddProjection(new TransverseMercatorProjection());
+            AddProjection<LongLatProjection>("longlat");
+            AddProjection<TransverseMercatorProjection>("tmerc");
         }
 
-        private static Dictionary<string, IProjection> projections = new Dictionary<string, IProjection> ();
+        private static Dictionary<string, Type> projections = new Dictionary<string, Type> ();
     }
 }

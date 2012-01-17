@@ -51,6 +51,11 @@ namespace GisExperiments.Proj4
             get { return ellipsoidName; }
         }
 
+        public bool IsSphere
+        {
+            get { return _a == _b; }
+        }
+
         private string ellipsoidCode;
         private double _a;
         private double _b;
