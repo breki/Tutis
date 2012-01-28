@@ -9,7 +9,6 @@ namespace GisExperiments.Proj4
         public void Test()
         {
             Proj4RipOff proj4 = new Proj4RipOff();
-
             Proj4SpecParser parser = new Proj4SpecParser();
 
             ISrs source = parser.ParseSrsSpecification("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs");

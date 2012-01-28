@@ -1,0 +1,9 @@
+﻿- functionality:
+	- XML configuration
+	+ every minute count the time the computer is not idle
+	- after certain amount of non-idle time, show
+	- only show when computer is not idle
+	- after certain amount of idle time, reset the counter
+	- there should be a maximum amount of time after last excercise when the new one is launched
+	- hide application in the task icons
+	- reset the counter after each day, but start it so that the excercises are launched after 10 mins 
