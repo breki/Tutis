@@ -117,33 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="button1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAABs0lEQVQ4T6WTP0gCURzHb9Mh
-        yDSkQZcEQYOWhHYHBwdr7ghEG3VybmtpaCloKLA/EJQVRGiEgU2hlAg2XIWeg4GJhC2F3PTt93t0jxDL
-        oAdf7r7fe5/vew/eKQCU/0jAR4oyklGUFClPKg8Rz0kxw6woOKSg6Pfrb/G48ZFM4ie9JxLoxmLGjc+n
-        MyMLDmjl12jUeFZV/EUvqmowIwv2adudWAwPc3NCPMz3QVlzYQHMyII0GQ5vg0EBm4P9oEyLRMCMLNgi
-        8zg/j+vZWRx7PILv9Xpot9toNBqo1WrQdR3bY2PYdTqRm5oCM7Jgk8x9OIyrmRlcTk9jx+FApVJBtVqF
-        pmmo1+tIE7z3pRO3G8zIgnUylVAIOa8Xx+PjyNDE73Cz2RSZqbOJCTAjC9bIFAMBZO12ZAfArVYLnU5H
-        fGNd0CLMyIJVMqXJSRT64FPyLIa73a4QzynQQszIghU+gsuFEn08J/GZ+cnezBj+njEjC5bpUtw5nUaV
-        d8Bb/Hqavj8rjY4azMiCJF3LDatVL9tsxhPBv6lM8LrFojMjC5box1ikgJQnlYeI56SYkQX/+Z0/AbTE
-        X6+lEJ5KAAAAAElFTkSuQmCC
-</value>
-  </data>
-  <data name="closeButton1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAABs0lEQVQ4T6WTP0gCURzHb9Mh
-        yDSkQZcEQYOWhHYHBwdr7ghEG3VybmtpaCloKLA/EJQVRGiEgU2hlAg2XIWeg4GJhC2F3PTt93t0jxDL
-        oAdf7r7fe5/vew/eKQCU/0jAR4oyklGUFClPKg8Rz0kxw6woOKSg6Pfrb/G48ZFM4ie9JxLoxmLGjc+n
-        MyMLDmjl12jUeFZV/EUvqmowIwv2adudWAwPc3NCPMz3QVlzYQHMyII0GQ5vg0EBm4P9oEyLRMCMLNgi
-        8zg/j+vZWRx7PILv9Xpot9toNBqo1WrQdR3bY2PYdTqRm5oCM7Jgk8x9OIyrmRlcTk9jx+FApVJBtVqF
-        pmmo1+tIE7z3pRO3G8zIgnUylVAIOa8Xx+PjyNDE73Cz2RSZqbOJCTAjC9bIFAMBZO12ZAfArVYLnU5H
-        fGNd0CLMyIJVMqXJSRT64FPyLIa73a4QzynQQszIghU+gsuFEn08J/GZ+cnezBj+njEjC5bpUtw5nUaV
-        d8Bb/Hqavj8rjY4azMiCJF3LDatVL9tsxhPBv6lM8LrFojMjC5box1ikgJQnlYeI56SYkQX/+Z0/AbTE
-        X6+lEJ5KAAAAAElFTkSuQmCC
-</value>
-  </data>
 </root>

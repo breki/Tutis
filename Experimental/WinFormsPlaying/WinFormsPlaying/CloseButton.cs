@@ -14,8 +14,8 @@ namespace WinFormsPlaying
             TabStop = false;
             UseCompatibleTextRendering = true;
 
-            images.Images.Add(new Bitmap(@"D:\MyStuff\projects\Maperitive\trunk\Icons\candidates\crosses\cross-small.png"));
-            images.Images.Add(new Bitmap(@"D:\MyStuff\projects\Tutis\WinFormsPlaying\WinFormsPlaying\cross-button.png"));
+            //images.Images.Add(new Bitmap(@"D:\MyStuff\projects\Maperitive\trunk\Icons\candidates\crosses\cross-small.png"));
+            //images.Images.Add(new Bitmap(@"D:\MyStuff\projects\Tutis\WinFormsPlaying\WinFormsPlaying\cross-button.png"));
             ImageList = images;
             ImageIndex = 0;
 
