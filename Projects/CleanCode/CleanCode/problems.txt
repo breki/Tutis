@@ -1,0 +1,22 @@
+﻿step 1
+------
+- what's wrong?
+    - what's right??
+
+    - the parser code is unreadable
+        - no vertical space inside the Parse method
+        - local variable names do not mean anything
+        - we are using magic strings and numbers (and duplicating them in code, too)
+
+    - we are doing testing on a live service. What happens when the weather changes?
+
+    - a lot of other stuff, but we'll leave it for next steps...
+
+step 2
+------
+- the tests now run
+- we put more meaningful names to local variables
+- we put some vertical space
+
+- the code is pretty brittle - if HTML layout changes, it will be difficult to
+    maintain the code
