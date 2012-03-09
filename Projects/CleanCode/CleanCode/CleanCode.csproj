@@ -57,6 +57,14 @@
     <Compile Include="Step2\ParserTests.cs" />
     <Compile Include="Step2\WeatherData.cs" />
     <Compile Include="Step2\WeatherService.cs" />
+    <Compile Include="Step3\Parser.cs" />
+    <Compile Include="Step3\ParserTests.cs" />
+    <Compile Include="Step3\WeatherData.cs" />
+    <Compile Include="Step3\WeatherService.cs" />
+    <Compile Include="Step4\Parser.cs" />
+    <Compile Include="Step4\ParserTests.cs" />
+    <Compile Include="Step4\WeatherData.cs" />
+    <Compile Include="Step4\WeatherService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
