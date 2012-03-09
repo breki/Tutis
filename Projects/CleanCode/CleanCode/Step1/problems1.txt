@@ -1,0 +1,12 @@
+﻿- what's wrong?
+    - what's right??
+
+    - the parser code is unreadable
+        - local variable names do not mean anything
+        - we are using magic strings and numbers (and duplicating them in code, too)
+    - the code is pretty brittle - if HTML layout changes, it will be difficult to
+        maintain the code
+
+    - we are doing testing on a live service. What happens when the weather changes?
+
+    - a lot of other stuff, but we'll leave it for next steps...
