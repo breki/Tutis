@@ -1,12 +1,11 @@
-using CleanCode.Step1;
 using NUnit.Framework;
 
-namespace CleanCode.Step2
+namespace CleanCode.Step3
 {
     public class ParserTests
     {
         [Test]
-        public void Test1()
+        public void AssertTemperatureIsRight()
         {
             Parser parser = new Parser();
             WeatherData data = parser.Parse("SampleData/sample.html", false);
@@ -14,13 +13,21 @@ namespace CleanCode.Step2
             WeatherService w = new WeatherService();
             int t = w.GetTemp(data, "Kredarica");
             Assert.AreEqual(-11, t);
+        }
 
+        [Test]
+        public void AssertPressureTrendIsRight()
+        {
+            Parser parser = new Parser();
+            WeatherData data = parser.Parse("SampleData/sample.html", false);
+
+            WeatherService w = new WeatherService();
             string s = w.GetPressure(data, "Murska Sobota");
             Assert.AreEqual("raste", s);
         }
 
         [Test]
-        public void Test2()
+        public void MakeSureAllRowsHaveBeenRead()
         {
             Parser parser = new Parser();
             WeatherData data = parser.Parse("SampleData/sample.html", false);

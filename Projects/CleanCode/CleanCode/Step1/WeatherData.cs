@@ -10,6 +10,11 @@ namespace CleanCode.Step1
             set { values = value; }
         }
 
+        public int RowsCount
+        {
+            get { return values.Count; }
+        }
+
         private List<Dictionary<string, string>> values = new List<Dictionary<string, string>>();
     }
 }
