@@ -1,6 +1,7 @@
+using CleanCode.Step1;
 using NUnit.Framework;
 
-namespace CleanCode.Step1
+namespace CleanCode.Step2
 {
     public class ParserTests
     {
@@ -8,7 +9,7 @@ namespace CleanCode.Step1
         public void Test1()
         {
             Parser parser = new Parser();
-            WeatherData data = parser.Parse();
+            WeatherData data = parser.Parse("SampleData/sample.html", false);
 
             WeatherService w = new WeatherService();
             int t = w.GetTemp(data, "Kredarica");
@@ -16,17 +17,6 @@ namespace CleanCode.Step1
 
             string s = w.GetPressure(data, "Murska Sobota");
             Assert.AreEqual("raste", s);
-        }
-
-        [Test]
-        public void Test2()
-        {
-            Parser parser = new Parser();
-            WeatherData data = parser.Parse();
-
-            WeatherService w = new WeatherService();
-            int t = w.GetTemp(data, "Kredarica");
-            Assert.AreEqual(-11, t);
         }
     }
 }
