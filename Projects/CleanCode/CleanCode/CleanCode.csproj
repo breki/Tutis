@@ -53,13 +53,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Step1\WeatherData.cs" />
     <Compile Include="Step1\WeatherService.cs" />
+    <Compile Include="Step2\Parser.cs" />
+    <Compile Include="Step2\ParserTests.cs" />
+    <Compile Include="Step2\WeatherData.cs" />
+    <Compile Include="Step2\WeatherService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SampleData\sample.html" />
-    <Content Include="Step1\problems.txt" />
+    <Content Include="SampleData\sample.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="problems.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

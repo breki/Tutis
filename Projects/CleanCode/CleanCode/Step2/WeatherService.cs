@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CleanCode.Step1
+namespace CleanCode.Step2
 {
     public class WeatherService
     {
