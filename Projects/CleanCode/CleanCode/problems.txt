@@ -133,10 +133,14 @@ step 6
     - BUT: when fixing & maintaining code we can now focus on a single responsibility
         - if we make new bugs in a class, they are now contained 
             and don't affect other responsibilities
-        - the code is easier to understand
+        - classes are small and code is readable
         - it's now much easier to extend the functionality 
             with new types of data sources (like XML, JSON etc)
         - it's also easier to test it using mock implementations
+- a new test fixture ArsoHtmlReadingTests for testing ArsoHtmlWeatherDataReader
+- renamed existing test fixture to WeatherDataCollectionTests
+    - we've left ArsoHtmlWeatherDataReader in it for simplicity, 
+        but we could also use mocks if it was simpler to set up
 
 problems:
 - WeatherDataCollector still relies on the weather data having exactly 10 rows
