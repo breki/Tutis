@@ -65,6 +65,13 @@
     <Compile Include="Step4\ParserTests.cs" />
     <Compile Include="Step4\WeatherData.cs" />
     <Compile Include="Step4\WeatherService.cs" />
+    <Compile Include="Step5\FileHtmlFetcher.cs" />
+    <Compile Include="Step5\IHtmlFetcher.cs" />
+    <Compile Include="Step5\Parser.cs" />
+    <Compile Include="Step5\ParserTests.cs" />
+    <Compile Include="Step5\WeatherData.cs" />
+    <Compile Include="Step5\WeatherService.cs" />
+    <Compile Include="Step5\WebHtmlFetcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
