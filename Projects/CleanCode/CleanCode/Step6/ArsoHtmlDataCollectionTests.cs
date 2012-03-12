@@ -1,8 +1,8 @@
 using NUnit.Framework;
 
-namespace CleanCode.Step5
+namespace CleanCode.Step6
 {
-    public class ParserTests
+    public class ArsoHtmlDataCollectionTests
     {
         [Test]
         public void AssertTemperatureIsRight()
@@ -28,8 +28,9 @@ namespace CleanCode.Step5
         public void Setup()
         {
             FileTextFetcher textFetcher = new FileTextFetcher();
-            Parser parser = new Parser(textFetcher);
-            weatherData = parser.Parse("SampleData/sample.html");
+            IWeatherDataReader weatherDataReader = new ArsoHtmlWeatherDataReader();
+            WeatherDataCollector weatherDataCollector = new WeatherDataCollector(textFetcher, weatherDataReader);
+            weatherData = weatherDataCollector.Parse("SampleData/sample.html");
             weatherService = new WeatherService();
         }
 
