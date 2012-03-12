@@ -124,6 +124,7 @@ problems:
 step 6
 ------
 - we applied DIP once more to remove one more responsibility: parsing the text source
+    IWeatherDataReader
 - Parser is now WeatherDataCollector
 - one more SOLID principle is now covered: Open-Closed Principle
     - "You should be able to extend a classes behavior, without modifying it."
@@ -144,7 +145,25 @@ step 6
 
 problems:
 - WeatherDataCollector still relies on the weather data having exactly 10 rows
+    - it also uses magic strings to detect the end of the row
+    - we need to upgrade the IWeatherDataReader to inform clients of this
 
-----
-- the code is pretty brittle - if HTML layout changes, it will be difficult to
-    maintain the code
+
+
+
+
+
+
+
+step 8
+------
+- IWeatherDataReader now provides information about the "EOF" events
+    - notice new complexity of ArsoHtmlWeatherDataReader which does not affect 
+        WeatherDataCollector
+    - WeatherDataCollector no longer uses magic numbers & strings
+    - in fact, we discovered & fixed a bug: there are actually 11 rows!
+        - written an additional test to prove it
+
+problems:
+- WeatherService breaks the Law of Demeter (LoD)
+    - it has a "feature" envy towards WeatherData
