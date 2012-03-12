@@ -51,16 +51,23 @@ step 4
 - we removed duplicated setup code in tests and used more meaningful names
 
 problems:
-- there are still some problems with the level of abstraction in Parse
-- the Parser is breaking the "Single Responsibility Principle"
+- there are still some problems with the level of abstraction in Parse method
+- the Parser is breaking the "Single Responsibility Principle" (SRP)
     - it should do one thing, and one thing only
     - instead, it:
         1. reads HTML from files
         2. downloads HTML from Web
-        3. moves along the HTML code
-        4. parses the HTML code and fills the WeatherData structure
+        3. moves along & parses the HTML code
+        4. fills the WeatherData structure
     - this makes the class difficult to maintain, reuse, extend
 
+step 5
+------
+- we used dependency injection to remove one responsibility from the Parser class
+    - IHtmlFetcher
+
+problems:
+- still violating the SRP
 
 ----
 - the code is pretty brittle - if HTML layout changes, it will be difficult to
