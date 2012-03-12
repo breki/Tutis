@@ -2,7 +2,7 @@ using NUnit.Framework;
 
 namespace CleanCode.Step7
 {
-    public class ArsoHtmlDataCollectionTests
+    public class WeatherDataCollectorTests
     {
         [Test]
         public void AssertTemperatureIsRight()

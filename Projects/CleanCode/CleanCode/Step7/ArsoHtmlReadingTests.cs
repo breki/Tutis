@@ -2,7 +2,7 @@ using NUnit.Framework;
 
 namespace CleanCode.Step7
 {
-    public class WeatherDataCollectionTests
+    public class ArsoHtmlReadingTests
     {
         [Test]
         public void AssertDataRecordReadingIsWorking()
@@ -22,7 +22,6 @@ namespace CleanCode.Step7
                         Assert.AreEqual("pretežno jasno", fieldValue);                        
                 }
             }
-
         }
 
         [SetUp]

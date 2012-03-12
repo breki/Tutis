@@ -81,8 +81,8 @@
     <Compile Include="Step6\WeatherData.cs" />
     <Compile Include="Step6\WeatherService.cs" />
     <Compile Include="Step6\WebTextFetcher.cs" />
-    <Compile Include="Step7\ArsoHtmlDataCollectionTests.cs" />
-    <Compile Include="Step7\WeatherDataCollectionTests.cs" />
+    <Compile Include="Step7\WeatherDataCollectorTests.cs" />
+    <Compile Include="Step7\ArsoHtmlReadingTests.cs" />
     <Compile Include="Step7\ArsoHtmlWeatherDataReader.cs" />
     <Compile Include="Step7\FileTextFetcher.cs" />
     <Compile Include="Step7\ITextFetcher.cs" />
@@ -91,6 +91,16 @@
     <Compile Include="Step7\WeatherDataCollector.cs" />
     <Compile Include="Step7\WeatherService.cs" />
     <Compile Include="Step7\WebTextFetcher.cs" />
+    <Compile Include="Step8\WeatherDataCollectorTests.cs" />
+    <Compile Include="Step8\ArsoHtmlWeatherDataReader.cs" />
+    <Compile Include="Step8\FileTextFetcher.cs" />
+    <Compile Include="Step8\ITextFetcher.cs" />
+    <Compile Include="Step8\IWeatherDataReader.cs" />
+    <Compile Include="Step8\WeatherData.cs" />
+    <Compile Include="Step8\ArsoHtmlReadingTests.cs" />
+    <Compile Include="Step8\WeatherDataCollector.cs" />
+    <Compile Include="Step8\WeatherService.cs" />
+    <Compile Include="Step8\WebTextFetcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
