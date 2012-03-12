@@ -65,13 +65,22 @@
     <Compile Include="Step4\ParserTests.cs" />
     <Compile Include="Step4\WeatherData.cs" />
     <Compile Include="Step4\WeatherService.cs" />
-    <Compile Include="Step5\FileHtmlFetcher.cs" />
-    <Compile Include="Step5\IHtmlFetcher.cs" />
+    <Compile Include="Step5\FileTextFetcher.cs" />
+    <Compile Include="Step5\ITextFetcher.cs" />
     <Compile Include="Step5\Parser.cs" />
     <Compile Include="Step5\ParserTests.cs" />
     <Compile Include="Step5\WeatherData.cs" />
     <Compile Include="Step5\WeatherService.cs" />
-    <Compile Include="Step5\WebHtmlFetcher.cs" />
+    <Compile Include="Step5\WebTextFetcher.cs" />
+    <Compile Include="Step6\ArsoHtmlWeatherDataReader.cs" />
+    <Compile Include="Step6\FileTextFetcher.cs" />
+    <Compile Include="Step6\ITextFetcher.cs" />
+    <Compile Include="Step6\IWeatherDataReader.cs" />
+    <Compile Include="Step6\WeatherDataCollector.cs" />
+    <Compile Include="Step6\ArsoHtmlDataCollectionTests.cs" />
+    <Compile Include="Step6\WeatherData.cs" />
+    <Compile Include="Step6\WeatherService.cs" />
+    <Compile Include="Step6\WebTextFetcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

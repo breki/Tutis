@@ -12,6 +12,16 @@
 
     - a lot of other stuff, but we'll leave it for next steps...
 
+
+
+
+
+
+
+
+
+
+
 step 2
 ------
 - we are now using a sample HTML file for testing
@@ -23,6 +33,16 @@ problems:
 - the Parse method is too long and its behavior is not obvious
 - the Test1 name is not descriptive
 - also, the test should test one thing (one assertion)
+
+
+
+
+
+
+
+
+
+
 
 step 3
 ------
@@ -37,6 +57,18 @@ problems:
 - move some submethod parameters to class members
 - also move some local variables to class members to avoid new method parameters
 - code duplication in the test code
+
+
+
+
+
+
+
+
+
+
+
+
 
 step 4
 ------
@@ -61,13 +93,53 @@ problems:
         4. fills the WeatherData structure
     - this makes the class difficult to maintain, reuse, extend
 
+
+
+
+
+
+
+
+
 step 5
 ------
-- we used dependency injection to remove one responsibility from the Parser class
-    - IHtmlFetcher
+- we used Dependency Inversion Principle (DIP) to remove one responsibility from the Parser class
+    - ITextFetcher
 
 problems:
 - still violating the SRP
+
+
+
+
+
+
+
+
+
+
+
+
+
+step 6
+------
+- we applied DIP once more to remove one more responsibility: parsing the text source
+- Parser is now WeatherDataCollector
+- one more SOLID principle is now covered: Open-Closed Principle
+    - "You should be able to extend a classes behavior, without modifying it."
+- end result:
+    - more classes & files
+    - more lines of code
+    - BUT: when fixing & maintaining code we can now focus on a single responsibility
+        - if we make new bugs in a class, they are now contained 
+            and don't affect other responsibilities
+        - the code is easier to understand
+        - it's now much easier to extend the functionality 
+            with new types of data sources (like XML, JSON etc)
+        - it's also easier to test it using mock implementations
+
+problems:
+- WeatherDataCollector still relies on the weather data having exactly 10 rows
 
 ----
 - the code is pretty brittle - if HTML layout changes, it will be difficult to

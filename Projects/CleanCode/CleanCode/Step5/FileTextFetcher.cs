@@ -2,9 +2,9 @@
 
 namespace CleanCode.Step5
 {
-    public class FileHtmlFetcher : IHtmlFetcher
+    public class FileTextFetcher : ITextFetcher
     {
-        public string FetchHtml(string source)
+        public string FetchText(string source)
         {
             return File.ReadAllText(source);
         }

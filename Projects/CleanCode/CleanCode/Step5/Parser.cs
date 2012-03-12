@@ -4,9 +4,9 @@ namespace CleanCode.Step5
 {
     public class Parser
     {
-        public Parser(IHtmlFetcher htmlFetcher)
+        public Parser(ITextFetcher textFetcher)
         {
-            this.htmlFetcher = htmlFetcher;
+            this.textFetcher = textFetcher;
         }
 
         public WeatherData Parse(string source)
@@ -18,7 +18,7 @@ namespace CleanCode.Step5
 
         private void FetchHtml(string source)
         {
-            htmlData = htmlFetcher.FetchHtml(source);
+            htmlData = textFetcher.FetchText(source);
         }
 
         private void ExtractWeatherFromHtml()
@@ -99,7 +99,7 @@ namespace CleanCode.Step5
             htmlCursor = htmlData.IndexOf(text, htmlCursor);
         }
 
-        private readonly IHtmlFetcher htmlFetcher;
+        private readonly ITextFetcher textFetcher;
         private string htmlData;
         private WeatherData weatherData;
         private int classMarkerLen;

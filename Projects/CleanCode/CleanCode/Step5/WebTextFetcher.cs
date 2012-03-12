@@ -2,9 +2,9 @@
 
 namespace CleanCode.Step5
 {
-    public class WebHtmlFetcher : IHtmlFetcher
+    public class WebTextFetcher : ITextFetcher
     {
-        public string FetchHtml(string source)
+        public string FetchText(string source)
         {
             using (WebClient webClient = new WebClient())
                 return webClient.DownloadString(source);
