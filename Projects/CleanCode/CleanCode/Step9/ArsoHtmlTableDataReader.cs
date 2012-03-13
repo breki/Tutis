@@ -2,7 +2,7 @@
 
 namespace CleanCode.Step9
 {
-    public class ArsoHtmlWeatherDataReader : IWeatherDataReader
+    public class ArsoHtmlTableDataReader : ITableDataReader
     {
         public void SetText(string text)
         {

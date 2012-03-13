@@ -102,13 +102,16 @@
     <Compile Include="Step8\WeatherService.cs" />
     <Compile Include="Step8\WebTextFetcher.cs" />
     <Compile Include="Step9\ArsoHtmlReadingTests.cs" />
-    <Compile Include="Step9\ArsoHtmlWeatherDataReader.cs" />
+    <Compile Include="Step9\ArsoHtmlTableDataReader.cs" />
     <Compile Include="Step9\FileTextFetcher.cs" />
     <Compile Include="Step9\ITextFetcher.cs" />
-    <Compile Include="Step9\IWeatherDataReader.cs" />
+    <Compile Include="Step9\ITableDataReader.cs" />
+    <Compile Include="Step9\IWeatherDataSource.cs" />
     <Compile Include="Step9\WeatherData.cs" />
-    <Compile Include="Step9\WeatherDataCollector.cs" />
-    <Compile Include="Step9\WeatherDataCollectorTests.cs" />
+    <Compile Include="Step9\ArsoWeatherDataSource.cs" />
+    <Compile Include="Step9\ArsoSourceTests.cs" />
+    <Compile Include="Step9\WeatherDataType.cs" />
+    <Compile Include="Step9\WeatherStation.cs" />
     <Compile Include="Step9\WebTextFetcher.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -118,7 +121,7 @@
     <Content Include="SampleData\sample.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="problems.txt" />
+    <Content Include="steps.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
