@@ -101,6 +101,15 @@
     <Compile Include="Step8\WeatherDataCollector.cs" />
     <Compile Include="Step8\WeatherService.cs" />
     <Compile Include="Step8\WebTextFetcher.cs" />
+    <Compile Include="Step9\ArsoHtmlReadingTests.cs" />
+    <Compile Include="Step9\ArsoHtmlWeatherDataReader.cs" />
+    <Compile Include="Step9\FileTextFetcher.cs" />
+    <Compile Include="Step9\ITextFetcher.cs" />
+    <Compile Include="Step9\IWeatherDataReader.cs" />
+    <Compile Include="Step9\WeatherData.cs" />
+    <Compile Include="Step9\WeatherDataCollector.cs" />
+    <Compile Include="Step9\WeatherDataCollectorTests.cs" />
+    <Compile Include="Step9\WebTextFetcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
