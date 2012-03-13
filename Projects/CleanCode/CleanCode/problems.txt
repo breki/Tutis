@@ -166,4 +166,13 @@ step 8
 
 problems:
 - WeatherService breaks the Law of Demeter (LoD)
-    - it has a "feature" envy towards WeatherData
+    - it has a "feature envy" towards WeatherData
+- we still rely on magic strings for data fields from ARSO
+    - what happens if another data provider doesn't use the same IDs?
+- we use magic values for missing data in WeatherService
+- WeatherData interface is too generic
+    - this allows error-prone read & write access to the data
+    - breaks the encapsulation
+
+step 9
+------
