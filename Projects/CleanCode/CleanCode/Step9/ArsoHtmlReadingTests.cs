@@ -46,10 +46,10 @@ namespace CleanCode.Step9
             FileTextFetcher textFetcher = new FileTextFetcher();
             string text = textFetcher.FetchText("SampleData/sample.html");
 
-            reader = new ArsoHtmlWeatherDataReader();
+            reader = new ArsoHtmlTableDataReader();
             reader.SetText(text);
         }
 
-        private ArsoHtmlWeatherDataReader reader;
+        private ArsoHtmlTableDataReader reader;
     }
 }

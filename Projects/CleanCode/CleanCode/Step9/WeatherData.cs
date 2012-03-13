@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace CleanCode.Step9
@@ -7,33 +6,21 @@ namespace CleanCode.Step9
     {
         public int StationsCount { get { return stations.Count; } }
 
-        public void AddStationData(Dictionary<string, string> stationValues)
+        public void AddStation(WeatherStation station)
         {
-            stations.Add(stationValues);
+            stations.Add(station.StationId, station);
         }
 
-        public int GetTemp(string stationName)
+        public WeatherStation GetStation(string stationId)
         {
-            foreach (Dictionary<string, string> d in stations)
-            {
-                if (d["meteoSI-th"] == stationName)
-                    return int.Parse(d["t"]);
-            }
-
-            return -12345;
+            return stations[stationId];
         }
 
-        public string GetPressure(string stationName)
+        public bool HasStation(string stationId)
         {
-            foreach (Dictionary<string, string> d in stations)
-            {
-                if (d["meteoSI-th"] == stationName)
-                    return d["pa_code"];
-            }
-
-            return null;
+            return stations.ContainsKey(stationId);
         }
 
-        private List<Dictionary<string, string>> stations = new List<Dictionary<string, string>>();
+        private Dictionary<string, WeatherStation> stations = new Dictionary<string, WeatherStation>();
     }
 }

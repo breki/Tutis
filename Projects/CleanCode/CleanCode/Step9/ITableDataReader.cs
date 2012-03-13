@@ -1,6 +1,6 @@
 ﻿namespace CleanCode.Step9
 {
-    public interface IWeatherDataReader
+    public interface ITableDataReader
     {
         void SetText(string text);
         bool MoveToNextRow();

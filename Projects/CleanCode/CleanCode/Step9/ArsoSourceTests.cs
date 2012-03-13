@@ -2,19 +2,21 @@ using NUnit.Framework;
 
 namespace CleanCode.Step9
 {
-    public class WeatherDataCollectorTests
+    public class ArsoSourceTests
     {
         [Test]
         public void AssertTemperatureIsRight()
         {
-            int temperature = weatherData.GetTemp("Kredarica");
+            WeatherStation station = weatherData.GetStation("Kredarica");
+            int temperature = station.GetData<int>(WeatherDataType.Temperature);
             Assert.AreEqual(-11, temperature);
         }
 
         [Test]
         public void AssertPressureTrendIsRight()
         {
-            string pressureTrend = weatherData.GetPressure("Murska Sobota");
+            WeatherStation station = weatherData.GetStation("Murska Sobota");
+            string pressureTrend = station.GetData<string>(WeatherDataType.PressureTrend);
             Assert.AreEqual("raste", pressureTrend);
         }
 
@@ -28,9 +30,12 @@ namespace CleanCode.Step9
         public void Setup()
         {
             FileTextFetcher textFetcher = new FileTextFetcher();
-            IWeatherDataReader weatherDataReader = new ArsoHtmlWeatherDataReader();
-            WeatherDataCollector weatherDataCollector = new WeatherDataCollector(textFetcher, weatherDataReader);
-            weatherData = weatherDataCollector.Parse("SampleData/sample.html");
+            ITableDataReader tableDataReader = new ArsoHtmlTableDataReader();
+            IWeatherDataSource source = new ArsoWeatherDataSource(
+                "SampleData/sample.html",
+                textFetcher, 
+                tableDataReader);
+            weatherData = source.FetchWeatherData();
         }
 
         private WeatherData weatherData;

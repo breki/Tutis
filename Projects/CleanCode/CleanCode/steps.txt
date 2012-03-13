@@ -174,5 +174,26 @@ problems:
     - this allows error-prone read & write access to the data
     - breaks the encapsulation
 
+
+
+
 step 9
 ------
+- sometimes during your emergent design, you discover that responsibilities 
+    have to change
+- what happened?
+- we introduced a more encapsulated WeatherData, WeatherStation and WeatherDataType
+- we now have a unified WeatherDataType to identify what kind of weather data
+    we are dealing with
+- who is responsible for translating ARSO HTML ids to WeatherDataType values?
+    - this is an ARSO-specific domain issue
+- so ArsoHtmlWeatherDataReader should no longer return just string key+value pairs
+- this means IWeatherDataReader should change
+- there are different ways how to deal with this
+    - it all depends on your expectations for the future
+- what I did:
+    - introduced a new interface IWeatherDataSource
+    - WeatherDataCollector -> ArsoWeatherDataSource
+    - IWeatherDataReader has now changed its responsibility: ITableDataReader
+- this is not the end of the road:
+    - design evolves as your understanding of the problem evolves (and requirements change)
