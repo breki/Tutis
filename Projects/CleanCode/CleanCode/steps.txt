@@ -31,7 +31,7 @@ step 2
 
 problems:
 - the Parse method is too long and its behavior is not obvious
-- the Test1 name is not descriptive
+- the Test1 name does not tell anything
 - also, the test should test one thing (one assertion)
 
 
@@ -48,7 +48,7 @@ step 3
 ------
 - the Parse method is now shortened
     - we extracted two submethods (note the descriptive names!)
-- we split the test method into two separate ones
+- we split one the test methods into two separate ones
 - test methods now indicate what they check
 
 problems:
@@ -83,7 +83,7 @@ step 4
 - we removed duplicated setup code in tests and used more meaningful names
 
 problems:
-- there are still some problems with the level of abstraction in Parse method
+- there are still some problems with the level of abstraction in the Parse method
 - the Parser is breaking the "Single Responsibility Principle" (SRP)
     - it should do one thing, and one thing only
     - instead, it:
@@ -103,11 +103,12 @@ problems:
 
 step 5
 ------
-- we used Dependency Inversion Principle (DIP) to remove one responsibility from the Parser class
+- we used Dependency Inversion Principle (DIP) to remove one responsibility from 
+    the Parser class
     - ITextFetcher
 
 problems:
-- still violating the SRP
+- Parser is still doing too much
 
 
 
@@ -125,7 +126,7 @@ step 6
 ------
 - we applied DIP once more to remove one more responsibility: parsing the text source
     IWeatherDataReader
-- Parser is now WeatherDataCollector
+- Parser is now called WeatherDataCollector
 - one more SOLID principle is now covered: Open-Closed Principle
     - "You should be able to extend a classes behavior, without modifying it."
 - end result:

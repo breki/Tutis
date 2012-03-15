@@ -25,15 +25,13 @@ namespace CleanCode.Step6
 
         private void ExtractWeatherFromText()
         {
-            weatherData = new WeatherData();
-            
             reader.MoveToTableStart();
-
             ExtractWeatherFromTable();
         }
 
         private void ExtractWeatherFromTable()
         {
+            weatherData = new WeatherData();
             for (int rowsCounter = 0; rowsCounter < WeatherRowsCount; rowsCounter++)
                 ExtractRow();
         }
