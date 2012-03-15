@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CleanCode.Step2
+namespace CleanCode.Step7
 {
     public class WeatherData
     {

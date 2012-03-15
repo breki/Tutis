@@ -1,0 +1,199 @@
+﻿step 1
+------
+- what's wrong?
+    - what's right??
+
+    - the parser code is unreadable
+        - no vertical space inside the Parse method
+        - local variable names do not mean anything
+        - we are using magic strings and numbers (and duplicating them in code, too)
+
+    - we are doing testing on a live service. What happens when the weather changes?
+
+    - a lot of other stuff, but we'll leave it for next steps...
+
+
+
+
+
+
+
+
+
+
+
+step 2
+------
+- we are now using a sample HTML file for testing
+- the tests now run
+- we put more meaningful names to local variables
+- we put some vertical space
+
+problems:
+- the Parse method is too long and its behavior is not obvious
+- the Test1 name is not descriptive
+- also, the test should test one thing (one assertion)
+
+
+
+
+
+
+
+
+
+
+
+step 3
+------
+- the Parse method is now shortened
+    - we extracted two submethods (note the descriptive names!)
+- we split the test method into two separate ones
+- test methods now indicate what they check
+
+problems:
+- wrong levels of abstraction in the new Parse method
+- the submethods are still too long
+- move some submethod parameters to class members
+- also move some local variables to class members to avoid new method parameters
+- code duplication in the test code
+
+
+
+
+
+
+
+
+
+
+
+
+
+step 4
+------
+- we split the Parse method into hierarchy of small methods with better matching
+    levels of abstraction
+    - reading code from top to bottom: "The Stepdown Rule"
+    - note the order of submethods
+- we moved some local variables to class members to avoid passing too many
+    arguments in methods
+    - note the order of class members: public, protected, private
+        - the "Scissors Rule" (it goes agains the recommendation in the book)
+- we removed duplicated setup code in tests and used more meaningful names
+
+problems:
+- there are still some problems with the level of abstraction in Parse method
+- the Parser is breaking the "Single Responsibility Principle" (SRP)
+    - it should do one thing, and one thing only
+    - instead, it:
+        1. reads HTML from files
+        2. downloads HTML from Web
+        3. moves along & parses the HTML code
+        4. fills the WeatherData structure
+    - this makes the class difficult to maintain, reuse, extend
+
+
+
+
+
+
+
+
+
+step 5
+------
+- we used Dependency Inversion Principle (DIP) to remove one responsibility from the Parser class
+    - ITextFetcher
+
+problems:
+- still violating the SRP
+
+
+
+
+
+
+
+
+
+
+
+
+
+step 6
+------
+- we applied DIP once more to remove one more responsibility: parsing the text source
+    IWeatherDataReader
+- Parser is now WeatherDataCollector
+- one more SOLID principle is now covered: Open-Closed Principle
+    - "You should be able to extend a classes behavior, without modifying it."
+- end result:
+    - more classes & files
+    - more lines of code
+    - BUT: when fixing & maintaining code we can now focus on a single responsibility
+        - if we make new bugs in a class, they are now contained 
+            and don't affect other responsibilities
+        - classes are small and code is readable
+        - it's now much easier to extend the functionality 
+            with new types of data sources (like XML, JSON etc)
+        - it's also easier to test it using mock implementations
+- a new test fixture ArsoHtmlReadingTests for testing ArsoHtmlWeatherDataReader
+- renamed existing test fixture to WeatherDataCollectionTests
+    - we've left ArsoHtmlWeatherDataReader in it for simplicity, 
+        but we could also use mocks if it was simpler to set up
+
+problems:
+- WeatherDataCollector still relies on the weather data having exactly 10 rows
+    - it also uses magic strings to detect the end of the row
+    - we need to upgrade the IWeatherDataReader to inform clients of this
+
+
+
+
+
+
+
+
+step 8
+------
+- IWeatherDataReader now provides information about the "EOF" events
+    - notice new complexity of ArsoHtmlWeatherDataReader which does not affect 
+        WeatherDataCollector
+    - WeatherDataCollector no longer uses magic numbers & strings
+    - in fact, we discovered & fixed a bug: there are actually 11 rows!
+        - written an additional test to prove it
+
+problems:
+- WeatherService breaks the Law of Demeter (LoD)
+    - it has a "feature envy" towards WeatherData
+- we still rely on magic strings for data fields from ARSO
+    - what happens if another data provider doesn't use the same IDs?
+- we use magic values for missing data in WeatherService
+- WeatherData interface is too generic
+    - this allows error-prone read & write access to the data
+    - breaks the encapsulation
+
+
+
+
+step 9
+------
+- sometimes during your emergent design, you discover that responsibilities 
+    have to change
+- what happened?
+- we introduced a more encapsulated WeatherData, WeatherStation and WeatherDataType
+- we now have a unified WeatherDataType to identify what kind of weather data
+    we are dealing with
+- who is responsible for translating ARSO HTML ids to WeatherDataType values?
+    - this is an ARSO-specific domain issue
+- so ArsoHtmlWeatherDataReader should no longer return just string key+value pairs
+- this means IWeatherDataReader should change
+- there are different ways how to deal with this
+    - it all depends on your expectations for the future
+- what I did:
+    - introduced a new interface IWeatherDataSource
+    - WeatherDataCollector -> ArsoWeatherDataSource
+    - IWeatherDataReader has now changed its responsibility: ITableDataReader
+- this is not the end of the road:
+    - design evolves as your understanding of the problem evolves (and requirements change)

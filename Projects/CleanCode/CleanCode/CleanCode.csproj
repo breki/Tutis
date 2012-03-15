@@ -57,6 +57,62 @@
     <Compile Include="Step2\ParserTests.cs" />
     <Compile Include="Step2\WeatherData.cs" />
     <Compile Include="Step2\WeatherService.cs" />
+    <Compile Include="Step3\Parser.cs" />
+    <Compile Include="Step3\ParserTests.cs" />
+    <Compile Include="Step3\WeatherData.cs" />
+    <Compile Include="Step3\WeatherService.cs" />
+    <Compile Include="Step4\Parser.cs" />
+    <Compile Include="Step4\ParserTests.cs" />
+    <Compile Include="Step4\WeatherData.cs" />
+    <Compile Include="Step4\WeatherService.cs" />
+    <Compile Include="Step5\FileTextFetcher.cs" />
+    <Compile Include="Step5\ITextFetcher.cs" />
+    <Compile Include="Step5\Parser.cs" />
+    <Compile Include="Step5\ParserTests.cs" />
+    <Compile Include="Step5\WeatherData.cs" />
+    <Compile Include="Step5\WeatherService.cs" />
+    <Compile Include="Step5\WebTextFetcher.cs" />
+    <Compile Include="Step6\ArsoHtmlWeatherDataReader.cs" />
+    <Compile Include="Step6\FileTextFetcher.cs" />
+    <Compile Include="Step6\ITextFetcher.cs" />
+    <Compile Include="Step6\IWeatherDataReader.cs" />
+    <Compile Include="Step6\WeatherDataCollector.cs" />
+    <Compile Include="Step6\ArsoHtmlDataCollectionTests.cs" />
+    <Compile Include="Step6\WeatherData.cs" />
+    <Compile Include="Step6\WeatherService.cs" />
+    <Compile Include="Step6\WebTextFetcher.cs" />
+    <Compile Include="Step7\WeatherDataCollectorTests.cs" />
+    <Compile Include="Step7\ArsoHtmlReadingTests.cs" />
+    <Compile Include="Step7\ArsoHtmlWeatherDataReader.cs" />
+    <Compile Include="Step7\FileTextFetcher.cs" />
+    <Compile Include="Step7\ITextFetcher.cs" />
+    <Compile Include="Step7\IWeatherDataReader.cs" />
+    <Compile Include="Step7\WeatherData.cs" />
+    <Compile Include="Step7\WeatherDataCollector.cs" />
+    <Compile Include="Step7\WeatherService.cs" />
+    <Compile Include="Step7\WebTextFetcher.cs" />
+    <Compile Include="Step8\WeatherDataCollectorTests.cs" />
+    <Compile Include="Step8\ArsoHtmlWeatherDataReader.cs" />
+    <Compile Include="Step8\FileTextFetcher.cs" />
+    <Compile Include="Step8\ITextFetcher.cs" />
+    <Compile Include="Step8\IWeatherDataReader.cs" />
+    <Compile Include="Step8\WeatherData.cs" />
+    <Compile Include="Step8\ArsoHtmlReadingTests.cs" />
+    <Compile Include="Step8\WeatherDataCollector.cs" />
+    <Compile Include="Step8\WeatherService.cs" />
+    <Compile Include="Step8\WebTextFetcher.cs" />
+    <Compile Include="Step9\ArsoHtmlReadingTests.cs" />
+    <Compile Include="Step9\ArsoHtmlTableDataReader.cs" />
+    <Compile Include="Step9\FileTextFetcher.cs" />
+    <Compile Include="Step9\ITextFetcher.cs" />
+    <Compile Include="Step9\ITableDataReader.cs" />
+    <Compile Include="Step9\IWeatherDataSource.cs" />
+    <Compile Include="Step9\WeatherData.cs" />
+    <Compile Include="Step9\ArsoWeatherDataSource.cs" />
+    <Compile Include="Step9\ArsoSourceTests.cs" />
+    <Compile Include="Step9\WeatherDataType.cs" />
+    <Compile Include="Step9\WeatherStation.cs" />
+    <Compile Include="Step9\WebTextFetcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -65,7 +121,7 @@
     <Content Include="SampleData\sample.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="problems.txt" />
+    <Content Include="steps.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
