@@ -145,6 +145,21 @@ step 6
         but we could also use mocks if it was simpler to set up
 
 problems:
+- we don't have tests for ArsoHtmlWeatherDataReader
+- IWeatherDataReader has a method that's not really needed: MoveToTableStart
+    - minimize your interfaces to prevent clients from breaking the encapsulation
+
+
+
+
+
+
+step 7
+------
+- written tests for ArsoHtmlWeatherDataReader
+- removed MoveToTableStart
+
+problems:
 - WeatherDataCollector still relies on the weather data having exactly 10 rows
     - it also uses magic strings to detect the end of the row
     - we need to upgrade the IWeatherDataReader to inform clients of this
@@ -186,7 +201,7 @@ step 9
 - we introduced a more encapsulated WeatherData, WeatherStation and WeatherDataType
 - we now have a unified WeatherDataType to identify what kind of weather data
     we are dealing with
-- who is responsible for translating ARSO HTML ids to WeatherDataType values?
+- who is responsible for translating ARSO HTML IDs to WeatherDataType values?
     - this is an ARSO-specific domain issue
 - so ArsoHtmlWeatherDataReader should no longer return just string key+value pairs
 - this means IWeatherDataReader should change
