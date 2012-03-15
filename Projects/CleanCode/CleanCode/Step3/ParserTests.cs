@@ -31,8 +31,6 @@ namespace CleanCode.Step3
         {
             Parser parser = new Parser();
             WeatherData data = parser.Parse("SampleData/sample.html", false);
-
-            WeatherService w = new WeatherService();
             Assert.AreEqual(10, data.RowsCount);
         }
     }
