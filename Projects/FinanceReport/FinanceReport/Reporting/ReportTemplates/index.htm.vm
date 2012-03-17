@@ -1,0 +1,149 @@
+﻿<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Finance Report</title>
+
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script type="text/javascript">
+$(function () {
+    var chart;
+    $(document).ready(function() {
+        chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'TotalBalanceContainer',
+                zoomType: 'x',
+                spacingRight: 20
+            },
+            title: {
+                text: 'Total Balance'
+            },
+            subtitle: {
+                text: document.ontouchstart === undefined ?
+                    'Click and drag in the plot area to zoom in' :
+                    'Drag your finger over the plot to zoom in'
+            },
+            xAxis: {
+                type: 'datetime',
+                maxZoom: 14 * 24 * 3600000, // fourteen days
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'Total Balance (EUR)'
+                },
+                min: 0.6,
+                startOnTick: false,
+                showFirstLabel: false
+            },
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                enabled: true
+            },
+            plotOptions: {
+                series: {
+                    lineWidth: 3,
+                    marker: {
+                        enabled: false,
+                        states: {
+                            hover: {
+                                enabled: true,
+                                radius: 5
+                            }
+                        }
+                    },
+                    shadow: false,
+                    states: {
+                        hover: {
+                            lineWidth: 1
+                        }
+                    }
+                }
+            },
+    
+            series: [{
+                type: 'line',
+                name: 'total balance',
+                data: [$TotalBalanceData]
+            }]
+        });
+
+        chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'SpendingContainer',
+                zoomType: 'x',
+                spacingRight: 20
+            },
+            title: {
+                text: 'Earning & Spending By Month'
+            },
+            xAxis: {
+                type: 'datetime',
+                maxZoom: 14 * 24 * 3600000, // fourteen days
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'EUR'
+                },
+                startOnTick: false,
+                showFirstLabel: false
+            },
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                enabled: true
+            },
+            plotOptions: {
+                series: {
+                    lineWidth: 3,
+                    marker: {
+                        enabled: false,
+                        states: {
+                            hover: {
+                                enabled: true,
+                                radius: 5
+                            }
+                        }
+                    },
+                    shadow: false,
+                    states: {
+                        hover: {
+                            lineWidth: 1
+                        }
+                    }
+                }
+            },
+    
+            series: [{
+                type: 'column',
+                name: 'spending',
+                data: [$SpendingData]
+            }, {
+                type: 'column',
+                name: 'earning',
+                data: [$EarningData]
+			}]
+        });
+
+    });
+    
+});
+		</script>
+	</head>
+	<body>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+<div id="TotalBalanceContainer" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+<div id="SpendingContainer" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+
+	</body>
+</html>
