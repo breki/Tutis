@@ -15,10 +15,9 @@ namespace TreasureChest.Tests.SampleModule
         TService CreateUsingGenerics<TService>() where TService : IServiceX;
         IServiceX CreateUsingTypeMethod(Type serviceType);
 
-        void Release(object instance);
+        DisposableComponentA CreateDisposableComponentA();
+        IDisposableService CreateIDisposableService();
 
-        //void RegisterByName<T>(string name)
-        //    where T : IServiceX;
-        //IServiceX  
+        void Release(object instance);
     }
 }

@@ -24,8 +24,6 @@ namespace TreasureChest.Tests
 
             using (var lease = Chest.Fetch<ISampleFactory>())
             {
-                //IServiceX component = lease.Instance.CreateX();
-                //Assert.IsNotNull(component);
             }
         }
 
@@ -132,17 +130,38 @@ namespace TreasureChest.Tests
             }
         }
 
-        //[Test]
-        //public void RegisterTypeByName()
-        //{
-        //    Chest
-        //        .AddFactory<ISampleFactory>();
+        [Test]
+        public void MakeSureDisposableTransientObjectsAreDisposedWhenReleasedInFactories ()
+        {
+            Chest
+                .AddTransient<DisposableComponentA> ()
+                .AddFactory<ISampleFactory> ();
 
-        //    using (var lease = Chest.Fetch<ISampleFactory>())
-        //    {
-        //        lease.Instance.Register<IndependentComponentA>("name");
-        //        lease.Instance.
-        //    }
-        //}
+            using (var factoryLease = Chest.Fetch<ISampleFactory> ())
+            {
+                ISampleFactory factory = factoryLease.Instance;
+
+                DisposableComponentA service = factory.CreateDisposableComponentA ();
+                factory.Release (service);
+                Assert.IsTrue(service.Disposed);
+            }
+        }
+
+        [Test]
+        public void MakeSureDisposableServicesAreDisposedWhenReleasedInFactories ()
+        {
+            Chest
+                .AddTransient<IDisposableService> ()
+                .AddFactory<ISampleFactory> ();
+
+            using (var factoryLease = Chest.Fetch<ISampleFactory> ())
+            {
+                ISampleFactory factory = factoryLease.Instance;
+
+                IDisposableService service = factory.CreateIDisposableService();
+                factory.Release (service);
+                Assert.IsTrue (((DisposableComponentA)service).Disposed);
+            }
+        }
     }
 }

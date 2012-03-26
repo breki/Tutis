@@ -84,6 +84,7 @@
     <Compile Include="ReleasingTests.cs" />
     <Compile Include="ResolvingTests.cs" />
     <Compile Include="SampleModule\ComponentWithEnumerableConstructorArg.cs" />
+    <Compile Include="SampleModule\IDisposableService.cs" />
     <Compile Include="SampleModule\SampleManualDependencyRegistrationPolicy.cs" />
     <Compile Include="SampleModule\ComponentWithMultipleConstructors.cs" />
     <Compile Include="SampleModule\ComponentWithMultipleServices.cs" />

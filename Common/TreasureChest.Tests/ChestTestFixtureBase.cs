@@ -2,7 +2,6 @@ using System.Reflection;
 using Gallio.Framework;
 using log4net;
 using MbUnit.Framework;
-using TreasureChest.Logging;
 
 namespace TreasureChest.Tests
 {
