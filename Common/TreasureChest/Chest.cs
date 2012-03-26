@@ -534,7 +534,8 @@ namespace TreasureChest
             dependencyGraph.RegisterDependency(dependencyInstance, dependentInstance);
         }
 
-        public void Return(object instance)
+        [SuppressMessage ("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]
+        public void Return (object instance)
         {
             if (instance == null)
                 throw new ArgumentNullException("instance");
@@ -547,8 +548,14 @@ namespace TreasureChest
 
                 IRegistrationHandler instanceHandler = dependencyGraph.GetRegistrationHandlerForInstance(
                     instance);
-                if (instanceHandler.MarkInstanceAsReleased(instance, chestPolicies))
+                if (instanceHandler.MarkInstanceAsReleased (instance, chestPolicies))
+                {
                     dependencyGraph.RemoveInstance(instance, true);
+
+                    // 26.03.2012: disposable instances should be disposed
+                    if (instance is IDisposable)
+                        ((IDisposable)instance).Dispose();
+                }
             }
         }
 

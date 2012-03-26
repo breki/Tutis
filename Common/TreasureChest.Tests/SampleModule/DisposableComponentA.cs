@@ -1,8 +1,6 @@
-using System;
-
 namespace TreasureChest.Tests.SampleModule
 {
-    public class DisposableComponentA : IDisposable
+    public class DisposableComponentA : IDisposableService
     {
         public bool Disposed
         {
