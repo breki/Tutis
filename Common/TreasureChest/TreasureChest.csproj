@@ -76,6 +76,8 @@
     </Compile>
     <Compile Include="ChestExtensionBase.cs" />
     <Compile Include="ConstructorInjectionInfo.cs" />
+    <Compile Include="Diagnostics\DependencyDotGraphGenerator.cs" />
+    <Compile Include="Diagnostics\DotBuilder.cs" />
     <Compile Include="Fluent\ForEachClass.cs" />
     <Compile Include="Fluent\IForEachClass.cs" />
     <Compile Include="Fluent\IVirtualFactory.cs" />
