@@ -201,6 +201,8 @@ namespace TreasureChest.Policies
                         {
                             context.PushServiceType(parameter.ParameterType);
 
+                            object dependency = Chest.Fetch (parameter.ParameterType, context);
+
                             Logger.Log(
                                 LogEventType.FetchDependency, 
                                 "impl. type", 
@@ -208,9 +210,10 @@ namespace TreasureChest.Policies
                                 "dependency type", 
                                 parameter.ParameterType,
                                 "stack", 
-                                context.ResolvingStackToString());
+                                context.ResolvingStackToString(),
+                                TreasureChest.Chest.InstanceArgName,
+                                dependency);
 
-                            object dependency = Chest.Fetch(parameter.ParameterType, context);
                             constructorInjection.SetParameterValue(parameter.Name, dependency);
                             createdDependencies.Add(dependency);
                         }

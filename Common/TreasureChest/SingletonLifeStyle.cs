@@ -5,11 +5,12 @@ namespace TreasureChest
 {
     public class SingletonLifestyle : RegistrationHandlerBase
     {
-        public SingletonLifestyle()
+        public SingletonLifestyle (IChestMaster chest)
+            : base (chest)
         {
         }
 
-        public SingletonLifestyle(object instance)
+        public SingletonLifestyle(IChestMaster chest, object instance) : base(chest)
         {
             this.instance = instance;
         }
@@ -34,7 +35,6 @@ namespace TreasureChest
         }
 
         public override bool CanBeFetched(
-            IChestMaster chest,
             ResolvingContext context,
             IComponentCreator componentCreator)
         {
@@ -45,7 +45,6 @@ namespace TreasureChest
         }
 
         public override object GetInstance(
-            IChestMaster chest,
             ResolvingContext context,
             IComponentCreator componentCreator)
         {
@@ -63,7 +62,7 @@ namespace TreasureChest
                     }
 
                     instantiationInProgress = true;
-                    instance = GetInstancePrivate (chest, context, componentCreator);
+                    instance = GetInstancePrivate (context, componentCreator);
                 }
 
                 return instance;
@@ -78,6 +77,7 @@ namespace TreasureChest
 
         public override bool MarkInstanceAsReleased(object instance, PolicyCollection chestPolicies)
         {
+            Chest.Logger.Log (LogEventType.ReleaseInstance, TreasureChest.Chest.InstanceArgName, instance);
             return false;
         }
 

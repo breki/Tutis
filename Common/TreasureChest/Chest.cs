@@ -13,6 +13,8 @@ namespace TreasureChest
 {
     public class Chest : IChestMaster
     {
+        public const string InstanceArgName = "instance";
+
         public Chest() : this (new NullLogger())
         {
         }
@@ -99,7 +101,7 @@ namespace TreasureChest
                 ServiceRegistration registration = new ServiceRegistration(
                     serviceType,
                     implementationType,
-                    (IRegistrationHandler)Activator.CreateInstance(defaultLifestyle));
+                    (IRegistrationHandler)Activator.CreateInstance(defaultLifestyle, this));
                 servicesRegistry.AddRegistration(registration);
                 return this;
             }
@@ -112,7 +114,7 @@ namespace TreasureChest
                 ServiceRegistration registration = new ServiceRegistration(
                     serviceType,
                     implementationType,
-                    (IRegistrationHandler)Activator.CreateInstance(defaultLifestyle));
+                    (IRegistrationHandler)Activator.CreateInstance(defaultLifestyle, this));
                 servicesRegistry.AddRegistration(registration);
                 return this;
             }
@@ -127,7 +129,7 @@ namespace TreasureChest
             ServiceRegistration registration = new ServiceRegistration(
                 serviceType, 
                 implType, 
-                (IRegistrationHandler)Activator.CreateInstance(defaultLifestyle));
+                (IRegistrationHandler)Activator.CreateInstance(defaultLifestyle, this));
 
             servicesRegistry.AddRegistration(registration);
             return this;
@@ -145,7 +147,7 @@ namespace TreasureChest
             ServiceRegistration registration = new ServiceRegistration(
                 serviceTypes, 
                 implType, 
-                (IRegistrationHandler)Activator.CreateInstance(defaultLifestyle));
+                (IRegistrationHandler)Activator.CreateInstance(defaultLifestyle, this));
             servicesRegistry.AddRegistration(registration);
             return this;
         }
@@ -163,7 +165,7 @@ namespace TreasureChest
             ServiceRegistration registration = new ServiceRegistration(
                 serviceTypes,
                 implType,
-                (IRegistrationHandler)Activator.CreateInstance(defaultLifestyle));
+                (IRegistrationHandler)Activator.CreateInstance(defaultLifestyle, this));
             servicesRegistry.AddRegistration(registration);
             return this;
         }
@@ -175,7 +177,7 @@ namespace TreasureChest
             FactoryProxy proxy = new FactoryProxy(this, factoryType);
             T proxyInstance = (T)proxy.GetTransparentProxy();
 
-            SingletonLifestyle registrationHandler = new SingletonLifestyle(proxyInstance);
+            SingletonLifestyle registrationHandler = new SingletonLifestyle(this, proxyInstance);
 
             ServiceRegistration registration = new ServiceRegistration(
                 factoryType,
@@ -204,7 +206,7 @@ namespace TreasureChest
                     ServiceRegistration registration = new ServiceRegistration(
                         serviceType,
                         serviceType,
-                        (IRegistrationHandler)Activator.CreateInstance(defaultLifestyle, instance));
+                        (IRegistrationHandler)Activator.CreateInstance(defaultLifestyle, this, instance));
                     servicesRegistry.AddRegistration(registration);
                     dependencyGraph.AddInstanceToMap(
                         instance, 
@@ -229,7 +231,7 @@ namespace TreasureChest
                 try
                 {
                     IRegistrationHandler registrationHandler = (IRegistrationHandler)
-                        Activator.CreateInstance(defaultLifestyle, instance);
+                        Activator.CreateInstance(defaultLifestyle, this, instance);
 
                     ServiceRegistration registration1 = new ServiceRegistration(
                         serviceType1,
@@ -275,7 +277,7 @@ namespace TreasureChest
                 ServiceRegistration registration = new ServiceRegistration(
                     serviceType,
                     implementationType,
-                    new TransientLifestyle());
+                    new TransientLifestyle(this));
                 servicesRegistry.AddRegistration(registration);
                 return this;
             }
@@ -290,7 +292,7 @@ namespace TreasureChest
                 ServiceRegistration registration = new ServiceRegistration(
                     serviceType,
                     implementationType,
-                    new TransientLifestyle());
+                    new TransientLifestyle(this));
                 servicesRegistry.AddRegistration(registration);
                 return this;
             }
@@ -301,7 +303,7 @@ namespace TreasureChest
         {
             Type serviceType = typeof(TService);
             Type implType = typeof(TImpl);
-            ServiceRegistration registration = new ServiceRegistration(serviceType, implType, new TransientLifestyle());
+            ServiceRegistration registration = new ServiceRegistration(serviceType, implType, new TransientLifestyle(this));
             servicesRegistry.AddRegistration(registration);
             return this;
         }
@@ -318,7 +320,7 @@ namespace TreasureChest
             ServiceRegistration registration = new ServiceRegistration(
                 serviceTypes,
                 implType,
-                new TransientLifestyle());
+                new TransientLifestyle(this));
             servicesRegistry.AddRegistration(registration);
             return this;
         }
@@ -357,8 +359,6 @@ namespace TreasureChest
 
         public object Fetch(Type serviceType, ResolvingContext resolvingContext)
         {
-            logger.Log (LogEventType.Fetch, "serviceType", serviceType, "stack", resolvingContext.ResolvingStackToString());
-
             lock (this)
             {
                 if (servicesRegistry.IsServiceRegistered(serviceType))
@@ -366,9 +366,17 @@ namespace TreasureChest
                     ServiceRegistration registration = servicesRegistry.GetFirstRegistrationForService(
                         serviceType);
                     object instance = registration.RegistrationHandler.GetInstance(
-                        this,
                         resolvingContext,
                         componentCreator);
+
+                    logger.Log (
+                        LogEventType.Fetch, 
+                        "serviceType", 
+                        serviceType, 
+                        "stack", 
+                        resolvingContext.ResolvingStackToString (),
+                        InstanceArgName,
+                        instance);
 
                     return instance;
                 }
@@ -386,12 +394,11 @@ namespace TreasureChest
         [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
         public Lease<T> FetchFromServiceRegistration<T> (ServiceRegistration registration)
         {
-            logger.Log (LogEventType.Fetch, "serviceType", typeof(T));
-
             object instance = registration.RegistrationHandler.GetInstance(
-                this,
                 new ResolvingContext(DependencyGraph, typeof(T)), 
                 componentCreator);
+
+            logger.Log (LogEventType.Fetch, "serviceType", typeof(T), InstanceArgName, instance);
 
             return new Lease<T>(this, (T)instance);
         }
@@ -399,26 +406,35 @@ namespace TreasureChest
         [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
         public IEnumerable<T> FetchAll<T> ()
         {
-            Type type = typeof(T);
+            Type serviceType = typeof(T);
 
-            logger.Log (LogEventType.FetchAll, "serviceType", type);
+            logger.Log (LogEventType.FetchAll, "serviceType", serviceType);
 
             lock (this)
             {
                 if (!HasService<T>())
-                    throw ChestException("Service {0} is not registered.", type.FullName);
+                    throw ChestException("Service {0} is not registered.", serviceType.FullName);
 
                 foreach (ServiceRegistration registration 
-                    in servicesRegistry.EnumerateRegistrationsForService(type))
+                    in servicesRegistry.EnumerateRegistrationsForService(serviceType))
                 {
-                    ResolvingContext context = new ResolvingContext(dependencyGraph, type);
+                    ResolvingContext context = new ResolvingContext(dependencyGraph, serviceType);
 
                     try
                     {
                         T instance = (T)registration.RegistrationHandler.GetInstance(
-                                            this,
                                             context,
                                             componentCreator);
+
+                        logger.Log (
+                            LogEventType.Fetch,
+                            "serviceType",
+                            serviceType,
+                            "stack",
+                            context.ResolvingStackToString (),
+                            InstanceArgName,
+                            instance);
+
                         yield return instance;
                     }
                     finally
@@ -447,9 +463,18 @@ namespace TreasureChest
                     try
                     {
                         object instance = registration.RegistrationHandler.GetInstance(
-                            this,
                             context,
                             componentCreator);
+
+                        logger.Log (
+                            LogEventType.Fetch,
+                            "serviceType",
+                            serviceType,
+                            "stack",
+                            context.ResolvingStackToString (),
+                            InstanceArgName,
+                            instance);
+
                         yield return instance;
                     }
                     finally
@@ -544,7 +569,19 @@ namespace TreasureChest
             {
                 // 27.09.2011: this allows calling factory release methods transparently, even on objects that are not in the container
                 if (!dependencyGraph.HandlesInstance (instance))
+                {
+                    logger.Log (LogEventType.ReleaseInstance, InstanceArgName, instance);
+
+                    if (instance is IDisposable)
+                    {
+                        (instance as IDisposable).Dispose();
+                        logger.Log (LogEventType.DisposeInstance, InstanceArgName, instance);
+                    }
+
+                    logger.Log (LogEventType.DestroyInstance, InstanceArgName, instance);
+
                     return;
+                }
 
                 IRegistrationHandler instanceHandler = dependencyGraph.GetRegistrationHandlerForInstance(
                     instance);

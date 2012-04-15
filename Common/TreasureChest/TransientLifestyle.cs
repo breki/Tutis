@@ -6,13 +6,16 @@ namespace TreasureChest
 {
     public class TransientLifestyle : RegistrationHandlerBase
     {
+        public TransientLifestyle(IChestMaster chest) : base(chest)
+        {
+        }
+
         public override bool RequiresFetchingValidation
         {
             get { return !Registration.UsesCustomCreationMethod; }
         }
 
         public override bool CanBeFetched(
-            IChestMaster chest,
             ResolvingContext context,
             IComponentCreator componentCreator)
         {
@@ -31,11 +34,10 @@ namespace TreasureChest
         }
 
         public override object GetInstance(
-            IChestMaster chest,
             ResolvingContext context,
             IComponentCreator componentCreator)
         {
-            object instance = GetInstancePrivate(chest, context, componentCreator);
+            object instance = GetInstancePrivate(context, componentCreator);
             instances.Add(instance);
             return instance;
         }
@@ -43,6 +45,8 @@ namespace TreasureChest
         public override bool MarkInstanceAsReleased(object instance, PolicyCollection chestPolicies)
         {
             instances.Remove(instance);
+            Chest.Logger.Log (LogEventType.ReleaseInstance, TreasureChest.Chest.InstanceArgName, instance);
+
             return true;
         }
 

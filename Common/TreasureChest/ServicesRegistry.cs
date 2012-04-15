@@ -37,7 +37,14 @@ namespace TreasureChest
 
                     registrations[serviceType].Add(registration);
 
-                    logger.Log(LogEventType.RegisterService, "serviceType", serviceType, "implType", registration.ImplType, "regHandlerType", registration.RegistrationHandler.GetType());
+                    logger.Log(
+                        LogEventType.RegisterService, 
+                        "serviceType", 
+                        serviceType, 
+                        "implType", 
+                        registration.ImplType, 
+                        "regHandlerType", 
+                        registration.RegistrationHandler.GetType());
                 }
             }
         }

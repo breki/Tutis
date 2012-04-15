@@ -8,6 +8,9 @@ namespace TreasureChest
         FetchDependency,
         Reflection,
         RegisterService,
+        ReleaseInstance,
+        DisposeInstance,
+        DestroyInstance,
     }
 
     public interface ILogger

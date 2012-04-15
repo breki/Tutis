@@ -7,13 +7,16 @@ namespace TreasureChest
 {
     public class ThreadSingletonLifestyle : RegistrationHandlerBase
     {
+        public ThreadSingletonLifestyle(IChestMaster chest) : base(chest)
+        {
+        }
+
         public override bool RequiresFetchingValidation
         {
             get { return true; }
         }
 
         public override bool CanBeFetched(
-            IChestMaster chest,
             ResolvingContext context,
             IComponentCreator componentCreator)
         {
@@ -35,7 +38,6 @@ namespace TreasureChest
         }
 
         public override object GetInstance(
-            IChestMaster chest,
             ResolvingContext context,
             IComponentCreator componentCreator)
         {
@@ -43,7 +45,7 @@ namespace TreasureChest
 
             if (!instancesPerThreads.ContainsKey(threadId))
             {
-                object instance = GetInstancePrivate(chest, context, componentCreator);
+                object instance = GetInstancePrivate(context, componentCreator);
                 instancesPerThreads.Add(threadId, instance);
             }
 
@@ -52,6 +54,7 @@ namespace TreasureChest
 
         public override bool MarkInstanceAsReleased(object instance, PolicyCollection chestPolicies)
         {
+            Chest.Logger.Log (LogEventType.ReleaseInstance, TreasureChest.Chest.InstanceArgName, instance);
             return false;
         }
 
