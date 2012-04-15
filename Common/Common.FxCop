@@ -41,6 +41,15 @@
  </Rules>
  <FxCopReport Version="1.36">
   <Namespaces>
+   <Namespace Name="TreasureChest.Diagnostics">
+    <Messages>
+     <Message TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020" Status="Excluded" Created="2012-04-14 15:33:41Z">
+      <Issue>
+       <Item>TreasureChest.Diagnostics</Item>
+      </Issue>
+     </Message>
+    </Messages>
+   </Namespace>
    <Namespace Name="TreasureChest.Factories">
     <Messages>
      <Message TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020" Status="Excluded" Created="2011-08-13 18:34:06Z">
@@ -67,16 +76,14 @@
       <Namespaces>
        <Namespace Name="TreasureChest">
         <Types>
-         <Type Name="Chest">
+         <Type Name="ObjectDependencyGraph">
           <Members>
-           <Member Name="#Return(System.Object)">
+           <Member Name="#EnumerateObjects()">
             <Messages>
-             <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Created="2012-03-26 06:12:44Z">
-              <Issue Name="Parameter">
-               <Item>'instance'</Item>
-               <Item>'IDisposable'</Item>
-               <Item>'Chest.Return(object)'</Item>
-               <Item>castclass</Item>
+             <Message TypeName="DoNotNestGenericTypesInMemberSignatures" Category="Microsoft.Design" CheckId="CA1006" Created="2012-04-14 15:33:41Z">
+              <Issue>
+               <Item>'ObjectDependencyGraph.EnumerateObjects()'</Item>
+               <Item>'IEnumerable&lt;KeyValuePair&lt;object, IRegistrationHandler&gt;&gt;'</Item>
               </Issue>
              </Message>
             </Messages>
@@ -108,8 +115,8 @@
    <Rule TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020">
     <Resolution Name="Default">Consider merging the types defined in '{0}' with another namespace.</Resolution>
    </Rule>
-   <Rule TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800">
-    <Resolution Name="Parameter">{0}, a parameter, is cast to type {1} multiple times in method {2}. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant {3} instruction.</Resolution>
+   <Rule TypeName="DoNotNestGenericTypesInMemberSignatures" Category="Microsoft.Design" CheckId="CA1006">
+    <Resolution Name="Default">Consider a design where {0} doesn't nest generic type {1}.</Resolution>
    </Rule>
    <Rule TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704">
     <Resolution Name="Type">Correct the spelling of '{0}' in type name {1}.</Resolution>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 using TreasureChest.Policies;
 
 namespace TreasureChest
@@ -46,10 +47,32 @@ namespace TreasureChest
             }
         }
 
+        [SuppressMessage ("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        public IEnumerable<KeyValuePair<object, IRegistrationHandler>> EnumerateObjects ()
+        {
+            return objectsMap;
+        }
+
         public bool HandlesInstance (object instance)
         {
             lock (this)
                 return objectsMap.ContainsKey(instance);
+        }
+
+        public IEnumerable<object> GetObjectsThatDependOn(object instance)
+        {
+            if (!isNecessaryFor.ContainsKey (instance) || isNecessaryFor[instance] == null)
+                return Enumerable.Empty<object>();
+
+            return isNecessaryFor[instance];
+        }
+
+        public IEnumerable<object> GetObjectsThatAreNecessaryFor (object instance)
+        {
+            if (!isDependentOn.ContainsKey (instance) || isDependentOn[instance] == null)
+                return Enumerable.Empty<object> ();
+
+            return isDependentOn[instance];
         }
 
         public IRegistrationHandler GetRegistrationHandlerForInstance (object instance)

@@ -72,6 +72,7 @@
     <Compile Include="ConstructorAutowiringTests.cs" />
     <Compile Include="CustomRegistrationTests.cs" />
     <Compile Include="DefaultAutowiringConstructorArgumentTypesPolicyTests.cs" />
+    <Compile Include="DiagnosticsTests.cs" />
     <Compile Include="ExtensionTests.cs" />
     <Compile Include="FactoriesTests.cs" />
     <Compile Include="Log4NetLogger.cs" />
