@@ -137,7 +137,7 @@ namespace TreasureChest
                 {
                     foreach (object dependency in dependencies)
                     {
-                        RemoveIsNecessaryForRelation(dependency, instance);
+                        RemoveDependency(dependency, instance);
                         if (GetRegistrationHandlerForInstance(dependency)
                             .MarkInstanceAsReleased(dependency, chestPolicies))
                             RemoveInstance(dependency, destroyIt);
@@ -204,7 +204,7 @@ namespace TreasureChest
                 isNecessaryFor[isNecessary].Add(instance);
         }
 
-        private void RemoveIsNecessaryForRelation(object isNecessary, object instance)
+        private void RemoveDependency(object isNecessary, object instance)
         {
             isNecessaryFor[isNecessary].Remove(instance);
         }

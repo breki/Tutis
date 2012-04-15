@@ -20,12 +20,10 @@ namespace TreasureChest
         void Initialize(ServiceRegistration registration);
 
         bool CanBeFetched(
-            IChestMaster chest, 
             ResolvingContext context,
             IComponentCreator componentCreator);
 
         object GetInstance(
-            IChestMaster chest,
             ResolvingContext context,
             IComponentCreator componentCreator);
 

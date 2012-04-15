@@ -176,9 +176,9 @@ namespace TreasureChest.Fluent
         {
             IRegistrationHandler lifestyle;
             if (LifestyleType != null)
-                lifestyle = (IRegistrationHandler)Activator.CreateInstance(LifestyleType);
+                lifestyle = (IRegistrationHandler)Activator.CreateInstance(LifestyleType, chest);
             else
-                lifestyle = (IRegistrationHandler)Activator.CreateInstance(Chest.DefaultLifestyleType);
+                lifestyle = (IRegistrationHandler)Activator.CreateInstance(Chest.DefaultLifestyleType, chest);
             return lifestyle;
         }
 

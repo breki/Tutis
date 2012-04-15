@@ -14,7 +14,14 @@ namespace TreasureChest.Logging
             string comma = null;
             for (int i = 0; i < args.Length; i += 2)
             {
-                s.AppendFormat(CultureInfo.InvariantCulture, "{2}{0}='{1}'", args[i], args[i + 1], comma);
+                object argName = args[i];
+                object argValue = args[i + 1];
+
+                if ((string)argName == Chest.InstanceArgName)
+                    argValue = string.Format(
+                        CultureInfo.InvariantCulture, "{0} ({1})", argValue.GetType().FullName, argValue.GetHashCode());
+
+                s.AppendFormat(CultureInfo.InvariantCulture, "{2}{0}='{1}'", argName, argValue, comma);
                 comma = ", ";
             }
 

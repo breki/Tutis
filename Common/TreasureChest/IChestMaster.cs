@@ -6,6 +6,7 @@ namespace TreasureChest
 {
     public interface IChestMaster : IChestFilling
     {
+        ILogger Logger { get; }
         PolicyCollection ChestPolicies { get; }
         Type DefaultLifestyleType { get; }
         ObjectDependencyGraph DependencyGraph { get; }

@@ -25,12 +25,10 @@ namespace TreasureChest
         }
 
         public abstract bool CanBeFetched(
-            IChestMaster chest, 
             ResolvingContext context,
             IComponentCreator componentCreator);
 
         public abstract object GetInstance(
-            IChestMaster chest,
             ResolvingContext context,
             IComponentCreator componentCreator);
 
@@ -50,13 +48,27 @@ namespace TreasureChest
                 policy.BeforeDestroyed(instance);
 
             if (instance is IDisposable)
+            {
                 (instance as IDisposable).Dispose();
+                chest.Logger.Log (LogEventType.DisposeInstance, TreasureChest.Chest.InstanceArgName, instance);
+            }
+
+            chest.Logger.Log (LogEventType.DestroyInstance, TreasureChest.Chest.InstanceArgName, instance);
+        }
+
+        protected RegistrationHandlerBase (IChestMaster chest)
+        {
+            this.chest = chest;
+        }
+
+        protected IChestMaster Chest
+        {
+            get { return chest; }
         }
 
         [SuppressMessage ("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
         [SuppressMessage ("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]
         protected object GetInstancePrivate (
-            IChestMaster chest,
             ResolvingContext context,
             IComponentCreator componentCreator)
         {
@@ -78,6 +90,7 @@ namespace TreasureChest
             return instance;
         }
 
+        private IChestMaster chest;
         private ServiceRegistration registration;
     }
 }
