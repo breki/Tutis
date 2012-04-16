@@ -27,10 +27,13 @@ namespace TreasureChest
 
         public override void DestroyAllInstances(PolicyCollection chestPolicies)
         {
-            if (IsInstantiated)
+            lock (this)
             {
-                DestroyInstance(instance, chestPolicies);
-                instance = null;
+                if (IsInstantiated)
+                {
+                    DestroyInstance(instance, chestPolicies);
+                    instance = null;
+                }
             }
         }
 
@@ -71,8 +74,11 @@ namespace TreasureChest
 
         public void MarkAsInstantiated (object instance)
         {
-            instantiationInProgress = false;
-            this.instance = instance;
+            lock (this)
+            {
+                instantiationInProgress = false;
+                this.instance = instance;
+            }
         }
 
         public override bool MarkInstanceAsReleased(object instance, PolicyCollection chestPolicies)

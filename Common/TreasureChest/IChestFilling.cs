@@ -41,6 +41,14 @@ namespace TreasureChest
         [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
         IChestFilling AddTransient<TService1, TService2, TImpl> () where TImpl : class, TService1, TService2;
 
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        IChestFilling AddPooled<T> ();
+        IChestFilling AddPooled (Type serviceType);
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        IChestFilling AddPooled<TService, TImpl> () where TImpl : class, TService;
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        IChestFilling AddPooled<TService1, TService2, TImpl> () where TImpl : class, TService1, TService2;
+
         void Done();
 
         [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]

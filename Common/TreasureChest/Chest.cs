@@ -325,6 +325,67 @@ namespace TreasureChest
             return this;
         }
 
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IChestFilling AddPooled<T> ()
+        {
+            Type serviceType = typeof(T);
+
+            lock (this)
+            {
+                Type implementationType = GetImplementationType (serviceType);
+
+                ServiceRegistration registration = new ServiceRegistration (
+                    serviceType,
+                    implementationType,
+                    new PoolLifestyle(this));
+                servicesRegistry.AddRegistration (registration);
+                return this;
+            }
+        }
+
+        public IChestFilling AddPooled (Type serviceType)
+        {
+            lock (this)
+            {
+                Type implementationType = GetImplementationType (serviceType);
+
+                ServiceRegistration registration = new ServiceRegistration (
+                    serviceType,
+                    implementationType,
+                    new PoolLifestyle(this));
+                servicesRegistry.AddRegistration (registration);
+                return this;
+            }
+        }
+
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IChestFilling AddPooled<TService, TImpl> () where TImpl : class, TService
+        {
+            Type serviceType = typeof(TService);
+            Type implType = typeof(TImpl);
+            ServiceRegistration registration = new ServiceRegistration (
+                serviceType, implType, new PoolLifestyle (this));
+            servicesRegistry.AddRegistration (registration);
+            return this;
+        }
+
+        [SuppressMessage ("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        public IChestFilling AddPooled<TService1, TService2, TImpl> ()
+            where TImpl : class, TService1, TService2
+        {
+            Type service1Type = typeof(TService1);
+            Type service2Type = typeof(TService2);
+
+            Type[] serviceTypes = new[] { service1Type, service2Type };
+            Type implType = typeof(TImpl);
+            ServiceRegistration registration = new ServiceRegistration (
+                serviceTypes,
+                implType,
+                new PoolLifestyle (this));
+            servicesRegistry.AddRegistration (registration);
+            return this;
+        }
+
         public void Done()
         {
         }

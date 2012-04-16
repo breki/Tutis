@@ -61,18 +61,24 @@ namespace TreasureChest
 
         public IEnumerable<object> GetObjectsThatDependOn(object instance)
         {
-            if (!isNecessaryFor.ContainsKey (instance) || isNecessaryFor[instance] == null)
-                return Enumerable.Empty<object>();
+            lock (this)
+            {
+                if (!isNecessaryFor.ContainsKey (instance) || isNecessaryFor[instance] == null)
+                    return Enumerable.Empty<object>();
 
-            return isNecessaryFor[instance];
+                return isNecessaryFor[instance];
+            }
         }
 
         public IEnumerable<object> GetObjectsThatAreNecessaryFor (object instance)
         {
-            if (!isDependentOn.ContainsKey (instance) || isDependentOn[instance] == null)
-                return Enumerable.Empty<object> ();
+            lock (this)
+            {
+                if (!isDependentOn.ContainsKey (instance) || isDependentOn[instance] == null)
+                    return Enumerable.Empty<object> ();
 
-            return isDependentOn[instance];
+                return isDependentOn[instance];
+            }
         }
 
         public IRegistrationHandler GetRegistrationHandlerForInstance (object instance)
