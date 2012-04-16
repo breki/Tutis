@@ -87,6 +87,8 @@ namespace TreasureChest
                     ((SingletonLifestyle)this).MarkAsInstantiated(instance);
             }
 
+            chest.Logger.Log(LogEventType.CreateInstance, "instance", instance);
+
             return instance;
         }
 
