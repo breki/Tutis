@@ -20,36 +20,45 @@ namespace TreasureChest
             ResolvingContext context,
             IComponentCreator componentCreator)
         {
-            if (instancesPerThreads.ContainsKey(Thread.CurrentThread.ManagedThreadId))
-                return true;
+            lock (this)
+            {
+                if (instancesPerThreads.ContainsKey(Thread.CurrentThread.ManagedThreadId))
+                    return true;
 
-            if (Registration.UsesCustomCreationMethod)
-                return true;
+                if (Registration.UsesCustomCreationMethod)
+                    return true;
 
-            return componentCreator.CanBeCreated(Registration.ImplType, context);
+                return componentCreator.CanBeCreated(Registration.ImplType, context);
+            }
         }
 
         public override void DestroyAllInstances(PolicyCollection chestPolicies)
         {
-            foreach (object instance in instancesPerThreads.Values)
-                DestroyInstance(instance, chestPolicies);
+            lock (this)
+            {
+                foreach (object instance in instancesPerThreads.Values)
+                    DestroyInstance(instance, chestPolicies);
 
-            instancesPerThreads.Clear();
+                instancesPerThreads.Clear();
+            }
         }
 
         public override object GetInstance(
             ResolvingContext context,
             IComponentCreator componentCreator)
         {
-            int threadId = Thread.CurrentThread.ManagedThreadId;
-
-            if (!instancesPerThreads.ContainsKey(threadId))
+            lock (this)
             {
-                object instance = GetInstancePrivate(context, componentCreator);
-                instancesPerThreads.Add(threadId, instance);
-            }
+                int threadId = Thread.CurrentThread.ManagedThreadId;
 
-            return instancesPerThreads[threadId];
+                if (!instancesPerThreads.ContainsKey(threadId))
+                {
+                    object instance = GetInstancePrivate(context, componentCreator);
+                    instancesPerThreads.Add(threadId, instance);
+                }
+
+                return instancesPerThreads[threadId];
+            }
         }
 
         public override bool MarkInstanceAsReleased(object instance, PolicyCollection chestPolicies)

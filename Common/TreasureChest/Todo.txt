@@ -1,1 +1,1 @@
-﻿- finish new logging stuff
+﻿- thread safety of lifestyles!

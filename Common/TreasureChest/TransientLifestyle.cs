@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using TreasureChest.Policies;
 
@@ -27,27 +26,36 @@ namespace TreasureChest
 
         public override void DestroyAllInstances(PolicyCollection chestPolicies)
         {
-            foreach (object instance in instances)
-                DestroyInstance(instance, chestPolicies);
+            lock (this)
+            {
+                foreach (object instance in instances)
+                    DestroyInstance(instance, chestPolicies);
 
-            instances.Clear();
+                instances.Clear();
+            }
         }
 
         public override object GetInstance(
             ResolvingContext context,
             IComponentCreator componentCreator)
         {
-            object instance = GetInstancePrivate(context, componentCreator);
-            instances.Add(instance);
-            return instance;
+            lock (this)
+            {
+                object instance = GetInstancePrivate(context, componentCreator);
+                instances.Add(instance);
+                return instance;
+            }
         }
 
         public override bool MarkInstanceAsReleased(object instance, PolicyCollection chestPolicies)
         {
-            instances.Remove(instance);
-            Chest.Logger.Log (LogEventType.ReleaseInstance, TreasureChest.Chest.InstanceArgName, instance);
+            lock (this)
+            {
+                instances.Remove(instance);
+                Chest.Logger.Log (LogEventType.ReleaseInstance, TreasureChest.Chest.InstanceArgName, instance);
 
-            return true;
+                return true;
+            }
         }
 
         private HashSet<object> instances = new HashSet<object>();

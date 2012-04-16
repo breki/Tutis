@@ -105,6 +105,8 @@
     <Compile Include="Lease.cs" />
     <Compile Include="Chest.cs" />
     <Compile Include="ChestException.cs" />
+    <Compile Include="PooledObject.cs" />
+    <Compile Include="PoolLifestyle.cs" />
     <Compile Include="ServiceRegistration.cs" />
     <Compile Include="ComponentCreator.cs" />
     <Compile Include="Factories\FactoryProxy.cs" />
