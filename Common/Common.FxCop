@@ -21,7 +21,7 @@
   <IgnoreGeneratedCode>False</IgnoreGeneratedCode>
  </ProjectOptions>
  <Targets>
-  <Target Name="$(ProjectDir)/Clavis/bin/Release/Clavis.dll" Analyze="True" AnalyzeAllChildren="True" />
+  <Target Name="$(ProjectDir)/Clavis/bin/Release/Clavis.dll" Analyze="False" AnalyzeAllChildren="False" />
   <Target Name="$(ProjectDir)/TreasureChest/bin/Release/TreasureChest.dll" Analyze="True" AnalyzeAllChildren="True" />
  </Targets>
  <Rules>
@@ -74,16 +74,17 @@
     <Modules>
      <Module Name="treasurechest.dll">
       <Namespaces>
-       <Namespace Name="TreasureChest">
+       <Namespace Name="TreasureChest.Factories">
         <Types>
-         <Type Name="ObjectDependencyGraph">
+         <Type Name="FactoryProxy">
           <Members>
-           <Member Name="#EnumerateObjects()">
+           <Member Name="#Invoke(System.Runtime.Remoting.Messaging.IMessage)">
             <Messages>
-             <Message TypeName="DoNotNestGenericTypesInMemberSignatures" Category="Microsoft.Design" CheckId="CA1006" Created="2012-04-14 15:33:41Z">
-              <Issue>
-               <Item>'ObjectDependencyGraph.EnumerateObjects()'</Item>
-               <Item>'IEnumerable&lt;KeyValuePair&lt;object, IRegistrationHandler&gt;&gt;'</Item>
+             <Message TypeName="OverrideLinkDemandsShouldBeIdenticalToBase" Category="Microsoft.Security" CheckId="CA2123" Status="Excluded" Created="2012-05-12 06:32:57Z">
+              <Issue Name="OverrideOnly">
+               <Item>'FactoryProxy.Invoke(IMessage)'</Item>
+               <Item>'RealProxy.Invoke(IMessage)'</Item>
+               <Item>[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)]</Item>
               </Issue>
              </Message>
             </Messages>
@@ -115,11 +116,11 @@
    <Rule TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020">
     <Resolution Name="Default">Consider merging the types defined in '{0}' with another namespace.</Resolution>
    </Rule>
-   <Rule TypeName="DoNotNestGenericTypesInMemberSignatures" Category="Microsoft.Design" CheckId="CA1006">
-    <Resolution Name="Default">Consider a design where {0} doesn't nest generic type {1}.</Resolution>
-   </Rule>
    <Rule TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704">
     <Resolution Name="Type">Correct the spelling of '{0}' in type name {1}.</Resolution>
+   </Rule>
+   <Rule TypeName="OverrideLinkDemandsShouldBeIdenticalToBase" Category="Microsoft.Security" CheckId="CA2123">
+    <Resolution Name="OverrideOnly">Override {0} has the following LinkDemand that is not present on base method {1}: {2}. If possible, apply the same LinkDemand to the base method. Otherwise, replace it with a full Demand or remove it entirely.</Resolution>
    </Rule>
   </Rules>
  </FxCopReport>
