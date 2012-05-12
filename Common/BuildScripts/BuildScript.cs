@@ -68,11 +68,12 @@ namespace BuildScripts
                 session.AddLogger(new MulticoloredConsoleLogger(Console.Out));
 
                 session.Properties.Set(BuildProps.CompanyName, "igorbrejc.net");
-                session.Properties.Set(BuildProps.CompanyCopyright, "Copyright (C) 2010-2011 Igor Brejc.");
+                session.Properties.Set(BuildProps.CompanyCopyright, "Copyright (C) 2010-2012 Igor Brejc.");
                 session.Properties.Set(BuildProps.ProductId, "Common");
                 session.Properties.Set (BuildProps.ProductName, "Common");
                 session.Properties.Set (BuildProps.SolutionFileName, "Common.sln");
-                session.Properties.Set(BuildProps.VersionControlSystem, VersionControlSystem.Mercurial);
+                session.Properties.Set (BuildProps.TargetDotNetVersion, FlubuEnvironment.Net40VersionNumber);
+                session.Properties.Set (BuildProps.VersionControlSystem, VersionControlSystem.Mercurial);
 
                 try
                 {
