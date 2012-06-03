@@ -2,21 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Threading;
-using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
 
 namespace CpuUsage
 {
     class Program
     {
-        [DllImport ("kernel32.dll")]
-        static extern bool GetProcessTimes (IntPtr hProcess,
-            out FILETIME lpCreationTime,
-            out FILETIME lpExitTime,
-            out FILETIME lpKernelTime,
-            out FILETIME lpUserTime);
-
         static void Main (string[] args)
         {
             const int Interval = 2000;
@@ -26,13 +17,6 @@ namespace CpuUsage
             {
                 foreach (Process process in Process.GetProcesses ())
                 {
-                    //FILETIME lpCreationTime;
-                    //FILETIME lpExitTime;
-                    //FILETIME lpKernelTime;
-                    //FILETIME lpUserTime;
-                    //bool result = GetProcessTimes (process.Handle, out lpCreationTime, out lpExitTime, out lpKernelTime, out lpUserTime);
-                    //Console.Out.WriteLine("{0} - {1} {2}", process.ProcessName, lpKernelTime, lpUserTime);       
-
                     try
                     {
                         int processId = process.Id;
