@@ -117,7 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="richTextBox2.Text" xml:space="preserve">
-    <value>In order to make things easier for you, the RtfResourceName property has an associated type editor (RtfResourceNameEditor), which displays a popup list of all the RTF resource files available in the current assembly (see the image at the top of the article).</value>
-  </data>
 </root>
