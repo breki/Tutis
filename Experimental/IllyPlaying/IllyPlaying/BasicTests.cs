@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading;
 using Illustrator;
 using NUnit.Framework;
 
@@ -20,6 +18,7 @@ namespace IllyPlaying
                 @"D:\MyStuff\Dropbox\Public\Pigment\H_Maribor_130102_180245.pdf", AiDocumentColorSpace.aiDocumentRGBColor, null);
 
             Layer zeroLayer = document.ActiveLayer;
+            zeroLayer.Preview = false;
 
             Debug.WriteLine("GraphItems: {0}", zeroLayer.GraphItems.Count);
             Debug.WriteLine ("PathItems: {0}", zeroLayer.PathItems.Count);
@@ -65,11 +64,15 @@ namespace IllyPlaying
             //foreach (PathItem pageItem in zeroLayer.PathItems)
             //    pageItem.Move(newLayer, AiElementPlacement.aiPlaceAtEnd);
 
+            zeroLayer.Preview = true;
+            newLayer.Preview = true;
+            groupLayer.Preview = true;
+
             IllustratorSaveOptions options = new IllustratorSaveOptions();
             options.FlattenOutput = AiOutputFlattening.aiPreserveAppearance;
             options.FontSubsetThreshold = 100;
             options.PDFCompatible = true;
-            options.Compatibility = AiCompatibility.aiIllustrator10;
+            options.Compatibility = AiCompatibility.aiIllustrator12;
             options.Compressed = true;
             document.SaveAs (@"D:\hg\Tutis\Experimental\IllyPlaying\IllyPlaying\bin\Debug\test.ai", options);
 
