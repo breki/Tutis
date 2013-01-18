@@ -15,12 +15,12 @@ namespace GisExperiments.PngOptimization
         public void Test()
         {
             WuQuantizer quantizer = new WuQuantizer ();
-            using (Bitmap bitmap = (Bitmap)Bitmap.FromFile(@"../../../samples/sample.png"))
+            using (Bitmap bitmap = (Bitmap)Bitmap.FromFile(@"../../../samples/topo.png"))
             {
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
-                const int Runs = 20;
+                const int Runs = 5;
                 for (int i = 0; i < Runs; i++)
                 {
                     int alphaTransparency = 0;

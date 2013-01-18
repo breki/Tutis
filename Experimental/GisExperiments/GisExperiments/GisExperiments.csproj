@@ -53,6 +53,9 @@
     <Reference Include="nQuant.Core">
       <HintPath>..\packages\nQuant.0.9.8\lib\net40\nQuant.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Pngcs">
+      <HintPath>..\lib\pngcs\Pngcs.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="Rhino.Mocks">
       <HintPath>..\..\lib\Rhino.Mocks\Rhino.Mocks.dll</HintPath>
@@ -92,6 +95,7 @@
     <Compile Include="Curves\LineStringInfo.cs" />
     <Compile Include="DotSpatialProjectionTests.cs" />
     <Compile Include="PngOptimization\nQuantTests.cs" />
+    <Compile Include="PngOptimization\PngCsTests.cs" />
     <Compile Include="Proj4\Datums.cs" />
     <Compile Include="Proj4\DatumType.cs" />
     <Compile Include="Proj4\Ellipsoid.cs" />
