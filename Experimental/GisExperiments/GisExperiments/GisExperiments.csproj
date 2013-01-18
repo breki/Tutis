@@ -50,6 +50,9 @@
     <Reference Include="MbUnit">
       <HintPath>..\..\lib\Gallio\bin\MbUnit.dll</HintPath>
     </Reference>
+    <Reference Include="nQuant.Core">
+      <HintPath>..\packages\nQuant.0.9.8\lib\net40\nQuant.Core.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="Rhino.Mocks">
       <HintPath>..\..\lib\Rhino.Mocks\Rhino.Mocks.dll</HintPath>
@@ -88,6 +91,7 @@
     <Compile Include="Curves\ICurveInterpolator.cs" />
     <Compile Include="Curves\LineStringInfo.cs" />
     <Compile Include="DotSpatialProjectionTests.cs" />
+    <Compile Include="PngOptimization\nQuantTests.cs" />
     <Compile Include="Proj4\Datums.cs" />
     <Compile Include="Proj4\DatumType.cs" />
     <Compile Include="Proj4\Ellipsoid.cs" />
@@ -113,7 +117,9 @@
     <Compile Include="SplineTests.cs" />
     <Compile Include="WpfImaging\WpfImagingTests.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
