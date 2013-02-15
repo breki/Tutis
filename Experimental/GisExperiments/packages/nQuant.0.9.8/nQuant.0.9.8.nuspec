@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>nQuant</id>
+    <version>0.9.8</version>
+    <title>nQuant</title>
+    <authors>Matt Wrock</authors>
+    <owners>Matt Wrock</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>http://nquant.codeplex.com/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>nQuant is a .net color quantizer that can dramatically reduce the size of images with little to no perceptible quality loss.</description>
+    <summary>nQuant is a .net color quantizer which produces high quality 256 color 8 bit PNG images. nQuant uses an algorithm adapted from adapts Xiaolin Wu's fast optimal color quantizer. nQuant often reduces the size of a 32 bit image to a size 3 times smaller than its original with quality surpassing what the standard C command line utilities produce.</summary>
+    <tags>PNG Image Optimization Quantization</tags>
+    <references>
+      <reference file="nQuant.Core.dll" />
+    </references>
+  </metadata>
+</package>
