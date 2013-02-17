@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net.Cache;
 
 namespace TreasureChest.Policies
 {
@@ -12,6 +11,9 @@ namespace TreasureChest.Policies
             if (argumentType.IsValueType)
                 return false;
             if (argumentType == typeof(string))
+                return false;
+            // this is to avoid the Mono Mac NotImplementedException
+            if (argumentType == typeof(RequestCachePolicy))
                 return false;
             if (argumentType.Namespace == "System")
                 return false;
