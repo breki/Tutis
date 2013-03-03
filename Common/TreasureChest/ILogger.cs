@@ -6,11 +6,12 @@ namespace TreasureChest
         Fetch,
         FetchAll,
         FetchDependency,
-        Reflection,
         RegisterService,
         ReleaseInstance,
         DisposeInstance,
         DestroyInstance,
+        Informational,
+        Error,
     }
 
     public interface ILogger

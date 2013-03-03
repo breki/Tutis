@@ -25,7 +25,7 @@ namespace TreasureChest.Policies
                 if (!autowiringPolicy.ShouldArgumentTypeBeAutowired(property.PropertyType))
                     continue;
 
-                Logger.Log (LogEventType.CreateInstance, "PropertyInjectionPolicy", "AfterCreated", "InstanceType", instance.GetType().FullName, "PropertyName", property.Name);
+                Logger.Log (LogEventType.Informational, "PropertyInjectionPolicy", "AfterCreated", "InstanceType", instance.GetType().FullName, "PropertyName", property.Name);
 
                 object existingPropertyValue;
                 try
@@ -35,17 +35,17 @@ namespace TreasureChest.Policies
                 catch (NotImplementedException)
                 {
                     // this is to prevent Mono problems
-                    Logger.Log (LogEventType.CreateInstance, "Exception", "NotImplementedException");
+                    Logger.Log (LogEventType.Informational, "location", "PropertyInjectionPolicy", "Exception", "NotImplementedException");
                     continue;
                 }
                 catch (TargetException ex)
                 {
-                    Logger.Log (LogEventType.CreateInstance, "Exception", "TargetException");
+                    Logger.Log (LogEventType.Error, "Exception", "TargetException");
                     throw ex;
                 }
                 catch (TargetInvocationException ex)
                 {
-                    Logger.Log (LogEventType.CreateInstance, "Exception", "TargetInvocationException");
+                    Logger.Log (LogEventType.Error, "Exception", "TargetInvocationException");
                     throw ex;
                 }
 
