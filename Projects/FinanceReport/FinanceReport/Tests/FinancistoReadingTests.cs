@@ -20,7 +20,7 @@ namespace FinanceReport.Tests
         public void Test()
         {
             FinancistoReader reader = new FinancistoReader();
-            Database db = reader.ReadDatabaseFromFile (@"D:\MyStuff\Dropbox\Apps\financisto\20130308_081358_536");
+            Database db = reader.ReadDatabaseFromFile (@"D:\MyStuff\Dropbox\Apps\financisto\20130503_202016_178");
 
             DatabaseTable table = db.Tables["transactions"];
 
