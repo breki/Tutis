@@ -36,13 +36,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Brejc.Common.Library">
-      <HintPath>..\..\..\..\Maperitive\current\bin\Debug\Brejc.Common.Library.dll</HintPath>
+      <HintPath>..\lib\Brejc\Brejc.Common.Library.dll</HintPath>
     </Reference>
     <Reference Include="Brejc.Geospatial">
-      <HintPath>..\..\..\..\Maperitive\current\bin\Debug\Brejc.Geospatial.dll</HintPath>
+      <HintPath>..\lib\Brejc\Brejc.Geospatial.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zlib">
+      <HintPath>..\lib\Brejc\Ionic.Zlib.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\lib\Brejc\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

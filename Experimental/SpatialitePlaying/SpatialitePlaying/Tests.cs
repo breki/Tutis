@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
-using System.Globalization;
-using System.Text;
+using System.IO;
 using Brejc.Common.FileSystem;
+using Brejc.Geometry;
 using Brejc.OsmLibrary;
 using Brejc.OsmLibrary.Pbf;
 using Brejc.Rdbms;
@@ -21,29 +22,27 @@ namespace SpatialitePlaying
             fileSystem.DeleteFile ("test.sqlite", false);
             string connString = SqliteHelper.ConstructConnectionString ("test.sqlite", false);
 
+            Stopwatch stopwatch = new Stopwatch ();
+            stopwatch.Start ();
+            int addedRowsCount = 0;
+            long elapsedSeconds;
+
+            Console.WriteLine("Reading OSM data...");
+
+            InMemoryOsmDatabase osmDb = new InMemoryOsmDatabase ();
+            using (OsmPbfReader osmReader = new OsmPbfReader())
+            {
+                osmReader.Read (@"D:\brisi\isle-of-man-latest.osm.pbf", fileSystem, osmDb);
+                //osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, osmDb);
+            }
+
             DbProviderFactory dbProviderFactory = SqliteHelper.SqliteProviderFactory;
             using (IDbConnection dbConnection = dbProviderFactory.CreateConnection ())
             {
                 dbConnection.ConnectionString = connString;
                 dbConnection.Open ();
 
-                using (IDbCommand command = dbConnection.CreateCommand ())
-                {
-                    command.CommandText = @"SELECT load_extension('libspatialite-4.dll');";
-                    command.ExecuteNonQuery ();
-                }
-
-                using (IDbCommand command = dbConnection.CreateCommand ())
-                {
-                    command.CommandText = @"CREATE TABLE areas (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT)";
-                    command.ExecuteNonQuery ();
-                }
-            }
-
-            using (IDbConnection dbConnection = dbProviderFactory.CreateConnection ())
-            {
-                dbConnection.ConnectionString = connString;
-                dbConnection.Open ();
+                Console.WriteLine ("Loading spatialite...");
 
                 using (IDbCommand command = dbConnection.CreateCommand ())
                 {
@@ -51,94 +50,148 @@ namespace SpatialitePlaying
                     command.ExecuteNonQuery ();
                 }
 
-                dbConnection.ExecuteCommand ("SELECT InitSpatialMetadata();");
-                //dbConnection.enable_load_extension (False);
+                Console.WriteLine ("Initializing spatial metadata...");
 
                 using (IDbCommand command = dbConnection.CreateCommand ())
                 {
-                    command.CommandText = @"SELECT AddGeometryColumn('areas','geom',-1,'POLYGON', 2)";
-                    object value = command.ExecuteScalar ();
-                }
-            }
-
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            int addedRowsCount = 0;
-            long elapsedSeconds;
-
-            using (IDbConnection dbConnection = dbProviderFactory.CreateConnection())
-            {
-                dbConnection.ConnectionString = connString;
-                dbConnection.Open();
-
-                using (IDbCommand command = dbConnection.CreateCommand())
-                {
-                    command.CommandText = @"SELECT load_extension('libspatialite-4.dll');";
-                    command.ExecuteNonQuery();
+                    command.CommandText = @"SELECT InitSpatialMetadata();";
+                    long value = (long)command.ExecuteScalar ();
+                    Assert.AreEqual(1, value);
                 }
 
-                using (OsmPbfReader osmReader = new OsmPbfReader())
-                {
-                    InMemoryOsmDatabase osmDb = new InMemoryOsmDatabase();
-                    osmReader.Read(@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, osmDb);
+                Console.WriteLine ("Creating table...");
 
-                    DBBulkProcessor.BulkInsert(
-                        SqliteHelper.SqliteProviderFactory,
-                        dbConnection,
-                        "SELECT geom FROM areas",
-                        "INSERT INTO areas (geom) VALUES (@p1)",
-                        dt =>
+                using (IDbCommand command = dbConnection.CreateCommand ())
+                {
+                    command.CommandText = @"CREATE TABLE areas (id INTEGER, geom BLOB NOT NULL)";
+                    command.ExecuteNonQuery ();
+                }
+
+                //using (IDbCommand command = dbConnection.CreateCommand ())
+                //{
+                //    command.CommandText = @"SELECT AddGeometryColumn('areas','geom',-1,'POLYGON', 2)";
+                //    long value = (long)command.ExecuteScalar ();
+                //    Assert.AreEqual (1, value);
+                //}
+
+                stopwatch.Start();
+
+                //using (IDbCommand command = dbConnection.CreateCommand ())
+                //{
+                //    command.CommandText = @"INSERT INTO areas (id, geom) VALUES (@p1, PolygonFromText(@p2, 4326))";
+                //    command.AddParameter("@p1", 1);
+                //    command.AddParameter ("@p2", "POLYGON ((30 10, 10 20, 20 40, 40 40, 30 10))");
+                //    command.ExecuteNonQuery ();
+                //}
+
+
+                Console.WriteLine ("Started filling data...");
+
+                DBBulkProcessor.BulkInsert (
+                    SqliteHelper.SqliteProviderFactory,
+                    dbConnection,
+                    "SELECT id, geom FROM areas",
+                    "INSERT INTO areas (id, geom) VALUES (@param1, @param2)",
+                    dt =>
+                    {
+                        foreach (OsmWay way in osmDb.Ways)
+                        {
+                            if (!way.IsClosed)
+                                continue;
+
+                            DataRow row = dt.NewRow ();
+                            int i = 0;
+                            row[i++] = 1;
+                            row[i++] = WkbPolygonFromNodes (osmDb, way);
+                            dt.Rows.Add (row);
+
+                            addedRowsCount++;
+
+                            if (addedRowsCount % 1000 == 0)
                             {
-                                foreach (OsmWay way in osmDb.Ways)
-                                {
-                                    if (!way.IsClosed)
-                                        continue;
+                                elapsedSeconds = stopwatch.ElapsedMilliseconds / 1000;
+                                Console.Out.WriteLine (
+                                    "Added {0} rows in {1} s ({2} rows/s)",
+                                    addedRowsCount,
+                                    elapsedSeconds,
+                                    ((double)addedRowsCount) / elapsedSeconds);
+                            }
 
-                                    StringBuilder geomBuilder = new StringBuilder();
-                                    geomBuilder.Append("POLYGON((");
+                            if (addedRowsCount >= 10000)
+                                break;
+                        }
+                    });
 
-                                    string comma = null;
-                                    foreach (long nodeId in way.Nodes)
-                                    {
-                                        OsmNode node = osmDb.GetNode(nodeId);
-                                        geomBuilder.AppendFormat(CultureInfo.InvariantCulture, "{0}{1} {2}", comma, node.X, node.Y);
-                                        comma = ",";
-                                    }
 
-                                    geomBuilder.Append("))");
+                elapsedSeconds = stopwatch.ElapsedMilliseconds/1000;
+                Console.Out.WriteLine("----------------------");
+                Console.Out.WriteLine(
+                    "Added {0} rows in {1} s ({2} rows/s)", 
+                    addedRowsCount, 
+                    elapsedSeconds, 
+                    ((double)addedRowsCount) / elapsedSeconds);
 
-                                    DataRow row = dt.NewRow();
-                                    int i = 0;
-                                    row[i++] = geomBuilder.ToString();
-                                    dt.Rows.Add(row);
+                Console.WriteLine ("Recovering geometries...");
 
-                                    addedRowsCount++;
+                using (IDbCommand command = dbConnection.CreateCommand ())
+                {
+                    command.CommandText = @"SELECT RecoverGeometryColumn('areas','geom',4326,'POLYGON', 2)";
+                    long value = (long)command.ExecuteScalar ();
+                    Assert.AreEqual (1, value, "RecoverGeometryColumn failed");
+                }
 
-                                    if (addedRowsCount%1000 == 0)
-                                    {
-                                        elapsedSeconds = stopwatch.ElapsedMilliseconds/1000;
-                                        Console.Out.WriteLine(
-                                            "Added {0} rows in {1} s ({2} rows/s)",
-                                            addedRowsCount,
-                                            elapsedSeconds,
-                                            ((double)addedRowsCount)/elapsedSeconds);
-                                    }
+                Console.WriteLine ("Creating spatial index...");
 
-                                    if (addedRowsCount >= 10000)
-                                        break;
-                                }
-                            });
-
+                using (IDbCommand command = dbConnection.CreateCommand ())
+                {
+                    command.CommandText = @"SELECT CreateSpatialIndex('areas','geom')";
+                    long value = (long)command.ExecuteScalar ();
+                    Assert.AreEqual (1, value, "CreateSpatialIndex failed");
                 }
             }
+        }
 
-            elapsedSeconds = stopwatch.ElapsedMilliseconds/1000;
-            Console.Out.WriteLine("----------------------");
-            Console.Out.WriteLine(
-                "Added {0} rows in {1} s ({2} rows/s)", 
-                addedRowsCount, 
-                elapsedSeconds, 
-                ((double)addedRowsCount) / elapsedSeconds);
+        // http://www.gaia-gis.it/gaia-sins/BLOB-Geometry.html
+        private static byte[] WkbPolygonFromNodes(IInMemoryOsmDataSource osmDb, IOsmNodesList nodes)
+        {
+            using (MemoryStream stream = new MemoryStream ())
+            using (BinaryWriter writer = new BinaryWriter (stream))
+            {
+                writer.Write((byte)0);
+                writer.Write((byte)1); // little-endian
+                writer.Write(4326); // SRID
+
+                List<OsmNode> nodesList = new List<OsmNode>();
+                Bounds2 mbr = new Bounds2();
+
+                foreach (long nodeId in nodes.Nodes)
+                {
+                    OsmNode node = osmDb.GetNode(nodeId);
+                    nodesList.Add(node);
+                    mbr.ExtendToCover(node.X, node.Y);
+                }
+
+                writer.Write(mbr.MinX);
+                writer.Write(mbr.MinY);
+                writer.Write(mbr.MaxX);
+                writer.Write(mbr.MaxY);
+                writer.Write ((byte)0x7C);
+
+                writer.Write(3);
+                writer.Write(1); // number of rings
+
+                writer.Write(nodesList.Count);
+                foreach (OsmNode node in nodesList)
+                {
+                    writer.Write(node.X);
+                    writer.Write(node.Y);
+                }
+
+                writer.Write ((byte)0xFE);
+
+                writer.Flush ();
+                return stream.ToArray ();
+            }
         }
     }
 }
