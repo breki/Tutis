@@ -32,8 +32,8 @@ namespace SpatialitePlaying
             InMemoryOsmDatabase osmDb = new InMemoryOsmDatabase ();
             using (OsmPbfReader osmReader = new OsmPbfReader())
             {
-                osmReader.Read (@"D:\brisi\isle-of-man-latest.osm.pbf", fileSystem, osmDb);
-                //osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, osmDb);
+                //osmReader.Read (@"D:\brisi\isle-of-man-latest.osm.pbf", fileSystem, osmDb);
+                osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, osmDb);
             }
 
             DbProviderFactory dbProviderFactory = SqliteHelper.SqliteProviderFactory;
@@ -43,6 +43,10 @@ namespace SpatialitePlaying
                 dbConnection.Open ();
 
                 Console.WriteLine ("Loading spatialite...");
+
+                dbConnection.ExecuteCommand("PRAGMA journal_mode=OFF");
+                dbConnection.ExecuteCommand("PRAGMA count_changes=OFF");
+                dbConnection.ExecuteCommand("PRAGMA cache_size=4000");
 
                 using (IDbCommand command = dbConnection.CreateCommand ())
                 {
@@ -117,8 +121,8 @@ namespace SpatialitePlaying
                                     ((double)addedRowsCount) / elapsedSeconds);
                             }
 
-                            if (addedRowsCount >= 10000)
-                                break;
+                            //if (addedRowsCount >= 10000)
+                            //    break;
                         }
                     });
 
