@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using Brejc.OsmLibrary;
+using Brejc.Rdbms;
 
 namespace SpatialitePlaying
 {
@@ -9,6 +13,8 @@ namespace SpatialitePlaying
         {
             this.storage = storage;
             this.readingPhase = readingPhase;
+
+            stopwatch.Start();
         }
 
         public void AddBoundingBox(OsmBoundingBox box)
@@ -17,8 +23,36 @@ namespace SpatialitePlaying
 
         public void AddNode(OsmNode node)
         {
-            if (storage.UsedNodes.Contains(node.ObjectId))
-                storage.AddNodeData(node);
+            if (readingPhase != ReadingPhase.ReadNodes)
+                throw new InvalidOperationException ();
+
+            collectedNodes.Add(node);
+
+            if (collectedNodes.Count >= 100000)
+            {
+                DBBulkProcessor.BulkUpdate(
+                    SqliteHelper.SqliteProviderFactory,
+                    storage.DbConnection,
+                    "SELECT node_id FROM nodes",
+                    "UPDATE nodes SET x=@p1, y=@p2 WHERE node_id=@p3",
+                    dt =>
+                    {
+                        foreach (OsmNode nodeToDb in collectedNodes)
+                        {
+                            DataRow row = dt.NewRow ();
+                            row[0] = nodeToDb.X;
+                            row[1] = nodeToDb.Y;
+                            row[2] = nodeToDb.ObjectId;
+                            dt.Rows.Add (row);
+                        }
+                    });
+
+                nodesCounter += collectedNodes.Count;
+                Console.WriteLine ("Nodes updated: {0} ({1} nodes/s)", nodesCounter, collectedNodes.Count / stopwatch.Elapsed.TotalSeconds);
+                stopwatch.Restart ();
+
+                collectedNodes.Clear ();
+            }
         }
 
         public void AddNote(string noteType, string note)
@@ -31,12 +65,38 @@ namespace SpatialitePlaying
 
         public void AddWay(OsmWay way)
         {
+            if (readingPhase != ReadingPhase.ReadWays)
+                throw new InvalidOperationException();
+
             if (!way.IsClosed)
                 return;
 
             storage.UsedWays.Add(way);
-            foreach (long nodeId in way.Nodes)
-                storage.UsedNodes.Add(nodeId);
+            collectedNodeIds.AddRange(way.Nodes);
+
+            if (collectedNodeIds.Count >= 100000)
+            {
+                DBBulkProcessor.BulkInsert(
+                    SqliteHelper.SqliteProviderFactory,
+                    storage.DbConnection,
+                    "SELECT node_id FROM nodes",
+                    "INSERT OR IGNORE INTO nodes (node_id) VALUES (@param1)",
+                    dt =>
+                        {
+                            foreach (long nodeId in collectedNodeIds)
+                            {
+                                DataRow row = dt.NewRow ();
+                                row[0] = nodeId;
+                                dt.Rows.Add (row);                                
+                            }
+                        });
+
+                nodesCounter += collectedNodeIds.Count;
+                Console.WriteLine("Nodes indexed: {0} ({1} nodes/s)", nodesCounter, collectedNodeIds.Count / stopwatch.Elapsed.TotalSeconds);
+                stopwatch.Restart();
+
+                collectedNodeIds.Clear();
+            }
         }
 
         public void Dispose()
@@ -63,5 +123,9 @@ namespace SpatialitePlaying
         private bool disposed;
         private readonly TestOsmDataStorage storage;
         private readonly ReadingPhase readingPhase;
+        private List<long> collectedNodeIds = new List<long>();
+        private List<OsmNode> collectedNodes = new List<OsmNode>();
+        private long nodesCounter;
+        private Stopwatch stopwatch = new Stopwatch();
     }
 }
