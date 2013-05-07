@@ -29,7 +29,7 @@ namespace SpatialitePlaying
 
             Console.WriteLine("Reading OSM data... (phase 1)");
 
-            TestOsmDataStorage osmDb2 = new TestOsmDataStorage ();
+            TestOsmDataStorage osmDb2 = new TestOsmDataStorage (fileSystem);
 
             using (OsmPbfReader osmReader = new OsmPbfReader())
             {
@@ -39,15 +39,16 @@ namespace SpatialitePlaying
                 osmReader.Settings.LoadExtendedData = false;
 
                 //osmReader.Read (@"D:\brisi\isle-of-man-latest.osm.pbf", fileSystem, osmDb);
-                //osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, osmDb2);
-                osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, osmDb2);
+                osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, osmDb2);
+                //osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, osmDb2);
             }
 
             Console.WriteLine ("Reading OSM data... (phase 2)");
 
             using (OsmPbfReader osmReader = new OsmPbfReader())
             {
-                osmReader.Settings.SkipNodes = true;
+                osmReader.Settings.SkipNodes = false;
+                osmReader.Settings.SkipWays = true;
                 osmReader.Settings.SkipRelations = true;
                 osmReader.Settings.IgnoreCreatedByTags = true;
                 osmReader.Settings.LoadExtendedData = false;
