@@ -6,6 +6,7 @@ using Brejc.Common.FileSystem;
 using Brejc.Geometry;
 using Brejc.OsmLibrary;
 using Brejc.Rdbms;
+using Sop;
 
 namespace SpatialitePlaying
 {
@@ -13,32 +14,23 @@ namespace SpatialitePlaying
     {
         public TestOsmDataStorage(IFileSystem fileSystem)
         {
-            this.fileSystem = fileSystem;
-            DbProviderFactory dbProviderFactory = SqliteHelper.SqliteProviderFactory;
-            dbConnection = dbProviderFactory.CreateConnection();
+            Preferences preferences = new Preferences();
+            nodesStorage = ObjectServer.OpenWithTransaction("nodes.dta", preferences);
 
-            fileSystem.DeleteFile ("osm-temp-import.sqlite", false);
-            string connString = SqliteHelper.ConstructConnectionString ("osm-temp-import.sqlite", false);
-            dbConnection.ConnectionString = connString;
-            dbConnection.Open();
-
-            dbConnection.ExecuteCommand ("PRAGMA journal_mode=OFF");
-            dbConnection.ExecuteCommand ("PRAGMA count_changes=OFF");
-            dbConnection.ExecuteCommand ("PRAGMA cache_size=4000");
-            dbConnection.ExecuteCommand ("PRAGMA temp_store=MEMORY");
-
-            using (IDbCommand command = dbConnection.CreateCommand ())
-            {
-                command.CommandText = @"CREATE TABLE nodes (node_id INTEGER PRIMARY KEY, x REAL NULL, y REAL NULL)";
-                command.ExecuteNonQuery ();
-            }
+            StoreFactory storeFactory = new StoreFactory();
+            nodesDict = storeFactory.Get<long, bool> (nodesStorage.SystemFile.Store, "nodes");
         }
 
         public string AttributionText { get; set; }
 
-        public IDbConnection DbConnection
+        public ObjectServer NodesStorage
         {
-            get { return dbConnection; }
+            get { return nodesStorage; }
+        }
+
+        public ISortedDictionary<long, bool> NodesDict
+        {
+            get { return nodesDict; }
         }
 
         public ReadingPhase ReadingPhase
@@ -80,6 +72,7 @@ namespace SpatialitePlaying
         private ReadingPhase readingPhase = ReadingPhase.ReadWays;
         private Dictionary<long, PointD2> nodesData = new Dictionary<long, PointD2> ();
         private List<OsmWay> usedWays = new List<OsmWay> ();
-        private IDbConnection dbConnection;
+        private ObjectServer nodesStorage;
+        private ISortedDictionary<long, bool> nodesDict;
     }
 }
