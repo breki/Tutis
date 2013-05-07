@@ -33,8 +33,8 @@ namespace SpatialitePlaying
 
             using (OsmPbfReader osmReader = new OsmPbfReader())
             {
-                osmReader.Settings.SkipNodes = true;
-                osmReader.Settings.SkipRelations = true;
+                //osmReader.Settings.SkipNodes = true;
+                //osmReader.Settings.SkipRelations = true;
                 osmReader.Settings.IgnoreCreatedByTags = true;
                 osmReader.Settings.LoadExtendedData = false;
 
@@ -163,6 +163,42 @@ namespace SpatialitePlaying
                     long value = (long)command.ExecuteScalar ();
                     Assert.AreEqual (1, value, "CreateSpatialIndex failed");
                 }
+            }
+        }
+
+        [Test]
+        public void AnalyzeOsmFile()
+        {
+            OsmFileAnalyzer analyzer = new OsmFileAnalyzer();
+
+            WindowsFileSystem fileSystem = new WindowsFileSystem ();
+            using (OsmPbfReader osmReader = new OsmPbfReader ())
+            {
+                osmReader.Settings.IgnoreCreatedByTags = true;
+                osmReader.Settings.LoadExtendedData = false;
+
+                //osmReader.Read (@"D:\brisi\isle-of-man-latest.osm.pbf", fileSystem, osmDb);
+                //osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, analyzer);
+                osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, analyzer);
+            }
+        }
+
+        [Test]
+        public void StoreNodesInBinaryFile()
+        {
+            OsmNodesBinaryRecorder recorder = new OsmNodesBinaryRecorder(new WindowsFileSystem());
+
+            WindowsFileSystem fileSystem = new WindowsFileSystem ();
+            using (OsmPbfReader osmReader = new OsmPbfReader ())
+            {
+                osmReader.Settings.SkipRelations = true;
+                osmReader.Settings.SkipWays = true;
+                osmReader.Settings.IgnoreCreatedByTags = true;
+                osmReader.Settings.LoadExtendedData = false;
+
+                //osmReader.Read (@"D:\brisi\isle-of-man-latest.osm.pbf", fileSystem, osmDb);
+                osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, recorder);
+                //osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, recorder);
             }
         }
 
