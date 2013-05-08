@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -7,7 +6,7 @@ using Brejc.Geometry;
 using Brejc.OsmLibrary;
 using Brejc.Rdbms;
 
-namespace SpatialitePlaying
+namespace SpatialitePlaying.InMemoryProcessing
 {
     public class TestOsmDataStorage : IOsmDataStorage
     {
