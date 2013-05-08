@@ -18,8 +18,8 @@ namespace SpatialitePlaying
                 osmReader.Settings.LoadExtendedData = false;
 
                 //osmReader.Read (@"D:\brisi\isle-of-man-latest.osm.pbf", fileSystem, osmDb);
-                //osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, analyzer);
-                osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, analyzer);
+                osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, analyzer);
+                //osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, analyzer);
             }
         }
     }

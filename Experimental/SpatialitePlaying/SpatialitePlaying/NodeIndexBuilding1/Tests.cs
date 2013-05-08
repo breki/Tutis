@@ -1,8 +1,4 @@
-using System.Collections.Generic;
-using System.IO;
 using Brejc.Common.FileSystem;
-using Brejc.Geometry;
-using Brejc.OsmLibrary;
 using Brejc.OsmLibrary.Pbf;
 using NUnit.Framework;
 
@@ -19,7 +15,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
             using (OsmPbfReader osmReader = new OsmPbfReader ())
             {
                 osmReader.Settings.SkipRelations = true;
-                osmReader.Settings.SkipWays = true;
+                osmReader.Settings.SkipWays = false;
                 osmReader.Settings.IgnoreCreatedByTags = true;
                 osmReader.Settings.LoadExtendedData = false;
 

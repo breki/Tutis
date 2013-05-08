@@ -70,7 +70,11 @@
     <Compile Include="InMemoryProcessing\TestOsmDataBulkInsertSession.cs" />
     <Compile Include="InMemoryProcessing\TestOsmDataStorage.cs" />
     <Compile Include="InMemoryProcessing\Tests.cs" />
+    <Compile Include="NodeIndexBuilding1\INodesBTreeNode.cs" />
+    <Compile Include="NodeIndexBuilding1\INodesStorage.cs" />
     <Compile Include="NodeIndexBuilding1\NodesBlock.cs" />
+    <Compile Include="NodeIndexBuilding1\NodesBTreeNonLeafNone.cs" />
+    <Compile Include="NodeIndexBuilding1\NodesStorage.cs" />
     <Compile Include="NodeIndexBuilding1\OsmNodesBinaryRecorder.cs" />
     <Compile Include="NodeIndexBuilding1\Tests.cs" />
     <Compile Include="OsmFileAnalyzer.cs" />
