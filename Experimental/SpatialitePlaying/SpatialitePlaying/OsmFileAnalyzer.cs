@@ -52,6 +52,11 @@ namespace SpatialitePlaying
             get { return areRelationIdsMonotone; }
         }
 
+        public bool AreEntityTypesMonotone
+        {
+            get { return areEntityTypesMonotone; }
+        }
+
         public IOsmDataBulkInsertSession StartBulkInsertSession(bool threadSafe)
         {
             return this;
@@ -71,6 +76,11 @@ namespace SpatialitePlaying
             if (areNodeIdsMonotone)
                 areNodeIdsMonotone = node.ObjectId > lastNodeId;
             lastNodeId = node.ObjectId;
+
+            if (areEntityTypesMonotone)
+                areEntityTypesMonotone = lastEntityTypeRead == EntityType.None || lastEntityTypeRead == EntityType.Node;
+
+            lastEntityTypeRead = EntityType.Node;
         }
 
         public void AddWay(OsmWay way)
@@ -79,6 +89,12 @@ namespace SpatialitePlaying
             if (areWaysIdsMonotone)
                 areWaysIdsMonotone = way.ObjectId > lastWayId;
             lastWayId = way.ObjectId;
+
+            if (areEntityTypesMonotone)
+                areEntityTypesMonotone = lastEntityTypeRead == EntityType.None 
+                    || lastEntityTypeRead == EntityType.Node || lastEntityTypeRead == EntityType.Way;
+
+            lastEntityTypeRead = EntityType.Way;
         }
 
         public void AddRelation(OsmRelation relation)
@@ -87,6 +103,8 @@ namespace SpatialitePlaying
             if (areRelationIdsMonotone)
                 areRelationIdsMonotone = relation.ObjectId > lastRelationId;
             lastRelationId = relation.ObjectId;
+
+            lastEntityTypeRead = EntityType.Relation;
         }
 
         public void AddBoundingBox(OsmBoundingBox box)
@@ -106,5 +124,14 @@ namespace SpatialitePlaying
         private long relationsCount;
         private long lastRelationId = -1;
         private bool areRelationIdsMonotone = true;
+        private bool areEntityTypesMonotone = true;
+        private enum EntityType
+        {
+            None,
+            Node,
+            Way,
+            Relation,
+        }
+        private EntityType lastEntityTypeRead = EntityType.None;
     }
 }

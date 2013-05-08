@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Brejc.Common.FileSystem;
+using Brejc.Geometry;
 using Brejc.OsmLibrary;
 
 namespace SpatialitePlaying.NodeIndexBuilding1
@@ -16,9 +18,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
         public IOsmDataBulkInsertSession StartBulkInsertSession (bool threadSafe)
         {
-            stream = fileSystem.OpenFileToWrite("nodes.dat");
-            writer = new BinaryWriter(stream);
-
+            nodesStorage = new NodesStorage("nodes.dat", fileSystem);
+            nodesStorage.InitializeForWriting();
             return this;
         }
 
@@ -32,22 +33,34 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
         public void AddNode (OsmNode node)
         {
-            if (nodesInBlockCounter%100 == 0)
-            {
-                NodesBlock block = new NodesBlock(node.ObjectId, stream.Position);
-                blocks.Add(block);
-                nodesInBlockCounter = 0;
-            }
-
-            writer.Write(node.ObjectId);
-            writer.Write(node.X);
-            writer.Write(node.Y);
-
-            nodesInBlockCounter++;
+            nodesStorage.WriteNode(node.ObjectId, node.X, node.Y);
         }
 
         public void AddWay (OsmWay way)
         {
+            if (!initializedForReading)
+            {
+                nodesStorage.CloseForWriting();
+                nodesStorage.InitializeForReading();
+                initializedForReading = true;
+                Console.WriteLine("Started reading ways...");
+            }
+
+            cachedWays.Add(way);
+
+            if (cachedWays.Count > 10000)
+            {
+                SortedSet<long> neededNodes = new SortedSet<long>();
+                foreach (OsmWay cachedWay in cachedWays)
+                {
+                    foreach (long nodeId in cachedWay.Nodes)
+                        neededNodes.Add(nodeId);
+                }
+
+                IDictionary<long, PointD2> nodesDict = nodesStorage.FetchNodes(neededNodes);
+
+                cachedWays.Clear();
+            }
         }
 
         public void AddRelation (OsmRelation relation)
@@ -63,9 +76,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         }
 
         private readonly IFileSystem fileSystem;
-        private Stream stream;
-        private BinaryWriter writer;
-        private List<NodesBlock> blocks = new List<NodesBlock>();
-        private int nodesInBlockCounter;
+        private List<OsmWay> cachedWays = new List<OsmWay>();
+        private INodesStorage nodesStorage;
+        private bool initializedForReading;
     }
 }
