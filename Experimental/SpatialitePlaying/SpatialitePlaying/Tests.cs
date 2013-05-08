@@ -1,4 +1,5 @@
 using Brejc.Common.FileSystem;
+using Brejc.OsmLibrary;
 using Brejc.OsmLibrary.Pbf;
 using NUnit.Framework;
 
@@ -12,7 +13,7 @@ namespace SpatialitePlaying
             OsmFileAnalyzer analyzer = new OsmFileAnalyzer();
 
             WindowsFileSystem fileSystem = new WindowsFileSystem ();
-            using (OsmPbfReader osmReader = new OsmPbfReader ())
+            using (IOsmReader osmReader = new OsmPbfReader())
             {
                 osmReader.Settings.IgnoreCreatedByTags = true;
                 osmReader.Settings.LoadExtendedData = false;
@@ -21,6 +22,11 @@ namespace SpatialitePlaying
                 osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, analyzer);
                 //osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, analyzer);
             }
+
+            Assert.IsTrue(analyzer.AreEntityTypesMonotone);
+            Assert.IsTrue(analyzer.AreNodeIdsMonotone);
+            Assert.IsTrue(analyzer.AreRelationIdsMonotone);
+            Assert.IsTrue(analyzer.AreWaysIdsMonotone);
         }
     }
 }

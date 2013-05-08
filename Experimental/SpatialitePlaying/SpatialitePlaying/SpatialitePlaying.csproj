@@ -72,10 +72,12 @@
     <Compile Include="InMemoryProcessing\Tests.cs" />
     <Compile Include="NodeIndexBuilding1\INodesBTreeNode.cs" />
     <Compile Include="NodeIndexBuilding1\INodesStorage.cs" />
-    <Compile Include="NodeIndexBuilding1\NodesBlock.cs" />
-    <Compile Include="NodeIndexBuilding1\NodesBTreeNonLeafNone.cs" />
+    <Compile Include="NodeIndexBuilding1\NodeData.cs" />
+    <Compile Include="NodeIndexBuilding1\NodeDataBlock.cs" />
+    <Compile Include="NodeIndexBuilding1\NodesBTreeLeafNode.cs" />
+    <Compile Include="NodeIndexBuilding1\NodesBTreeNonLeafNode.cs" />
     <Compile Include="NodeIndexBuilding1\NodesStorage.cs" />
-    <Compile Include="NodeIndexBuilding1\OsmNodesBinaryRecorder.cs" />
+    <Compile Include="NodeIndexBuilding1\OsmFileProcessor.cs" />
     <Compile Include="NodeIndexBuilding1\Tests.cs" />
     <Compile Include="OsmFileAnalyzer.cs" />
     <Compile Include="Program.cs" />

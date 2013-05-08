@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using Brejc.Common.FileSystem;
-using Brejc.Geometry;
 using Brejc.OsmLibrary;
 
 namespace SpatialitePlaying.NodeIndexBuilding1
 {
-    public class OsmNodesBinaryRecorder : IOsmDataStorage, IOsmDataBulkInsertSession
+    public class OsmFileProcessor : IOsmDataStorage, IOsmDataBulkInsertSession
     {
-        public OsmNodesBinaryRecorder(IFileSystem fileSystem)
+        public OsmFileProcessor(IFileSystem fileSystem)
         {
             this.fileSystem = fileSystem;
         }
@@ -18,6 +17,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
         public IOsmDataBulkInsertSession StartBulkInsertSession (bool threadSafe)
         {
+            Console.WriteLine ("Started reading OSM data...");
+
             nodesStorage = new NodesStorage("nodes.dat", fileSystem);
             nodesStorage.InitializeForWriting();
             return this;
@@ -54,10 +55,15 @@ namespace SpatialitePlaying.NodeIndexBuilding1
                 foreach (OsmWay cachedWay in cachedWays)
                 {
                     foreach (long nodeId in cachedWay.Nodes)
+                    {
+                        if (nodeId < 0)
+                            Debugger.Break();
+
                         neededNodes.Add(nodeId);
+                    }
                 }
 
-                IDictionary<long, PointD2> nodesDict = nodesStorage.FetchNodes(neededNodes);
+                IDictionary<long, NodeData> nodesDict = nodesStorage.FetchNodes(neededNodes);
 
                 cachedWays.Clear();
             }
