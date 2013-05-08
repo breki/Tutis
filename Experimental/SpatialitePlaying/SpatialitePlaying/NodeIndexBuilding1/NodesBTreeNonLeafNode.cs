@@ -1,8 +1,8 @@
 namespace SpatialitePlaying.NodeIndexBuilding1
 {
-    public class NodesBTreeNonLeafNone : INodesBTreeNode
+    public class NodesBTreeNonLeafNode : INodesBTreeNode
     {
-        public NodesBTreeNonLeafNone(INodesBTreeNode leftNode, INodesBTreeNode rightNode)
+        public NodesBTreeNonLeafNode(INodesBTreeNode leftNode, INodesBTreeNode rightNode)
         {
             this.leftNode = leftNode;
             this.rightNode = rightNode;
@@ -12,7 +12,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
         public long StartNodeId { get { return leftNodeStartId; } }
 
-        public NodesBlock FindNodeBlock (long nodeId)
+        public NodesBTreeLeafNode FindNodeBlock (long nodeId)
         {
             if (nodeId < rightNodeStartId)
                 return leftNode.FindNodeBlock(nodeId);

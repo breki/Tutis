@@ -1,8 +1,8 @@
 namespace SpatialitePlaying.NodeIndexBuilding1
 {
-    public class NodesBlock : INodesBTreeNode
+    public class NodesBTreeLeafNode : INodesBTreeNode
     {
-        public NodesBlock(long startNodeId, long filePosition)
+        public NodesBTreeLeafNode(long startNodeId, long filePosition)
         {
             this.startNodeId = startNodeId;
             this.filePosition = filePosition;
@@ -18,6 +18,12 @@ namespace SpatialitePlaying.NodeIndexBuilding1
             get { return filePosition; }
         }
 
+        public int NodesCount
+        {
+            get { return nodesCount; }
+            set { nodesCount = value; }
+        }
+
         public long? NextBlockStartNodeId
         {
             get
@@ -29,7 +35,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
             }
         }
 
-        public NodesBlock FindNodeBlock (long nodeId)
+        public NodesBTreeLeafNode FindNodeBlock (long nodeId)
         {
             return this;
         }
@@ -41,6 +47,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
         private long startNodeId;
         private long filePosition;
+        private int nodesCount;
         private int nextBlockNodeIdOffset;
     }
 }

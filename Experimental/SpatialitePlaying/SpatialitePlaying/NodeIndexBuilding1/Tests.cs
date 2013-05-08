@@ -9,7 +9,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         [Test]
         public void StoreNodesInBinaryFile()
         {
-            OsmNodesBinaryRecorder recorder = new OsmNodesBinaryRecorder(new WindowsFileSystem());
+            OsmFileProcessor recorder = new OsmFileProcessor(new WindowsFileSystem());
 
             WindowsFileSystem fileSystem = new WindowsFileSystem ();
             using (OsmPbfReader osmReader = new OsmPbfReader ())
@@ -20,8 +20,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1
                 osmReader.Settings.LoadExtendedData = false;
 
                 //osmReader.Read (@"D:\brisi\isle-of-man-latest.osm.pbf", fileSystem, osmDb);
-                osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, recorder);
-                //osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, recorder);
+                //osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, recorder);
+                osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, recorder);
             }
         }
     }

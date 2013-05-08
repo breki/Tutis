@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Brejc.Geometry;
 
 namespace SpatialitePlaying.NodeIndexBuilding1
 {
@@ -10,7 +9,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         void CloseForWriting();
 
         void InitializeForReading();
-        IDictionary<long, PointD2> FetchNodes(IEnumerable<long> nodeIds);
+        IDictionary<long, NodeData> FetchNodes (IEnumerable<long> nodeIds);
         void CloseForReading ();
     }
 }
