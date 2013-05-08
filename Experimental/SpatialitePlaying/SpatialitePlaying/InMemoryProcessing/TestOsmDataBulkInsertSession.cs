@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using Brejc.OsmLibrary;
 using Brejc.Rdbms;
 
-namespace SpatialitePlaying
+namespace SpatialitePlaying.InMemoryProcessing
 {
     public class TestOsmDataBulkInsertSession : IOsmDataBulkInsertSession
     {

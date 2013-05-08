@@ -1,4 +1,4 @@
-﻿namespace SpatialitePlaying
+namespace SpatialitePlaying.NodeIndexBuilding1
 {
     public class NodesBlock
     {

@@ -1,4 +1,4 @@
-﻿namespace SpatialitePlaying
+namespace SpatialitePlaying.InMemoryProcessing
 {
     public enum ReadingPhase
     {

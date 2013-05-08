@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using Brejc.Common.FileSystem;
 using Brejc.OsmLibrary;
 
-namespace SpatialitePlaying
+namespace SpatialitePlaying.NodeIndexBuilding1
 {
     public class OsmNodesBinaryRecorder : IOsmDataStorage, IOsmDataBulkInsertSession
     {
