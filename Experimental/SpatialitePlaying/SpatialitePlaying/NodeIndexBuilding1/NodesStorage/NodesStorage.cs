@@ -39,6 +39,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1.NodesStorage
                 leafNodes.Add (block);
                 nodesInBlockCounter = 0;
                 previousBlock = block;
+                writer.Flush ();
             }
 
             writer.Write (nodeId);
@@ -181,6 +182,6 @@ namespace SpatialitePlaying.NodeIndexBuilding1.NodesStorage
         private INodesBTreeNode btree;
         private NodesBTreeLeafNode previousBlock;
         private Dictionary<long, NodeDataBlock> nodeBlocks = new Dictionary<long, NodeDataBlock>();
-        private int nodeBlocksCacheSize = 1000000;
+        private int nodeBlocksCacheSize = 200000;
     }
 }
