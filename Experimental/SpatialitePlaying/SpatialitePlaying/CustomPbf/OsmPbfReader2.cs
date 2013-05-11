@@ -8,13 +8,12 @@ using Brejc.Common.Tasks;
 using Brejc.Geometry;
 using Brejc.OsmLibrary;
 using Brejc.OsmLibrary.Pbf;
-using SpatialitePlaying.CustomPbf;
 using Ionic.Zlib;
 using ProtoBuf;
 
 namespace SpatialitePlaying.CustomPbf
 {
-    public class OsmPbfReader2 : IOsmReader
+    public class OsmPbfReader2 : IDisposable
     {
         public bool AllowCancellation
         {
@@ -34,20 +33,18 @@ namespace SpatialitePlaying.CustomPbf
             set { taskExecutionContext = value; }
         }
 
-        public void Read (Stream stream, IOsmDataStorage osmStorage)
+        public void Read (Stream stream, IOsmObjectDiscovery osmObjectDiscovery)
         {
+            this.osmObjectDiscovery = osmObjectDiscovery;
+
             nodesCounter = 0;
             relationsCounter = 0;
             waysCounter = 0;
-            tagsFactory.Clear ();
 
+            osmObjectDiscovery.Begin();
             using (BinaryReader binaryReader = new BinaryReader (stream))
-            using (bulkInsertSession = osmStorage.StartBulkInsertSession (threadSafe: true))
-            {
                 ReadBlocks (binaryReader);
-            }
-
-            osmStorage.EndBulkInsertSession ();
+            osmObjectDiscovery.End();
 
             if (taskExecutionContext != null && !taskExecutionContext.ShouldAbort)
                 taskExecutionContext.Write (
@@ -57,13 +54,10 @@ namespace SpatialitePlaying.CustomPbf
                     relationsCounter);
         }
 
-        public void Read (string osmFileName, IFileSystem fileSystem, IOsmDataStorage osmStorage)
+        public void Read (string osmFileName, IFileSystem fileSystem, IOsmObjectDiscovery osmObjectDiscovery)
         {
             using (Stream stream = fileSystem.OpenFileToRead (osmFileName))
-            {
-                Read (stream, osmStorage);
-                return;
-            }
+                Read (stream, osmObjectDiscovery);
         }
 
         public void Dispose ()
@@ -133,7 +127,7 @@ namespace SpatialitePlaying.CustomPbf
                                 osmHeader.BBox.Top * FasterOsmPbfReader.Nanodegree);
                             bounds.Normalize ();
                             OsmBoundingBox osmBoundingBox = new OsmBoundingBox (bounds, osmHeader.Source);
-                            bulkInsertSession.AddBoundingBox (osmBoundingBox);
+                            osmObjectDiscovery.ProcessBoundingBox (osmBoundingBox);
                         }
                         //log.DebugFormat ("OSMHeader");
                     }
@@ -187,18 +181,15 @@ namespace SpatialitePlaying.CustomPbf
                             string key = primitiveBlock.StringTable[pbfNode.Keys[i]];
                             string value = primitiveBlock.StringTable[pbfNode.Vals[i]];
 
-                            if (false == settings.IgnoreCreatedByTags
-                                || 0 != string.Compare (key, "created_by", StringComparison.Ordinal))
-                                tags.Add (tagsFactory.GetTag (key, value));
+                            if (0 != string.Compare (key, "created_by", StringComparison.Ordinal))
+                                tags.Add (new Tag(key, value));
                         }
 
                         if (tags.Count > 0)
                             node.SetTags (tags);
                     }
 
-                    if (settings.LoadExtendedData)
-                        FillExtendedData (node, pbfNode.Info, primitiveBlock);
-                    bulkInsertSession.AddNode (node);
+                    osmObjectDiscovery.ProcessNode (node);
                 }
 
                 nodesCounter += primitiveGroup.Nodes.Count;
@@ -215,13 +206,6 @@ namespace SpatialitePlaying.CustomPbf
                 long id = 0;
                 long lon = 0;
                 long lat = 0;
-                long changeset = 0;
-                long timestamp = 0;
-                int userId = 0;
-                int userSid = 0;
-
-                DenseInfo denseInfo = primitiveGroup.DenseNodes.DenseInfo;
-                bool hasExtendedData = denseInfo != null;
 
                 IList<int> keysVals = primitiveGroup.DenseNodes.KeysVals;
                 int totalKeysValsCount = keysVals.Count;
@@ -257,9 +241,8 @@ namespace SpatialitePlaying.CustomPbf
                                 string key = primitiveBlock.StringTable[keyId];
                                 string value = primitiveBlock.StringTable[valId];
 
-                                if (false == settings.IgnoreCreatedByTags
-                                    || 0 != string.Compare (key, "created_by", StringComparison.Ordinal))
-                                    collectedTags.Add (tagsFactory.GetTag (key, value));
+                                if (0 != string.Compare (key, "created_by", StringComparison.Ordinal))
+                                    collectedTags.Add (new Tag(key, value));
 
                                 keysValsIndex += 2;
                             }
@@ -277,29 +260,7 @@ namespace SpatialitePlaying.CustomPbf
                         }
                     }
 
-                    if (hasExtendedData && settings.LoadExtendedData)
-                    {
-                        node.ExtendedData = new OsmObjectExtendedData ();
-
-                        changeset += denseInfo.ChangeSet[i];
-                        node.ExtendedData.ChangesetId = (int)changeset;
-
-                        timestamp += denseInfo.Timestamp[i];
-                        node.ExtendedData.Timestamp = UnixEpoch.Add (
-                            new TimeSpan (timestamp * primitiveBlock.DateGranularity * TimeSpan.TicksPerMillisecond));
-
-                        userId += denseInfo.UserId[i];
-                        node.ExtendedData.UserId = userId;
-
-                        userSid += denseInfo.UserSid[i];
-                        node.ExtendedData.User = primitiveBlock.StringTable[userSid];
-                        if (node.ExtendedData.User.Length == 0)
-                            node.ExtendedData.User = null;
-
-                        node.ExtendedData.Version = denseInfo.Version[i];
-                    }
-
-                    bulkInsertSession.AddNode (node);
+                    osmObjectDiscovery.ProcessNode (node);
                 }
             }
 
@@ -314,8 +275,6 @@ namespace SpatialitePlaying.CustomPbf
                 {
                     PbfWay pbfWay = primitiveGroup.Ways[wayIndex];
                     OsmWay way = new OsmWay (pbfWay.Id);
-                    if (settings.LoadExtendedData)
-                        FillExtendedData (way, pbfWay.Info, primitiveBlock);
 
                     if (pbfWay.Keys != null)
                     {
@@ -325,9 +284,8 @@ namespace SpatialitePlaying.CustomPbf
                             string key = primitiveBlock.StringTable[pbfWay.Keys[i]];
                             string value = primitiveBlock.StringTable[pbfWay.Vals[i]];
 
-                            if (false == settings.IgnoreCreatedByTags
-                                || 0 != string.Compare (key, "created_by", StringComparison.Ordinal))
-                                tags.Add (tagsFactory.GetTag (key, value));
+                            if (0 != string.Compare (key, "created_by", StringComparison.Ordinal))
+                                tags.Add (new Tag(key, value));
                         }
 
                         if (tags.Count > 0)
@@ -349,7 +307,7 @@ namespace SpatialitePlaying.CustomPbf
                         way.SetNodes (nodesIds);
                     }
 
-                    bulkInsertSession.AddWay (way);
+                    osmObjectDiscovery.ProcessWay(way);
                 }
             }
 
@@ -374,17 +332,13 @@ namespace SpatialitePlaying.CustomPbf
                             string key = primitiveBlock.StringTable[pbfRelation.Keys[i]];
                             string value = primitiveBlock.StringTable[pbfRelation.Vals[i]];
 
-                            if (false == settings.IgnoreCreatedByTags
-                                || 0 != string.Compare (key, "created_by", StringComparison.Ordinal))
-                                tags.Add (tagsFactory.GetTag (key, value));
+                            if (0 != string.Compare (key, "created_by", StringComparison.Ordinal))
+                                tags.Add (new Tag(key, value));
                         }
 
                         if (tags.Count > 0)
                             relation.SetTags (tags);
                     }
-
-                    if (settings.LoadExtendedData)
-                        FillExtendedData (relation, pbfRelation.Info, primitiveBlock);
 
                     long referenceId = 0;
                     for (int i = 0; i < pbfRelation.RolesSid.Count; i++)
@@ -413,34 +367,11 @@ namespace SpatialitePlaying.CustomPbf
                         relation.AddMember (referenceType, referenceId, role);
                     }
 
-                    bulkInsertSession.AddRelation (relation);
+                    osmObjectDiscovery.ProcessRelation (relation);
                 }
             }
 
             relationsCounter += primitiveGroup.Relation.Count;
-        }
-
-        private static void FillExtendedData (OsmObjectBase osmObject, Info info, PrimitiveBlock primitiveBlock)
-        {
-            if (info != null)
-            {
-                osmObject.ExtendedData = new OsmObjectExtendedData ();
-                if (info.ChangeSet.HasValue)
-                    osmObject.ExtendedData.ChangesetId = (int)info.ChangeSet.Value;
-
-                if (info.Timestamp.HasValue)
-                    osmObject.ExtendedData.Timestamp = UnixEpoch.Add (
-                        new TimeSpan (info.Timestamp.Value * primitiveBlock.DateGranularity * TimeSpan.TicksPerMillisecond));
-
-                if (info.UserId.HasValue)
-                    osmObject.ExtendedData.UserId = info.UserId.Value;
-
-                if (info.UserSid.HasValue)
-                    osmObject.ExtendedData.User = primitiveBlock.StringTable[info.UserSid.Value];
-
-                if (info.Version.HasValue)
-                    osmObject.ExtendedData.Version = info.Version.Value;
-            }
         }
 
         private static readonly DateTime UnixEpoch = new DateTime (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -467,7 +398,6 @@ namespace SpatialitePlaying.CustomPbf
             return (short)(value1 << 8 | value2);
         }
 
-        [SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private static InvalidOsmFileException InvalidFile (string messageFormat, params object[] args)
         {
             string message = string.Format (
@@ -477,14 +407,13 @@ namespace SpatialitePlaying.CustomPbf
             throw new InvalidOsmFileException (message);
         }
 
+        private IOsmObjectDiscovery osmObjectDiscovery;
         private bool allowCancellation;
-        private IOsmDataBulkInsertSession bulkInsertSession;
         private OsmReaderSettings settings = new OsmReaderSettings ();
         private ITaskExecutionContext taskExecutionContext;
         private int nodesCounter;
         private int waysCounter;
         private int relationsCounter;
-        private ITagFactory tagsFactory = new TagFactory ();
         //private static readonly ILog log = LogManager.GetLogger(typeof(OsmPbfReader));
         private bool disposed;
     }

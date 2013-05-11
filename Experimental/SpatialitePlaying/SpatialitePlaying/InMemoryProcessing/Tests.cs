@@ -7,6 +7,7 @@ using System.IO;
 using Brejc.Common.FileSystem;
 using Brejc.Geometry;
 using Brejc.OsmLibrary;
+using Brejc.OsmLibrary.Pbf;
 using SpatialitePlaying.CustomPbf;
 using Brejc.Rdbms;
 using NUnit.Framework;
@@ -31,7 +32,7 @@ namespace SpatialitePlaying.InMemoryProcessing
 
             TestOsmDataStorage osmDb2 = new TestOsmDataStorage (fileSystem);
 
-            using (OsmPbfReader2 osmReader = new OsmPbfReader2())
+            using (OsmPbfReader osmReader = new OsmPbfReader())
             {
                 //osmReader.Settings.SkipNodes = true;
                 //osmReader.Settings.SkipRelations = true;
@@ -45,7 +46,7 @@ namespace SpatialitePlaying.InMemoryProcessing
 
             Console.WriteLine ("Reading OSM data... (phase 2)");
 
-            using (OsmPbfReader2 osmReader = new OsmPbfReader2())
+            using (OsmPbfReader osmReader = new OsmPbfReader ())
             {
                 osmReader.Settings.SkipNodes = false;
                 osmReader.Settings.SkipWays = true;

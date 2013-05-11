@@ -16,8 +16,6 @@ namespace SpatialitePlaying.NodeIndexBuilding1
             {
                 osmReader.Settings.SkipRelations = true;
                 osmReader.Settings.SkipWays = false;
-                osmReader.Settings.IgnoreCreatedByTags = true;
-                osmReader.Settings.LoadExtendedData = false;
 
                 //osmReader.Read (@"D:\brisi\isle-of-man-latest.osm.pbf", fileSystem, osmDb);
                 //osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, recorder);
