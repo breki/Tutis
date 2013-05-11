@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Brejc.Common.FileSystem;
@@ -11,6 +12,12 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         {
             this.storageFileName = storageFileName;
             this.fileSystem = fileSystem;
+        }
+
+        public int NodeBlocksCacheSize
+        {
+            get { return nodeBlocksCacheSize; }
+            set { nodeBlocksCacheSize = value; }
         }
 
         public void InitializeForWriting()
@@ -134,8 +141,15 @@ namespace SpatialitePlaying.NodeIndexBuilding1
             if (!nodeBlocks.TryGetValue(treeLeaf.FilePosition, out nodeDataBlock))
             {
                 nodeDataBlock = ReadNodeDataBlock(treeLeaf);
-                if (nodeBlocks.Count > 1000)
+                //Console.WriteLine (nodeBlocks.Count);
+
+                if (nodeBlocks.Count > nodeBlocksCacheSize)
+                {
                     nodeBlocks.Remove(nodeBlocks.AsQueryable().First().Key);
+                    //Console.WriteLine("XXX");
+                }
+
+                nodeBlocks.Add (treeLeaf.FilePosition, nodeDataBlock);
             }
 
             return nodeDataBlock.GetNodeData(nodeId);
@@ -168,5 +182,6 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         private INodesBTreeNode btree;
         private NodesBTreeLeafNode previousBlock;
         private Dictionary<long, NodeDataBlock> nodeBlocks = new Dictionary<long, NodeDataBlock>();
+        private int nodeBlocksCacheSize = 1000000;
     }
 }

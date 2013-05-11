@@ -61,6 +61,9 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         public void AddNode (OsmNode node)
         {
             nodesStorage.WriteNode(node.ObjectId, node.X, node.Y);
+            nodesCount++;
+            if (nodesCount % 200000 == 0)
+                Console.WriteLine("Added {0} nodes", nodesCount);
         }
 
         public void AddWay (OsmWay way)
@@ -95,37 +98,33 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
                 IDictionary<long, NodeData> nodesDict = nodesStorage.FetchNodes(neededNodes);
 
-                DBBulkProcessor.BulkInsert (
-                    SqliteHelper.SqliteProviderFactory,
-                    dbConnection,
-                    "SELECT id, geom FROM areas",
-                    "INSERT INTO areas (id, geom) VALUES (@param1, @param2)",
-                    dt =>
-                    {
-                        foreach (OsmWay cachedWay in cachedWays)
-                        {
-                            DataRow row = dt.NewRow ();
-                            row[0] = 1;
-                            row[1] = WkbPolygonFromNodes (cachedWay, nodesDict);
-                            dt.Rows.Add (row);
+                addedRowsCount += cachedWays.Count;
+                //DBBulkProcessor.BulkInsert (
+                //    SqliteHelper.SqliteProviderFactory,
+                //    dbConnection,
+                //    "SELECT id, geom FROM areas",
+                //    "INSERT INTO areas (id, geom) VALUES (@param1, @param2)",
+                //    dt =>
+                //    {
+                //        foreach (OsmWay cachedWay in cachedWays)
+                //        {
+                //            DataRow row = dt.NewRow ();
+                //            row[0] = 1;
+                //            row[1] = WkbPolygonFromNodes (cachedWay, nodesDict);
+                //            dt.Rows.Add (row);
 
-                            addedRowsCount++;
-
-                            if (addedRowsCount % 1000 == 0)
-                            {
-                                long elapsedSeconds = stopwatch.ElapsedMilliseconds / 1000;
-                                Console.Out.WriteLine (
-                                    "Added {0} rows in {1} s ({2} rows/s)",
-                                    addedRowsCount,
-                                    elapsedSeconds,
-                                    ((double)addedRowsCount) / elapsedSeconds);
-                            }
-                        }
-                    });
-
-
+                //            addedRowsCount++;
+                //        }
+                //    });
 
                 cachedWays.Clear();
+
+                long elapsedSeconds = stopwatch.ElapsedMilliseconds / 1000;
+                Console.Out.WriteLine (
+                    "Added {0} rows in {1} s ({2} rows/s)",
+                    addedRowsCount,
+                    elapsedSeconds,
+                    ((double)addedRowsCount) / elapsedSeconds);
             }
         }
 
@@ -232,6 +231,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
         private readonly IFileSystem fileSystem;
         private List<OsmWay> cachedWays = new List<OsmWay>();
+        private int nodesCount;
         private INodesStorage nodesStorage;
         private bool initializedForReading;
         private static IDbConnection dbConnection;
