@@ -1,5 +1,5 @@
 using Brejc.Common.FileSystem;
-using Brejc.OsmLibrary.Pbf;
+using SpatialitePlaying.CustomPbf;
 using NUnit.Framework;
 
 namespace SpatialitePlaying.NodeIndexBuilding1
@@ -12,7 +12,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
             OsmFileProcessor processor = new OsmFileProcessor(new WindowsFileSystem());
 
             WindowsFileSystem fileSystem = new WindowsFileSystem ();
-            using (OsmPbfReader osmReader = new OsmPbfReader ())
+            using (OsmPbfReader2 osmReader = new OsmPbfReader2 ())
             {
                 osmReader.Settings.SkipRelations = true;
                 osmReader.Settings.SkipWays = false;

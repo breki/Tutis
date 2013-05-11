@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text;
 using Brejc.Common.FileSystem;
 using Brejc.OsmLibrary;
-using Brejc.OsmLibrary.Pbf;
+using SpatialitePlaying.CustomPbf;
 using Brejc.Rdbms;
 
 namespace SpatialitePlaying
@@ -68,7 +68,7 @@ namespace SpatialitePlaying
                     command.ExecuteNonQuery ();
                 }
 
-                using (OsmPbfReader osmReader = new OsmPbfReader ())
+                using (OsmPbfReader2 osmReader = new OsmPbfReader2 ())
                 {
                     InMemoryOsmDatabase osmDb = new InMemoryOsmDatabase ();
                     osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, osmDb);
