@@ -1,8 +1,8 @@
-namespace SpatialitePlaying.NodeIndexBuilding1
+namespace SpatialitePlaying.NodeIndexBuilding1.WaysStorage
 {
-    public class NodesBTreeLeafNode : INodesBTreeNode
+    public class WaysBTreeLeafNode : IWaysBTreeNode
     {
-        public NodesBTreeLeafNode(long startNodeId, long filePosition)
+        public WaysBTreeLeafNode (long startNodeId, long filePosition)
         {
             this.startNodeId = startNodeId;
             this.filePosition = filePosition;
@@ -35,7 +35,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
             }
         }
 
-        public NodesBTreeLeafNode FindNodeBlock (long nodeId)
+        public WaysBTreeLeafNode FindBlock (long wayId)
         {
             return this;
         }

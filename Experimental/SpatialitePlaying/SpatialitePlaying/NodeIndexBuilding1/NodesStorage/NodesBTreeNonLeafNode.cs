@@ -1,4 +1,4 @@
-namespace SpatialitePlaying.NodeIndexBuilding1
+namespace SpatialitePlaying.NodeIndexBuilding1.NodesStorage
 {
     public class NodesBTreeNonLeafNode : INodesBTreeNode
     {
