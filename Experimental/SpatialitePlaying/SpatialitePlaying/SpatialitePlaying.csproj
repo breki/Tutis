@@ -87,15 +87,19 @@
     <Compile Include="InMemoryProcessing\TestOsmDataBulkInsertSession.cs" />
     <Compile Include="InMemoryProcessing\TestOsmDataStorage.cs" />
     <Compile Include="InMemoryProcessing\Tests.cs" />
-    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\INodesBTreeNode.cs" />
+    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IIndexedNodesStorageWriter.cs" />
+    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IIndexedOsmObjectStorageWriter.cs" />
+    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IIndexedWaysStorageWriter.cs" />
+    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IndexedNodesStorageWriter.cs" />
+    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IndexedOsmObjectStorageWriterBase.cs" />
+    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IBTreeNode.cs" />
     <Compile Include="NodeIndexBuilding1\NodesStorage\INodesStorage.cs" />
     <Compile Include="NodeIndexBuilding1\NodesStorage\NodeData.cs" />
     <Compile Include="NodeIndexBuilding1\NodesStorage\NodeDataBlock.cs" />
-    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\NodesBTreeLeafNode.cs" />
-    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\NodesBTreeNonLeafNode.cs" />
+    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\BTreeLeafNode.cs" />
+    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\BTreeNonLeafNode.cs" />
     <Compile Include="NodeIndexBuilding1\NodesStorage\NodesStorage.cs" />
-    <Compile Include="NodeIndexBuilding1\WaysStorage\IIndexedWaysStorageWriter.cs" />
-    <Compile Include="NodeIndexBuilding1\WaysStorage\IndexedWaysStorageWriter.cs" />
+    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IndexedWaysStorageWriter.cs" />
     <Compile Include="NodeIndexBuilding1\OsmFileProcessor.cs" />
     <Compile Include="NodeIndexBuilding1\Tests.cs" />
     <Compile Include="OsmFileAnalyzer.cs" />
@@ -155,7 +159,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="NodeIndexBuilding1\WaysStorage\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

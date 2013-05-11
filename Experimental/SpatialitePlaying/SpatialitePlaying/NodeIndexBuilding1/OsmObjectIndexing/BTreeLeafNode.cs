@@ -1,5 +1,3 @@
-using SpatialitePlaying.NodeIndexBuilding1.NodesStorage;
-
 namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
 {
     public class BTreeLeafNode : IBTreeNode

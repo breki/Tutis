@@ -6,7 +6,7 @@ using Brejc.Geometry;
 using Brejc.OsmLibrary;
 using SpatialitePlaying.CustomPbf;
 using SpatialitePlaying.NodeIndexBuilding1.NodesStorage;
-using SpatialitePlaying.NodeIndexBuilding1.WaysStorage;
+using SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing;
 
 namespace SpatialitePlaying.NodeIndexBuilding1
 {
@@ -22,11 +22,13 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         public void Begin()
         {
             Console.WriteLine ("Started reading OSM data...");
+            string storageName = "experiment";
 
-            nodesStorage = new NodesStorage.NodesStorage("nodes.dat", fileSystem);
-            nodesStorage.InitializeForWriting();
-            waysStorage = new IndexedWaysStorageWriter("ways.dat", fileSystem);
-            waysStorage.InitializeStorage();
+            nodesStorageWriter = new IndexedNodesStorageWriter(fileSystem);
+            nodesStorageWriter.InitializeStorage(storageName);
+
+            waysStorageWriter = new IndexedWaysStorageWriter(fileSystem);
+            waysStorageWriter.InitializeStorage (storageName);
 
             stopwatch.Start ();
         }
@@ -41,7 +43,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
         public void ProcessNode (OsmNode node)
         {
-            nodesStorage.WriteNode(node.ObjectId, node.X, node.Y);
+            nodesStorageWriter.StoreNode(node.ObjectId, node.X, node.Y);
             nodesCount++;
             if (nodesCount%200000 == 0)
             {
@@ -58,8 +60,9 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         {
             if (!finishedReadingNodes)
             {
-                nodesStorage.CloseForWriting();
-                nodesStorage.InitializeForReading();
+                nodesStorageWriter.FinalizeStorage();
+
+                //nodesStorageWriter.InitializeForReading();
                 finishedReadingNodes = true;
                 Console.WriteLine("Started reading ways...");
                 stopwatch.Start();
@@ -84,7 +87,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
                     }
                 }
 
-                IDictionary<long, NodeData> nodesDict = nodesStorage.FetchNodes(neededNodes);
+                IDictionary<long, NodeData> nodesDict = nodesStorageWriter.FetchNodes(neededNodes);
 
                 waysCount += cachedWays.Count;
 
@@ -97,7 +100,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
                         points.AddPoint(node.X, node.Y);
                     }
 
-                    waysStorage.StoreWay(cachedWay, points);
+                    waysStorageWriter.StoreWay(cachedWay, points);
                     waysCount++;
                 }
 
@@ -124,8 +127,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         private List<OsmWay> cachedWays = new List<OsmWay>();
         private int nodesCount;
         private int waysCount;
-        private INodesStorage nodesStorage;
-        private IIndexedWaysStorageWriter waysStorage;
+        private IIndexedNodesStorageWriter nodesStorageWriter;
+        private IIndexedWaysStorageWriter waysStorageWriter;
         private bool finishedReadingNodes;
         private Stopwatch stopwatch = new Stopwatch();
     }
