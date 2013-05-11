@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Brejc.Common.FileSystem;
+using SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing;
 
 namespace SpatialitePlaying.NodeIndexBuilding1.NodesStorage
 {
@@ -29,16 +30,16 @@ namespace SpatialitePlaying.NodeIndexBuilding1.NodesStorage
         {
             if (nodesInBlockCounter % 100 == 0)
             {
-                if (previousBlock != null)
-                    previousBlock.SetNextBlockNodeId(nodeId);
+                if (previousLeafNode != null)
+                    previousLeafNode.SetNextBlockObjectId(nodeId);
 
-                if (previousBlock != null)
-                    previousBlock.NodesCount = nodesInBlockCounter;
+                if (previousLeafNode != null)
+                    previousLeafNode.ObjectsCount = nodesInBlockCounter;
 
-                NodesBTreeLeafNode block = new NodesBTreeLeafNode (nodeId, stream.Position);
-                leafNodes.Add (block);
+                BTreeLeafNode leafNode = new BTreeLeafNode (nodeId, stream.Position);
+                leafNodes.Add (leafNode);
                 nodesInBlockCounter = 0;
-                previousBlock = block;
+                previousLeafNode = leafNode;
                 writer.Flush ();
             }
 
@@ -51,8 +52,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1.NodesStorage
 
         public void CloseForWriting()
         {
-            if (previousBlock != null)
-                previousBlock.NodesCount = nodesInBlockCounter;
+            if (previousLeafNode != null)
+                previousLeafNode.ObjectsCount = nodesInBlockCounter;
 
             writer.Close();
             writer.Dispose();
@@ -74,14 +75,14 @@ namespace SpatialitePlaying.NodeIndexBuilding1.NodesStorage
         {
             Dictionary<long, NodeData> nodesData = new Dictionary<long, NodeData> ();
             
-            NodesBTreeLeafNode currentLeafNode = null;
+            BTreeLeafNode currentLeafNode = null;
             foreach (long nodeId in nodeIds)
             {
                 if (currentLeafNode == null)
-                    currentLeafNode = btree.FindNodeBlock(nodeId);
+                    currentLeafNode = btree.FindBlock(nodeId);
 
-                if (nodeId >= currentLeafNode.NextBlockStartNodeId)
-                    currentLeafNode = btree.FindNodeBlock (nodeId);
+                if (nodeId >= currentLeafNode.NextBlockStartObjectId)
+                    currentLeafNode = btree.FindBlock(nodeId);
 
                 NodeData nodeData = GetNodeData(nodeId, currentLeafNode);
                 nodesData.Add(nodeId, nodeData);
@@ -102,8 +103,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1.NodesStorage
 
         private void ConstructBTree()
         {
-            List<INodesBTreeNode> upperLevel = new List<INodesBTreeNode>();
-            List<INodesBTreeNode> lowerLevel = new List<INodesBTreeNode>();
+            List<IBTreeNode> upperLevel = new List<IBTreeNode>();
+            List<IBTreeNode> lowerLevel = new List<IBTreeNode>();
 
             lowerLevel.AddRange (leafNodes);
 
@@ -111,15 +112,15 @@ namespace SpatialitePlaying.NodeIndexBuilding1.NodesStorage
             {
                 for (int i = 0; i < lowerLevel.Count; i += 2)
                 {
-                    INodesBTreeNode node1 = lowerLevel[i];
+                    IBTreeNode node1 = lowerLevel[i];
 
                     // move the odd one to the higher level
                     if (i + 1 == lowerLevel.Count)
                         upperLevel.Add(node1);
                     else
                     {
-                        INodesBTreeNode node2 = lowerLevel[i + 1];
-                        NodesBTreeNonLeafNode parentNode = new NodesBTreeNonLeafNode(
+                        IBTreeNode node2 = lowerLevel[i + 1];
+                        BTreeNonLeafNode parentNode = new BTreeNonLeafNode(
                             node1, node2);
                         upperLevel.Add(parentNode);
                     }
@@ -127,14 +128,14 @@ namespace SpatialitePlaying.NodeIndexBuilding1.NodesStorage
 
                 lowerLevel.Clear();
                 lowerLevel = upperLevel;
-                upperLevel = new List<INodesBTreeNode>();
+                upperLevel = new List<IBTreeNode>();
             }
 
             btree = lowerLevel[0];
             leafNodes.Clear();
         }
 
-        private NodeData GetNodeData(long nodeId, NodesBTreeLeafNode treeLeaf)
+        private NodeData GetNodeData(long nodeId, BTreeLeafNode treeLeaf)
         {
             NodeDataBlock nodeDataBlock;
 
@@ -155,13 +156,13 @@ namespace SpatialitePlaying.NodeIndexBuilding1.NodesStorage
             return nodeDataBlock.GetNodeData(nodeId);
         }
 
-        private NodeDataBlock ReadNodeDataBlock(NodesBTreeLeafNode treeLeaf)
+        private NodeDataBlock ReadNodeDataBlock(BTreeLeafNode treeLeaf)
         {
             reader.BaseStream.Seek(treeLeaf.FilePosition, SeekOrigin.Begin);
 
-            NodeDataBlock block = new NodeDataBlock(treeLeaf.NodesCount);
+            NodeDataBlock block = new NodeDataBlock(treeLeaf.ObjectsCount);
 
-            for (int i = 0; i < treeLeaf.NodesCount; i++)
+            for (int i = 0; i < treeLeaf.ObjectsCount; i++)
             {
                 long id = reader.ReadInt64();
                 double x = reader.ReadDouble();
@@ -178,9 +179,9 @@ namespace SpatialitePlaying.NodeIndexBuilding1.NodesStorage
         private BinaryWriter writer;
         private BinaryReader reader;
         private int nodesInBlockCounter;
-        private List<NodesBTreeLeafNode> leafNodes = new List<NodesBTreeLeafNode> ();
-        private INodesBTreeNode btree;
-        private NodesBTreeLeafNode previousBlock;
+        private List<BTreeLeafNode> leafNodes = new List<BTreeLeafNode> ();
+        private IBTreeNode btree;
+        private BTreeLeafNode previousLeafNode;
         private Dictionary<long, NodeDataBlock> nodeBlocks = new Dictionary<long, NodeDataBlock>();
         private int nodeBlocksCacheSize = 200000;
     }

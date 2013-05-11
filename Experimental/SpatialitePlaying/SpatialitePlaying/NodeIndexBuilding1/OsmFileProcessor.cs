@@ -25,8 +25,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
             nodesStorage = new NodesStorage.NodesStorage("nodes.dat", fileSystem);
             nodesStorage.InitializeForWriting();
-            waysStorage = new WaysStorage.WaysStorage("ways.dat", fileSystem);
-            waysStorage.InitializeForWriting();
+            waysStorage = new IndexedWaysStorageWriter("ways.dat", fileSystem);
+            waysStorage.InitializeStorage();
 
             stopwatch.Start ();
         }
@@ -97,7 +97,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
                         points.AddPoint(node.X, node.Y);
                     }
 
-                    waysStorage.WriteWay(cachedWay, points);
+                    waysStorage.StoreWay(cachedWay, points);
                     waysCount++;
                 }
 
@@ -125,7 +125,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         private int nodesCount;
         private int waysCount;
         private INodesStorage nodesStorage;
-        private IWaysStorage waysStorage;
+        private IIndexedWaysStorageWriter waysStorage;
         private bool finishedReadingNodes;
         private Stopwatch stopwatch = new Stopwatch();
     }
