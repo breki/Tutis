@@ -65,6 +65,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomPbf\Blob.cs" />
+    <Compile Include="CustomPbf\BlockHeader.cs" />
+    <Compile Include="CustomPbf\ChangeSet.cs" />
+    <Compile Include="CustomPbf\DenseInfo.cs" />
+    <Compile Include="CustomPbf\DenseNodes.cs" />
+    <Compile Include="CustomPbf\HeaderBBox.cs" />
+    <Compile Include="CustomPbf\Info.cs" />
+    <Compile Include="CustomPbf\InvalidOsmFileException.cs" />
+    <Compile Include="CustomPbf\OsmHeader.cs" />
+    <Compile Include="CustomPbf\OsmPbfReader2.cs" />
+    <Compile Include="CustomPbf\PbfNode.cs" />
+    <Compile Include="CustomPbf\PbfRelation.cs" />
+    <Compile Include="CustomPbf\PbfWay.cs" />
+    <Compile Include="CustomPbf\PrimitiveBlock.cs" />
+    <Compile Include="CustomPbf\PrimitiveGroup.cs" />
+    <Compile Include="CustomPbf\StringTable.cs" />
     <Compile Include="DBBulkProcessor.cs" />
     <Compile Include="InMemoryProcessing\ReadingPhase.cs" />
     <Compile Include="InMemoryProcessing\TestOsmDataBulkInsertSession.cs" />

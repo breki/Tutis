@@ -1,6 +1,6 @@
 using Brejc.Common.FileSystem;
 using Brejc.OsmLibrary;
-using Brejc.OsmLibrary.Pbf;
+using SpatialitePlaying.CustomPbf;
 using NUnit.Framework;
 
 namespace SpatialitePlaying
@@ -13,7 +13,7 @@ namespace SpatialitePlaying
             OsmFileAnalyzer analyzer = new OsmFileAnalyzer();
 
             WindowsFileSystem fileSystem = new WindowsFileSystem ();
-            using (IOsmReader osmReader = new OsmPbfReader())
+            using (IOsmReader osmReader = new OsmPbfReader2())
             {
                 osmReader.Settings.IgnoreCreatedByTags = true;
                 osmReader.Settings.LoadExtendedData = false;
