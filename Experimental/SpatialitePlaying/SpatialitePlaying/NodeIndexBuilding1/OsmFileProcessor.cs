@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Brejc.Common.FileSystem;
+using Brejc.Geometry;
 using Brejc.OsmLibrary;
 using SpatialitePlaying.CustomPbf;
 using SpatialitePlaying.NodeIndexBuilding1.NodesStorage;
@@ -89,7 +90,14 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
                 foreach (OsmWay cachedWay in cachedWays)
                 {
-                    waysStorage.WriteWay(cachedWay);
+                    PointD2List points = new PointD2List(way.NodesCount);
+                    foreach (long nodeId in cachedWay.Nodes)
+                    {
+                        NodeData node = nodesDict[nodeId];
+                        points.AddPoint(node.X, node.Y);
+                    }
+
+                    waysStorage.WriteWay(cachedWay, points);
                     waysCount++;
                 }
 

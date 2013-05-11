@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using Brejc.Common.BinaryProcessing;
 using Brejc.Common.FileSystem;
+using Brejc.Geometry;
 using Brejc.OsmLibrary;
 using SpatialitePlaying.NodeIndexBuilding1.NodesStorage;
 
@@ -20,7 +23,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1.WaysStorage
             writer = new BinaryWriter (stream);
         }
 
-        public void WriteWay(OsmWay way)
+        public void WriteWay(OsmWay way, IPointD2List points)
         {
             if (itemsInBlockCounter % 100 == 0)
             {
@@ -34,11 +37,14 @@ namespace SpatialitePlaying.NodeIndexBuilding1.WaysStorage
                 leafNodes.Add (block);
                 itemsInBlockCounter = 0;
                 previousBlock = block;
+                writer.Flush();
             }
 
             writer.Write (way.ObjectId);
-            //writer.Write (x);
-            //writer.Write (y);
+            byte[] pointsBlob = PointsToBlob2(points, 1000, true);
+            int blobLength = pointsBlob.Length;
+            writer.Write(blobLength);
+            writer.Write(pointsBlob);
 
             itemsInBlockCounter++;
         }
@@ -56,6 +62,54 @@ namespace SpatialitePlaying.NodeIndexBuilding1.WaysStorage
             stream = null;
 
             ConstructBTree ();
+        }
+
+        public static byte[] PointsToBlob2 (IPointD2List points, int granularity, bool skipLastPoint)
+        {
+            const double Nanodegree = 0.000000001;
+            double resolution = granularity * Nanodegree;
+
+            List<long> coordDiffs = new List<long> ();
+            int pointsCount = points.PointsCount + (skipLastPoint ? -1 : 0);
+
+            long lxi = 0;
+            long lyi = 0;
+
+            for (int i = 0; i < pointsCount; i++)
+            {
+                double x;
+                double y;
+                points.GetPoint (i, out x, out y);
+
+                long xi = (long)Math.Round (x / resolution);
+                long yi = (long)Math.Round (y / resolution);
+
+                if (xi == lxi && yi == lyi)
+                    continue;
+
+                coordDiffs.Add (xi - lxi);
+                coordDiffs.Add (yi - lyi);
+
+                lxi = xi;
+                lyi = yi;
+            }
+
+            pointsCount = coordDiffs.Count / 2;
+
+            byte[] data;
+            using (MemoryStream stream = new MemoryStream ())
+            using (BinaryWriter writer = new BinaryWriter (stream))
+            {
+                writer.WriteVarint ((ulong)pointsCount);
+
+                foreach (long coordDiff in coordDiffs)
+                    writer.WriteVarint (coordDiff);
+
+                writer.Flush ();
+                data = stream.ToArray ();
+            }
+
+            return data;
         }
 
         private void ConstructBTree ()
