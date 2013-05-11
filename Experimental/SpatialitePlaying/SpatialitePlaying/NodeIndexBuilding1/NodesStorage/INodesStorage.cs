@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
-namespace SpatialitePlaying.NodeIndexBuilding1
+namespace SpatialitePlaying.NodeIndexBuilding1.NodesStorage
 {
     public interface INodesStorage
     {

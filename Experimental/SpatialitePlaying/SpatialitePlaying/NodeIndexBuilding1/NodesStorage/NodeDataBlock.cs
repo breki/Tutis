@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace SpatialitePlaying.NodeIndexBuilding1
+namespace SpatialitePlaying.NodeIndexBuilding1.NodesStorage
 {
     public class NodeDataBlock
     {

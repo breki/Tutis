@@ -1,10 +1,9 @@
-﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Brejc.Common.FileSystem;
 
-namespace SpatialitePlaying.NodeIndexBuilding1
+namespace SpatialitePlaying.NodeIndexBuilding1.NodesStorage
 {
     public class NodesStorage : INodesStorage
     {

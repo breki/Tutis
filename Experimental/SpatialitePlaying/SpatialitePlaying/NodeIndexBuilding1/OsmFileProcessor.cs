@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
 using System.Diagnostics;
-using System.IO;
 using Brejc.Common.FileSystem;
-using Brejc.Geometry;
 using Brejc.OsmLibrary;
-using Brejc.Rdbms;
-using NUnit.Framework;
 using SpatialitePlaying.CustomPbf;
+using SpatialitePlaying.NodeIndexBuilding1.NodesStorage;
+using SpatialitePlaying.NodeIndexBuilding1.WaysStorage;
 
 namespace SpatialitePlaying.NodeIndexBuilding1
 {
@@ -26,31 +22,16 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         {
             Console.WriteLine ("Started reading OSM data...");
 
-            nodesStorage = new NodesStorage("nodes.dat", fileSystem);
+            nodesStorage = new NodesStorage.NodesStorage("nodes.dat", fileSystem);
             nodesStorage.InitializeForWriting();
+            waysStorage = new WaysStorage.WaysStorage("ways.dat", fileSystem);
+            waysStorage.InitializeForWriting();
 
-            PrepareSqliteDb();
+            stopwatch.Start ();
         }
 
         public void End ()
         {
-            Console.WriteLine ("Recovering geometries...");
-
-            using (IDbCommand command = dbConnection.CreateCommand ())
-            {
-                command.CommandText = @"SELECT RecoverGeometryColumn('areas','geom',4326,'POLYGON', 2)";
-                long value = (long)command.ExecuteScalar ();
-                Assert.AreEqual (1, value, "RecoverGeometryColumn failed");
-            }
-
-            Console.WriteLine ("Creating spatial index...");
-
-            using (IDbCommand command = dbConnection.CreateCommand ())
-            {
-                command.CommandText = @"SELECT CreateSpatialIndex('areas','geom')";
-                long value = (long)command.ExecuteScalar ();
-                Assert.AreEqual (1, value, "CreateSpatialIndex failed");
-            }
         }
 
         public void Dispose ()
@@ -61,17 +42,24 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         {
             nodesStorage.WriteNode(node.ObjectId, node.X, node.Y);
             nodesCount++;
-            if (nodesCount % 200000 == 0)
-                Console.WriteLine("Added {0} nodes", nodesCount);
+            if (nodesCount%200000 == 0)
+            {
+                long elapsedSeconds = stopwatch.ElapsedMilliseconds / 1000;
+                Console.WriteLine (
+                    "Added {0} nodes in {1} s ({2} nodes/s)",
+                    nodesCount,
+                    elapsedSeconds,
+                    ((double)nodesCount) / elapsedSeconds);
+            }
         }
 
         public void ProcessWay (OsmWay way)
         {
-            if (!initializedForReading)
+            if (!finishedReadingNodes)
             {
                 nodesStorage.CloseForWriting();
                 nodesStorage.InitializeForReading();
-                initializedForReading = true;
+                finishedReadingNodes = true;
                 Console.WriteLine("Started reading ways...");
                 stopwatch.Start();
             }
@@ -97,33 +85,22 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
                 IDictionary<long, NodeData> nodesDict = nodesStorage.FetchNodes(neededNodes);
 
-                addedRowsCount += cachedWays.Count;
-                //DBBulkProcessor.BulkInsert (
-                //    SqliteHelper.SqliteProviderFactory,
-                //    dbConnection,
-                //    "SELECT id, geom FROM areas",
-                //    "INSERT INTO areas (id, geom) VALUES (@param1, @param2)",
-                //    dt =>
-                //    {
-                //        foreach (OsmWay cachedWay in cachedWays)
-                //        {
-                //            DataRow row = dt.NewRow ();
-                //            row[0] = 1;
-                //            row[1] = WkbPolygonFromNodes (cachedWay, nodesDict);
-                //            dt.Rows.Add (row);
+                waysCount += cachedWays.Count;
 
-                //            addedRowsCount++;
-                //        }
-                //    });
+                foreach (OsmWay cachedWay in cachedWays)
+                {
+                    waysStorage.WriteWay(cachedWay);
+                    waysCount++;
+                }
 
                 cachedWays.Clear();
 
                 long elapsedSeconds = stopwatch.ElapsedMilliseconds / 1000;
-                Console.Out.WriteLine (
-                    "Added {0} rows in {1} s ({2} rows/s)",
-                    addedRowsCount,
+                Console.WriteLine (
+                    "Added {0} ways in {1} s ({2} ways/s)",
+                    waysCount,
                     elapsedSeconds,
-                    ((double)addedRowsCount) / elapsedSeconds);
+                    ((double)waysCount) / elapsedSeconds);
             }
         }
 
@@ -135,102 +112,13 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         {
         }
 
-        private void PrepareSqliteDb()
-        {
-            string sqliteFileName = "test.sqlite";
-
-            fileSystem.DeleteFile(sqliteFileName, false);
-
-            string connString = SqliteHelper.ConstructConnectionString(sqliteFileName, false);
-
-            DbProviderFactory dbProviderFactory = SqliteHelper.SqliteProviderFactory;
-            dbConnection = dbProviderFactory.CreateConnection();
-            dbConnection.ConnectionString = connString;
-            dbConnection.Open();
-
-            Console.WriteLine("Loading spatialite...");
-
-            dbConnection.ExecuteCommand("PRAGMA journal_mode=OFF");
-            dbConnection.ExecuteCommand("PRAGMA count_changes=OFF");
-            dbConnection.ExecuteCommand("PRAGMA cache_size=4000");
-
-            using (IDbCommand command = dbConnection.CreateCommand())
-            {
-                command.CommandText = @"SELECT load_extension('libspatialite-4.dll');";
-                command.ExecuteNonQuery();
-            }
-
-            Console.WriteLine ("Initializing spatial metadata...");
-
-            using (IDbCommand command = dbConnection.CreateCommand ())
-            {
-                command.CommandText = @"SELECT InitSpatialMetadata();";
-                long value = (long)command.ExecuteScalar ();
-                Assert.AreEqual (1, value);
-            }
-
-            Console.WriteLine ("Creating table...");
-
-            using (IDbCommand command = dbConnection.CreateCommand ())
-            {
-                command.CommandText = @"CREATE TABLE areas (id INTEGER, geom BLOB NOT NULL)";
-                command.ExecuteNonQuery ();
-            }
-        }
-
-        private static byte[] WkbPolygonFromNodes (IOsmNodesList nodes, IDictionary<long, NodeData> nodesDict)
-        {
-            using (MemoryStream stream = new MemoryStream ())
-            using (BinaryWriter writer = new BinaryWriter (stream))
-            {
-                writer.Write ((byte)0);
-                writer.Write ((byte)1); // little-endian
-                writer.Write (4326); // SRID
-
-                List<IPointD2> nodesList = new List<IPointD2> ();
-                Bounds2 mbr = new Bounds2 ();
-
-                foreach (long nodeId in nodes.Nodes)
-                {
-                    NodeData nodeData = nodesDict[nodeId];
-
-                    if (nodeData != null)
-                    {
-                        nodesList.Add (new PointD2(nodeData.X, nodeData.Y));
-                        mbr.ExtendToCover (nodeData.X, nodeData.Y);
-                    }
-                }
-
-                writer.Write (mbr.MinX);
-                writer.Write (mbr.MinY);
-                writer.Write (mbr.MaxX);
-                writer.Write (mbr.MaxY);
-                writer.Write ((byte)0x7C);
-
-                writer.Write (3);
-                writer.Write (1); // number of rings
-
-                writer.Write (nodesList.Count);
-                foreach (PointD2 node in nodesList)
-                {
-                    writer.Write (node.X);
-                    writer.Write (node.Y);
-                }
-
-                writer.Write ((byte)0xFE);
-
-                writer.Flush ();
-                return stream.ToArray ();
-            }
-        }
-
         private readonly IFileSystem fileSystem;
         private List<OsmWay> cachedWays = new List<OsmWay>();
         private int nodesCount;
+        private int waysCount;
         private INodesStorage nodesStorage;
-        private bool initializedForReading;
-        private static IDbConnection dbConnection;
-        private int addedRowsCount;
+        private IWaysStorage waysStorage;
+        private bool finishedReadingNodes;
         private Stopwatch stopwatch = new Stopwatch();
     }
 }
