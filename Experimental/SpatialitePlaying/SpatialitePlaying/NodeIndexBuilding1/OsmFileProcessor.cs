@@ -9,10 +9,11 @@ using Brejc.Geometry;
 using Brejc.OsmLibrary;
 using Brejc.Rdbms;
 using NUnit.Framework;
+using SpatialitePlaying.CustomPbf;
 
 namespace SpatialitePlaying.NodeIndexBuilding1
 {
-    public class OsmFileProcessor : IOsmDataStorage, IOsmDataBulkInsertSession
+    public class OsmFileProcessor : IOsmObjectDiscovery
     {
         public OsmFileProcessor(IFileSystem fileSystem)
         {
@@ -21,7 +22,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
         public string AttributionText { get; set; }
 
-        public IOsmDataBulkInsertSession StartBulkInsertSession (bool threadSafe)
+        public void Begin()
         {
             Console.WriteLine ("Started reading OSM data...");
 
@@ -29,11 +30,9 @@ namespace SpatialitePlaying.NodeIndexBuilding1
             nodesStorage.InitializeForWriting();
 
             PrepareSqliteDb();
-
-            return this;
         }
 
-        public void EndBulkInsertSession ()
+        public void End ()
         {
             Console.WriteLine ("Recovering geometries...");
 
@@ -58,7 +57,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         {
         }
 
-        public void AddNode (OsmNode node)
+        public void ProcessNode (OsmNode node)
         {
             nodesStorage.WriteNode(node.ObjectId, node.X, node.Y);
             nodesCount++;
@@ -66,7 +65,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
                 Console.WriteLine("Added {0} nodes", nodesCount);
         }
 
-        public void AddWay (OsmWay way)
+        public void ProcessWay (OsmWay way)
         {
             if (!initializedForReading)
             {
@@ -128,15 +127,11 @@ namespace SpatialitePlaying.NodeIndexBuilding1
             }
         }
 
-        public void AddRelation (OsmRelation relation)
+        public void ProcessRelation (OsmRelation relation)
         {
         }
 
-        public void AddBoundingBox (OsmBoundingBox box)
-        {
-        }
-
-        public void AddNote (string noteType, string note)
+        public void ProcessBoundingBox (OsmBoundingBox box)
         {
         }
 

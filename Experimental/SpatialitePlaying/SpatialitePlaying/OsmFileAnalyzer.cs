@@ -1,9 +1,9 @@
-﻿using System;
-using Brejc.OsmLibrary;
+﻿using Brejc.OsmLibrary;
+using SpatialitePlaying.CustomPbf;
 
 namespace SpatialitePlaying
 {
-    public class OsmFileAnalyzer : IOsmDataStorage, IOsmDataBulkInsertSession
+    public class OsmFileAnalyzer : IOsmObjectDiscovery
     {
         public string AttributionText { get; set; }
 
@@ -57,20 +57,20 @@ namespace SpatialitePlaying
             get { return areEntityTypesMonotone; }
         }
 
-        public IOsmDataBulkInsertSession StartBulkInsertSession(bool threadSafe)
+        public void Begin ()
         {
-            return this;
         }
 
-        public void EndBulkInsertSession()
+        public void End ()
         {
         }
+
 
         public void Dispose()
         {
         }
 
-        public void AddNode(OsmNode node)
+        public void ProcessNode(OsmNode node)
         {
             nodesCount++;
             if (areNodeIdsMonotone)
@@ -83,7 +83,7 @@ namespace SpatialitePlaying
             lastEntityTypeRead = EntityType.Node;
         }
 
-        public void AddWay(OsmWay way)
+        public void ProcessWay(OsmWay way)
         {
             waysCount++;
             if (areWaysIdsMonotone)
@@ -97,7 +97,7 @@ namespace SpatialitePlaying
             lastEntityTypeRead = EntityType.Way;
         }
 
-        public void AddRelation(OsmRelation relation)
+        public void ProcessRelation(OsmRelation relation)
         {
             relationsCount++;
             if (areRelationIdsMonotone)
@@ -107,11 +107,7 @@ namespace SpatialitePlaying
             lastEntityTypeRead = EntityType.Relation;
         }
 
-        public void AddBoundingBox(OsmBoundingBox box)
-        {
-        }
-
-        public void AddNote(string noteType, string note)
+        public void ProcessBoundingBox(OsmBoundingBox box)
         {
         }
 
