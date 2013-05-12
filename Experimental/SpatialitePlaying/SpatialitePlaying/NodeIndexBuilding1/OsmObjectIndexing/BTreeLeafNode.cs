@@ -52,6 +52,9 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
 
         public void SetNextBlockObjectId (long objectId)
         {
+            if (objectId <= startObjectId)
+                throw new InvalidOperationException ("objectId <= startObjectId");
+
             nextBlockStartObjectId = objectId;
         }
 
