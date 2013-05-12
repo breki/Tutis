@@ -105,6 +105,12 @@
     <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\Mbr.cs" />
     <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\OsmObjectBTreeIndexBase.cs" />
     <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\OsmObjectIndexingHelper.cs" />
+    <Compile Include="NodeIndexBuilding1\RTrees\IRTreeConstructor.cs" />
+    <Compile Include="NodeIndexBuilding1\RTrees\IRTreeNode.cs" />
+    <Compile Include="NodeIndexBuilding1\RTrees\NaiveRTreeConstructor.cs" />
+    <Compile Include="NodeIndexBuilding1\RTrees\RTreeInnerNode.cs" />
+    <Compile Include="NodeIndexBuilding1\RTrees\RTreeLeafNode.cs" />
+    <Compile Include="NodeIndexBuilding1\RTrees\RTreeObjectEntry.cs" />
     <Compile Include="NodeIndexBuilding1\RTreeTests.cs" />
     <Compile Include="OsmFileAnalyzer.cs" />
     <Compile Include="Program.cs" />

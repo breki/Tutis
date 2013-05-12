@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using Brejc.Common.FileSystem;
@@ -8,7 +7,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
 {
     public abstract class IndexedOsmObjectStorageWriterBase : IIndexedOsmObjectStorageWriter
     {
-        public void InitializeStorage (string storageName)
+        public virtual void InitializeStorage (string storageName)
         {
             this.storageName = storageName;
 
@@ -17,7 +16,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
             writer = new BinaryWriter (stream);
         }
 
-        public void FinalizeStorage()
+        public virtual void FinalizeStorage()
         {
             if (previousLeafNode != null)
                 previousLeafNode.ObjectsCount = itemsInBlockCounter;
@@ -37,6 +36,11 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
         protected BinaryWriter Writer
         {
             get { return writer; }
+        }
+
+        public IFileSystem FileSystem
+        {
+            get { return fileSystem; }
         }
 
         protected IndexedOsmObjectStorageWriterBase (IFileSystem fileSystem)

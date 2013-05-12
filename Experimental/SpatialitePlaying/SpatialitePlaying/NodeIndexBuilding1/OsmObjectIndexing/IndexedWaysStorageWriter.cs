@@ -5,6 +5,7 @@ using Brejc.Common.BinaryProcessing;
 using Brejc.Common.FileSystem;
 using Brejc.Geometry;
 using Brejc.OsmLibrary;
+using SpatialitePlaying.NodeIndexBuilding1.RTrees;
 
 namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
 {
@@ -12,6 +13,13 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
     {
         public IndexedWaysStorageWriter (IFileSystem fileSystem) : base(fileSystem)
         {
+        }
+
+        public override void InitializeStorage (string storageName)
+        {
+            base.InitializeStorage (storageName);
+            rtreeConstructor = new NaiveRTreeConstructor(FileSystem);
+            rtreeConstructor.InitializeStorage(storageName, ObjectTypeName);
         }
 
         public void StoreWay(OsmWay way, IPointD2List points)
@@ -25,8 +33,17 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
             int blobLength = pointsBlob.Length;
             Writer.Write(blobLength);
             Writer.Write(pointsBlob);
-
+            
             IncrementObjectsInBlockCount ();
+
+            rtreeConstructor.AddObject(way.ObjectId, mbr);
+        }
+
+        public override void FinalizeStorage ()
+        {
+            base.FinalizeStorage ();
+
+            rtreeConstructor.ConstructRTree();
         }
 
         private static byte[] PointsToBlob2 (IPointD2List points, int granularity, bool skipLastPoint, out Mbr wayMbr)
@@ -83,5 +100,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
         {
             get { return "ways"; }
         }
+
+        private IRTreeConstructor rtreeConstructor;
     }
 }
