@@ -78,9 +78,6 @@ namespace SpatialitePlaying.NodeIndexBuilding1
                 stopwatch.Start();
             }
 
-            if (way.IsClosed)
-                return;
-
             cachedWays.Add(way);
 
             if (cachedWays.Count > 10000)

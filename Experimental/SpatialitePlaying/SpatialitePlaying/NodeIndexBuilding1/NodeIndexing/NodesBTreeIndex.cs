@@ -48,18 +48,19 @@ namespace SpatialitePlaying.NodeIndexBuilding1.NodeIndexing
         {
             NodeDataBlock nodeDataBlock;
 
-            if (!nodeBlocks.TryGetValue(treeLeaf.FilePosition, out nodeDataBlock))
+            long blockId = treeLeaf.FilePosition;
+            if (!nodeBlocks.TryGetValue(blockId, out nodeDataBlock))
             {
                 nodeDataBlock = ReadNodeDataBlock(treeLeaf);
-                //Console.WriteLine (nodeBlocks.Count);
 
                 if (nodeBlocks.Count > nodeBlocksCacheSize)
                 {
-                    nodeBlocks.Remove(nodeBlocks.AsQueryable().First().Key);
-                    //Console.WriteLine("XXX");
+                    long blockIdToRemove = nodeBlocksLoadingQueue.Dequeue();
+                    nodeBlocks.Remove (blockIdToRemove);
                 }
 
-                nodeBlocks.Add (treeLeaf.FilePosition, nodeDataBlock);
+                nodeBlocks.Add (blockId, nodeDataBlock);
+                nodeBlocksLoadingQueue.Enqueue(blockId);
             }
 
             return nodeDataBlock.GetNodeData(nodeId, ref startingIndex);
@@ -83,6 +84,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1.NodeIndexing
         }
 
         private Dictionary<long, NodeDataBlock> nodeBlocks = new Dictionary<long, NodeDataBlock>();
+        private Queue<long> nodeBlocksLoadingQueue = new Queue<long>();
         private int nodeBlocksCacheSize = 200000;
     }
 }
