@@ -26,17 +26,20 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
         {
             FlushCurrentBlockIfFull(way.ObjectId);
 
-            Writer.Write (way.ObjectId);
             Mbr mbr;
             byte[] pointsBlob = PointsToBlob2(points, 1000, true, out mbr);
-            mbr.WriteToStream(Writer);
-            int blobLength = pointsBlob.Length;
-            Writer.Write(blobLength);
-            Writer.Write(pointsBlob);
-            
-            IncrementObjectsInBlockCount ();
+            if (pointsBlob != null)
+            {
+                Writer.Write(way.ObjectId);
+                mbr.WriteToStream(Writer);
+                int blobLength = pointsBlob.Length;
+                Writer.Write(blobLength);
+                Writer.Write(pointsBlob);
 
-            rtreeConstructor.AddObject(way.ObjectId, mbr);
+                IncrementObjectsInBlockCount();
+
+                rtreeConstructor.AddObject(way.ObjectId, mbr);
+            }
         }
 
         public override void FinalizeStorage ()
@@ -79,6 +82,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
             }
 
             pointsCount = coordDiffs.Count / 2;
+            if (pointsCount == 0)
+                return null;
 
             byte[] data;
             using (MemoryStream stream = new MemoryStream ())
