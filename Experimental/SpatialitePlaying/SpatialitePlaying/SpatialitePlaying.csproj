@@ -102,8 +102,10 @@
     <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IndexedWaysStorageWriter.cs" />
     <Compile Include="NodeIndexBuilding1\OsmFileProcessor.cs" />
     <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IOsmObjectBTreeIndex.cs" />
+    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\Mbr.cs" />
     <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\OsmObjectBTreeIndexBase.cs" />
-    <Compile Include="NodeIndexBuilding1\Tests.cs" />
+    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\OsmObjectIndexingHelper.cs" />
+    <Compile Include="NodeIndexBuilding1\RTreeTests.cs" />
     <Compile Include="OsmFileAnalyzer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
