@@ -1,6 +1,11 @@
+using System;
+using System.Collections.Generic;
 using Brejc.Common.FileSystem;
+using Brejc.Geometry;
 using SpatialitePlaying.CustomPbf;
 using NUnit.Framework;
+using SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing;
+using SpatialitePlaying.NodeIndexBuilding1.RTrees;
 
 namespace SpatialitePlaying.NodeIndexBuilding1
 {
@@ -15,13 +20,28 @@ namespace SpatialitePlaying.NodeIndexBuilding1
             using (OsmPbfReader2 osmReader = new OsmPbfReader2 ())
             {
                 //osmReader.Settings.SkipRelations = true;
-                osmReader.Settings.SkipWays = false;
 
                 //osmReader.Read (@"D:\brisi\isle-of-man-latest.osm.pbf", fileSystem, processor);
-                osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, processor);
-                //osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, processor);
+                //osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, processor);
+                osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, processor);
                 //osmReader.Read (@"D:\brisi\germany-latest.osm.pbf", fileSystem, processor);
             }
+        }
+
+        [Test]
+        public void RunQuery()
+        {
+            ISpatialQuery spatialQuery = new SpatialQuery (new WindowsFileSystem ());
+            Console.WriteLine ("Opening r-tree...");
+            spatialQuery.Connect ("experiment", "ways");
+
+            Bounds2 bounds = new Bounds2 (15.4023050143043, 47.0599307403552, 15.4653307104719, 47.0833220386827);
+            //Bounds2 bounds = new Bounds2 (15.5438069890848, 46.5102421428415, 15.6504793872489, 46.5756640758013);
+            Mbr queryMbr = new Mbr (bounds, 1000);
+
+            Console.WriteLine ("Running r-tree query...");
+            IList<long> wayIds = spatialQuery.FindObjects (queryMbr);
+            Console.WriteLine ("Result: {0} ways", wayIds.Count);
         }
     }
 }

@@ -30,6 +30,16 @@ namespace SpatialitePlaying.NodeIndexBuilding1.RTrees
             mbr.ExtendToCover(objectMbr);
         }
 
+        public void FindObjects(Mbr insideMbr, IList<long> ids)
+        {
+            foreach (RTreeObjectEntry obj in objects)
+            {
+                Mbr objMbr = obj.Mbr;
+                if (objMbr.IntersectsWith (insideMbr) || insideMbr.Contains (objMbr) || objMbr.Contains (insideMbr))
+                    ids.Add(obj.ObjectId);
+            }
+        }
+
         private List<RTreeObjectEntry> objects = new List<RTreeObjectEntry>();
         private Mbr mbr = new Mbr();
     }

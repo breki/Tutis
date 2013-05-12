@@ -3,10 +3,9 @@ using SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing;
 
 namespace SpatialitePlaying.NodeIndexBuilding1.RTrees
 {
-    public interface IRTreeNode
+    public interface ISpatialQuery
     {
-        Mbr Mbr { get; }
-        bool IsLeaf { get; }
-        void FindObjects(Mbr insideMbr, IList<long> ids);
+        void Connect(string storageName, string objectTypeName);
+        IList<long> FindObjects(Mbr insideMbr);
     }
 }
