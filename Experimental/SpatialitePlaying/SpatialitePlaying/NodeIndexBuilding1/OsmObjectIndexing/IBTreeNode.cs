@@ -1,8 +1,13 @@
+using System;
+
 namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
 {
     public interface IBTreeNode
     {
         long StartObjectId { get; }
-        BTreeLeafNode FindBlock(long objectId);
+        bool IsLeaf { get; }
+
+        void VisitAllNodes(Action<IBTreeNode> visitAction);
+        BTreeLeafNode FindLeafNode(long objectId);
     }
 }

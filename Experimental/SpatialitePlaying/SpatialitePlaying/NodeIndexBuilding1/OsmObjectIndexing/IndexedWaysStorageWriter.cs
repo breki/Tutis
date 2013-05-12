@@ -23,6 +23,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
             int blobLength = pointsBlob.Length;
             Writer.Write(blobLength);
             Writer.Write(pointsBlob);
+
+            IncrementObjectsInBlockCount ();
         }
 
         private static byte[] PointsToBlob2 (IPointD2List points, int granularity, bool skipLastPoint)

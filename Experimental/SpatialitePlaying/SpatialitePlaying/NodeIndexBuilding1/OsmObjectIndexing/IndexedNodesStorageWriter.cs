@@ -15,6 +15,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
             Writer.Write (nodeId);
             Writer.Write (x);
             Writer.Write (y);
+
+            IncrementObjectsInBlockCount();
         }
 
         protected override string ObjectTypeName

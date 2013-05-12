@@ -5,7 +5,7 @@ using Brejc.Common.FileSystem;
 using Brejc.Geometry;
 using Brejc.OsmLibrary;
 using SpatialitePlaying.CustomPbf;
-using SpatialitePlaying.NodeIndexBuilding1.NodesStorage;
+using SpatialitePlaying.NodeIndexBuilding1.NodeIndexing;
 using SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing;
 
 namespace SpatialitePlaying.NodeIndexBuilding1
@@ -22,7 +22,6 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         public void Begin()
         {
             Console.WriteLine ("Started reading OSM data...");
-            string storageName = "experiment";
 
             nodesStorageWriter = new IndexedNodesStorageWriter(fileSystem);
             nodesStorageWriter.InitializeStorage(storageName);
@@ -58,12 +57,16 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
         public void ProcessWay (OsmWay way)
         {
-            if (!finishedReadingNodes)
+            if (nodesBTreeIndex == null)
             {
+                Console.WriteLine("Finalizing nodes storage writing...");
                 nodesStorageWriter.FinalizeStorage();
+                nodesStorageWriter = null;
 
-                //nodesStorageWriter.InitializeForReading();
-                finishedReadingNodes = true;
+                Console.WriteLine ("Preparing nodes b-tree...");
+                nodesBTreeIndex = new NodesBTreeIndex(fileSystem);
+                nodesBTreeIndex.Connect(storageName);
+
                 Console.WriteLine("Started reading ways...");
                 stopwatch.Start();
             }
@@ -87,7 +90,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
                     }
                 }
 
-                IDictionary<long, NodeData> nodesDict = nodesStorageWriter.FetchNodes(neededNodes);
+                IDictionary<long, NodeData> nodesDict = nodesBTreeIndex.FetchNodes (neededNodes);
 
                 waysCount += cachedWays.Count;
 
@@ -129,7 +132,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         private int waysCount;
         private IIndexedNodesStorageWriter nodesStorageWriter;
         private IIndexedWaysStorageWriter waysStorageWriter;
-        private bool finishedReadingNodes;
+        private INodesBTreeIndex nodesBTreeIndex;
         private Stopwatch stopwatch = new Stopwatch();
+        private string storageName = "experiment";
     }
 }

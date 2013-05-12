@@ -93,14 +93,16 @@
     <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IndexedNodesStorageWriter.cs" />
     <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IndexedOsmObjectStorageWriterBase.cs" />
     <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IBTreeNode.cs" />
-    <Compile Include="NodeIndexBuilding1\NodesStorage\INodesStorage.cs" />
-    <Compile Include="NodeIndexBuilding1\NodesStorage\NodeData.cs" />
-    <Compile Include="NodeIndexBuilding1\NodesStorage\NodeDataBlock.cs" />
+    <Compile Include="NodeIndexBuilding1\NodeIndexing\INodesBTreeIndex.cs" />
+    <Compile Include="NodeIndexBuilding1\NodeIndexing\NodeData.cs" />
+    <Compile Include="NodeIndexBuilding1\NodeIndexing\NodeDataBlock.cs" />
     <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\BTreeLeafNode.cs" />
-    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\BTreeNonLeafNode.cs" />
-    <Compile Include="NodeIndexBuilding1\NodesStorage\NodesStorage.cs" />
+    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\BTreeInnerNode.cs" />
+    <Compile Include="NodeIndexBuilding1\NodeIndexing\NodesBTreeIndex.cs" />
     <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IndexedWaysStorageWriter.cs" />
     <Compile Include="NodeIndexBuilding1\OsmFileProcessor.cs" />
+    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IOsmObjectBTreeIndex.cs" />
+    <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\OsmObjectBTreeIndexBase.cs" />
     <Compile Include="NodeIndexBuilding1\Tests.cs" />
     <Compile Include="OsmFileAnalyzer.cs" />
     <Compile Include="Program.cs" />
@@ -159,9 +161,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="NodeIndexBuilding1\WaysStorage\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

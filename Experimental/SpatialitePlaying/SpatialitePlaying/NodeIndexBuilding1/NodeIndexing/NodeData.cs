@@ -1,4 +1,4 @@
-namespace SpatialitePlaying.NodeIndexBuilding1.NodesStorage
+namespace SpatialitePlaying.NodeIndexBuilding1.NodeIndexing
 {
     public class NodeData
     {
