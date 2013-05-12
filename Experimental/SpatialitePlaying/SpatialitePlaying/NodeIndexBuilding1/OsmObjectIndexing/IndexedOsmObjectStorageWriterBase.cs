@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using Brejc.Common.FileSystem;
@@ -22,6 +22,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
             if (previousLeafNode != null)
                 previousLeafNode.ObjectsCount = itemsInBlockCounter;
 
+            Debug.WriteLine("{0} leaf nodes", leafNodes.Count);
+
             writer.Close ();
             writer.Dispose ();
             writer = null;
@@ -29,7 +31,6 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
             stream.Dispose ();
             stream = null;
 
-            ConstructBTree ();
             SaveBTree ();
         }
 
@@ -60,17 +61,13 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
             leafNodes.Add (leafNode);
             previousLeafNode = leafNode;
             Writer.Flush ();
+
+            itemsInBlockCounter = 0;
         }
 
         protected void IncrementObjectsInBlockCount ()
         {
             itemsInBlockCounter++;
-        }
-
-        private void ConstructBTree ()
-        {
-            btree = OsmObjectBTreeIndexBase.ConstructBTreeFromLeafNodes(leafNodes);
-            leafNodes.Clear ();
         }
 
         private void SaveBTree()
@@ -80,7 +77,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
             using (Stream btreeStream = fileSystem.OpenFileToWrite(dataFileName))
             using (BinaryWriter btreeWriter = new BinaryWriter(btreeStream))
             {
-                btree.VisitAllNodes (treeNode => WriteTreeNode (treeNode, btreeWriter));
+                foreach (BTreeLeafNode leafNode in leafNodes)
+                    WriteTreeNode(leafNode, btreeWriter);
 
                 // write end marker
                 btreeWriter.Write(0L);
@@ -95,13 +93,6 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
                 btreeWriter.Write (leafNode.StartObjectId);
                 btreeWriter.Write (leafNode.FilePosition);
                 btreeWriter.Write (leafNode.ObjectsCount);
-                Console.WriteLine (leafNode.StartObjectId);
-            }
-            else
-            {
-                BTreeInnerNode innerNode = (BTreeInnerNode)treeNode;
-                WriteTreeNode(innerNode.LeftNode, btreeWriter);
-                WriteTreeNode(innerNode.RightNode, btreeWriter);
             }
         }
 
@@ -110,7 +101,6 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
         private BinaryWriter writer;
         private int itemsInBlockCounter;
         private List<BTreeLeafNode> leafNodes = new List<BTreeLeafNode> ();
-        private IBTreeNode btree;
         private BTreeLeafNode previousLeafNode;
         private string storageName;
     }

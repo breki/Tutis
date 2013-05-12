@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using Brejc.Common.FileSystem;
@@ -18,6 +19,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
 
         public static IBTreeNode ConstructBTreeFromLeafNodes(IList<BTreeLeafNode> leafNodes)
         {
+            Debug.WriteLine ("Constructing b-tree from {0} leaf nodes", leafNodes.Count);
+
             List<IBTreeNode> upperLevel = new List<IBTreeNode> ();
             List<IBTreeNode> lowerLevel = new List<IBTreeNode> ();
 
@@ -39,6 +42,16 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
                             node1, node2);
                         upperLevel.Add (parentNode);
                     }
+
+#if DEBUG
+                    if (upperLevel.Count > 1)
+                    {
+                        long leftId = upperLevel[upperLevel.Count - 2].StartObjectId;
+                        long rightId = upperLevel[upperLevel.Count - 1].StartObjectId;
+                        if (leftId >= rightId)
+                            throw new InvalidOperationException ("BUG: leftId >= rightId");
+                    }
+#endif
                 }
 
                 lowerLevel.Clear ();

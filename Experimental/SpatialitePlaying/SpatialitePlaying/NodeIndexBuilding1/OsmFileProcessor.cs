@@ -42,7 +42,14 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
         public void ProcessNode (OsmNode node)
         {
-            nodesStorageWriter.StoreNode(node.ObjectId, node.X, node.Y);
+            long objectId = node.ObjectId;
+
+            if (objectId <= lastNodeId)
+                throw new InvalidOperationException("Nodes in OSM file are not monotone.");
+
+            lastNodeId = objectId;
+
+            nodesStorageWriter.StoreNode(objectId, node.X, node.Y);
             nodesCount++;
             if (nodesCount%200000 == 0)
             {
@@ -129,6 +136,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         private readonly IFileSystem fileSystem;
         private List<OsmWay> cachedWays = new List<OsmWay>();
         private int nodesCount;
+        private long lastNodeId = 0;
         private int waysCount;
         private IIndexedNodesStorageWriter nodesStorageWriter;
         private IIndexedWaysStorageWriter waysStorageWriter;
