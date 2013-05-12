@@ -7,6 +7,7 @@ using Brejc.OsmLibrary;
 using SpatialitePlaying.CustomPbf;
 using SpatialitePlaying.NodeIndexBuilding1.NodeIndexing;
 using SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing;
+using SpatialitePlaying.NodeIndexBuilding1.RTrees;
 
 namespace SpatialitePlaying.NodeIndexBuilding1
 {
