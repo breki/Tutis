@@ -127,6 +127,11 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
         public void ProcessRelation (OsmRelation relation)
         {
+            if (waysStorageWriter != null)
+            {
+                waysStorageWriter.FinalizeStorage();
+                waysStorageWriter = null;
+            }
         }
 
         public void ProcessBoundingBox (OsmBoundingBox box)
