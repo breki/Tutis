@@ -14,12 +14,12 @@ namespace SpatialitePlaying.NodeIndexBuilding1
             WindowsFileSystem fileSystem = new WindowsFileSystem ();
             using (OsmPbfReader2 osmReader = new OsmPbfReader2 ())
             {
-                osmReader.Settings.SkipRelations = true;
+                //osmReader.Settings.SkipRelations = true;
                 osmReader.Settings.SkipWays = false;
 
                 //osmReader.Read (@"D:\brisi\isle-of-man-latest.osm.pbf", fileSystem, processor);
-                osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, processor);
-                //osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, processor);
+                //osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, processor);
+                osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, processor);
                 //osmReader.Read (@"D:\brisi\germany-latest.osm.pbf", fileSystem, processor);
             }
         }

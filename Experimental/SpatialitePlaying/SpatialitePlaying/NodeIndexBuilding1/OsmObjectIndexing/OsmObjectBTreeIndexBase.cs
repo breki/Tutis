@@ -19,8 +19,6 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
 
         public static IBTreeNode ConstructBTreeFromLeafNodes(IList<BTreeLeafNode> leafNodes)
         {
-            Debug.WriteLine ("Constructing b-tree from {0} leaf nodes", leafNodes.Count);
-
             List<IBTreeNode> upperLevel = new List<IBTreeNode> ();
             List<IBTreeNode> lowerLevel = new List<IBTreeNode> ();
 

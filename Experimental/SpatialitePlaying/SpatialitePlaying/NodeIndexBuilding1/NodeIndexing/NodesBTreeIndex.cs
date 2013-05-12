@@ -23,14 +23,16 @@ namespace SpatialitePlaying.NodeIndexBuilding1.NodeIndexing
             Dictionary<long, NodeData> nodesData = new Dictionary<long, NodeData> ();
             
             BTreeLeafNode currentLeafNode = null;
+            int? startingIndex = null;
             foreach (long nodeId in nodeIds)
             {
-                if (currentLeafNode == null)
+                if (currentLeafNode == null || nodeId >= currentLeafNode.NextBlockStartObjectId)
+                {
                     currentLeafNode = Btree.FindLeafNode(nodeId);
-                else if (nodeId >= currentLeafNode.NextBlockStartObjectId)
-                    currentLeafNode = Btree.FindLeafNode(nodeId);
+                    startingIndex = null;
+                }
 
-                NodeData nodeData = GetNodeData(nodeId, currentLeafNode);
+                NodeData nodeData = GetNodeData(nodeId, currentLeafNode, ref startingIndex);
                 nodesData.Add(nodeId, nodeData);
             }
 
@@ -42,7 +44,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1.NodeIndexing
             get { return "nodes"; }
         }
 
-        private NodeData GetNodeData(long nodeId, BTreeLeafNode treeLeaf)
+        private NodeData GetNodeData(long nodeId, BTreeLeafNode treeLeaf, ref int? startingIndex)
         {
             NodeDataBlock nodeDataBlock;
 
@@ -60,7 +62,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1.NodeIndexing
                 nodeBlocks.Add (treeLeaf.FilePosition, nodeDataBlock);
             }
 
-            return nodeDataBlock.GetNodeData(nodeId);
+            return nodeDataBlock.GetNodeData(nodeId, ref startingIndex);
         }
 
         private NodeDataBlock ReadNodeDataBlock(BTreeLeafNode treeLeaf)

@@ -14,13 +14,16 @@ namespace SpatialitePlaying.NodeIndexBuilding1.NodeIndexing
             ys = new double[nodesCount];
         }
 
-        public NodeData GetNodeData (long nodeId)
+        public NodeData GetNodeData (long nodeId, ref int? startingIndex)
         {
-            for (int i = 0; i < ids.Length; i++)
+            for (int i = startingIndex ?? 0; i < ids.Length; i++)
             {
                 long indexedNodeId = ids[i];
                 if (indexedNodeId == nodeId)
-                    return new NodeData(ids[i], xs[i], ys[i]);
+                {
+                    startingIndex = i + 1;
+                    return new NodeData (ids[i], xs[i], ys[i]);
+                }
 
                 if (indexedNodeId > nodeId)
                     throw new InvalidOperationException("The node does not belong to this block");

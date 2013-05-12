@@ -22,8 +22,6 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
             if (previousLeafNode != null)
                 previousLeafNode.ObjectsCount = itemsInBlockCounter;
 
-            Debug.WriteLine("{0} leaf nodes", leafNodes.Count);
-
             writer.Close ();
             writer.Dispose ();
             writer = null;
