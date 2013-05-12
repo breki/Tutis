@@ -19,7 +19,9 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
             FlushCurrentBlockIfFull(way.ObjectId);
 
             Writer.Write (way.ObjectId);
-            byte[] pointsBlob = PointsToBlob2(points, 1000, true);
+            Mbr mbr;
+            byte[] pointsBlob = PointsToBlob2(points, 1000, true, out mbr);
+            mbr.WriteToStream(Writer);
             int blobLength = pointsBlob.Length;
             Writer.Write(blobLength);
             Writer.Write(pointsBlob);
@@ -27,10 +29,9 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
             IncrementObjectsInBlockCount ();
         }
 
-        private static byte[] PointsToBlob2 (IPointD2List points, int granularity, bool skipLastPoint)
+        private static byte[] PointsToBlob2 (IPointD2List points, int granularity, bool skipLastPoint, out Mbr wayMbr)
         {
-            const double Nanodegree = 0.000000001;
-            double resolution = granularity * Nanodegree;
+            double resolution = granularity * OsmObjectIndexingHelper.Nanodegree;
 
             List<long> coordDiffs = new List<long> ();
             int pointsCount = points.PointsCount + (skipLastPoint ? -1 : 0);
@@ -38,6 +39,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
             long lxi = 0;
             long lyi = 0;
 
+            wayMbr = new Mbr();
             for (int i = 0; i < pointsCount; i++)
             {
                 double x;
@@ -49,6 +51,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
 
                 if (xi == lxi && yi == lyi)
                     continue;
+
+                wayMbr.ExtendToCover(xi, yi);
 
                 coordDiffs.Add (xi - lxi);
                 coordDiffs.Add (yi - lyi);

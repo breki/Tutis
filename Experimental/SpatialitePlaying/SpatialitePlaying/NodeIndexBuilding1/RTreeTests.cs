@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace SpatialitePlaying.NodeIndexBuilding1
 {
-    public class Tests
+    public class RTreeTests
     {
         [Test]
         public void StoreNodesInBinaryFile()
@@ -18,8 +18,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1
                 osmReader.Settings.SkipWays = false;
 
                 //osmReader.Read (@"D:\brisi\isle-of-man-latest.osm.pbf", fileSystem, processor);
-                //osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, processor);
-                osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, processor);
+                osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, processor);
+                //osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, processor);
                 //osmReader.Read (@"D:\brisi\germany-latest.osm.pbf", fileSystem, processor);
             }
         }
