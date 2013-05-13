@@ -69,9 +69,10 @@ namespace SpatialitePlaying.NodeIndexBuilding1.WaysIndexing
             {
                 long id = dataReader.ReadInt64 ();
                 Mbr mbr = Mbr.ReadFromStream(dataReader);
+                short category = dataReader.ReadInt16();
                 int pointsBlobLen = dataReader.ReadInt32();
                 byte[] pointsBlob = dataReader.ReadBytes(pointsBlobLen);
-                WayData wayData = new WayData (id, mbr, pointsBlob);
+                WayData wayData = new WayData (id, mbr, category, pointsBlob);
 
                 block.SetWayData (i, wayData);
             }

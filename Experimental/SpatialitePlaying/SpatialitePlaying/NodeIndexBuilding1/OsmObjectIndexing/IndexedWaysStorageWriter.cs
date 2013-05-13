@@ -22,7 +22,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
             rtreeConstructor.InitializeStorage(storageName, ObjectTypeName);
         }
 
-        public void StoreWay(OsmWay way, IPointD2List points)
+        public void StoreWay(OsmWay way, short category, IPointD2List points)
         {
             FlushCurrentBlockIfFull(way.ObjectId);
 
@@ -32,6 +32,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
             {
                 Writer.Write(way.ObjectId);
                 mbr.WriteToStream(Writer);
+                Writer.Write(category);
                 int blobLength = pointsBlob.Length;
                 Writer.Write(blobLength);
                 Writer.Write(pointsBlob);
