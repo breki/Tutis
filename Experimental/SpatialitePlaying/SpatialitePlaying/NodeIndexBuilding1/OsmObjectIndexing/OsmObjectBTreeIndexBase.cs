@@ -171,6 +171,6 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
         private string storageName;
         private readonly IFileSystem fileSystem;
         private Stream dataStream;
-        private BinaryReader dataReader;
+        protected BinaryReader dataReader;
     }
 }

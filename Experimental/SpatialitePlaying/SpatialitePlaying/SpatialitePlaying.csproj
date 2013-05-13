@@ -114,6 +114,10 @@
     <Compile Include="NodeIndexBuilding1\RTrees\RTreeObjectEntry.cs" />
     <Compile Include="NodeIndexBuilding1\RTrees\SpatialQuery.cs" />
     <Compile Include="NodeIndexBuilding1\RTreeTests.cs" />
+    <Compile Include="NodeIndexBuilding1\WaysIndexing\IWaysBTreeIndex.cs" />
+    <Compile Include="NodeIndexBuilding1\WaysIndexing\WayData.cs" />
+    <Compile Include="NodeIndexBuilding1\WaysIndexing\WaysBTreeIndex.cs" />
+    <Compile Include="NodeIndexBuilding1\WaysIndexing\WaysDataBlock.cs" />
     <Compile Include="OsmFileAnalyzer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
