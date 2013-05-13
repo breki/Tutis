@@ -1,7 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using Brejc.Cartography;
 using Brejc.Common.FileSystem;
+using Brejc.Common.Props;
 using Brejc.Geometry;
+using Brejc.MapProjections;
+using Brejc.SpatialReferencing;
+using Karta.MapProjections.WebMercator;
+using Karta.Painting;
 using SpatialitePlaying.CustomPbf;
 using NUnit.Framework;
 using SpatialitePlaying.NodeIndexBuilding1.Features;
@@ -55,6 +63,39 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
             wayIds.Sort((a, b) => a.CompareTo(b));
             IDictionary<long, WayData> waysData = waysIdIndex.FetchWays(wayIds);
+
+            WebMercatorProjection proj = new WebMercatorProjection(new SimpleUserSettings(), null);
+
+            using (Bitmap bitmap = new Bitmap(1000, 1000))
+            using (Graphics gfx = Graphics.FromImage(bitmap))
+            {
+                gfx.Clear(Color.Wheat);
+
+                VirtualMapViewport viewport = new VirtualMapViewport(1000, 1000);
+                proj.AssignToViewport(viewport);
+                IMapNavigator navigator = proj.CreateNavigator ();
+                navigator.ZoomToArea (bounds, 1);
+
+                foreach (WayData way in waysData.Values)
+                {
+                    IPointD2List points = way.GetPointsList();
+                    IPointF2List vpoints = proj.Project(points);
+
+                    PointF[] gdiPoints = ConvertToGdiPointsF(vpoints);
+                    gfx.FillPolygon (Brushes.DarkSeaGreen, gdiPoints);
+                }
+
+                bitmap.Save("test.png", ImageFormat.Png);
+            }
+        }
+
+        private static PointF[] ConvertToGdiPointsF (IPointF2List points)
+        {
+            PointF[] gdiPoints = new PointF[points.PointsCount];
+
+            points.ForEachPoint ((i, x, y) => gdiPoints[i] = new PointF (x, y));
+
+            return gdiPoints;
         }
     }
 }
