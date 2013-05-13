@@ -87,6 +87,7 @@
     <Compile Include="InMemoryProcessing\TestOsmDataBulkInsertSession.cs" />
     <Compile Include="InMemoryProcessing\TestOsmDataStorage.cs" />
     <Compile Include="InMemoryProcessing\Tests.cs" />
+    <Compile Include="NodeIndexBuilding1\Features\AreaFeatures.cs" />
     <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IIndexedNodesStorageWriter.cs" />
     <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IIndexedOsmObjectStorageWriter.cs" />
     <Compile Include="NodeIndexBuilding1\OsmObjectIndexing\IIndexedWaysStorageWriter.cs" />

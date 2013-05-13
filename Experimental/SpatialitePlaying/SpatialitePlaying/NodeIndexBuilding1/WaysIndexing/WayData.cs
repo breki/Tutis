@@ -4,10 +4,11 @@ namespace SpatialitePlaying.NodeIndexBuilding1.WaysIndexing
 {
     public class WayData
     {
-        public WayData(long wayId, Mbr mbr, byte[] pointsBlob)
+        public WayData(long wayId, Mbr mbr, short category, byte[] pointsBlob)
         {
             this.wayId = wayId;
             this.mbr = mbr;
+            this.category = category;
             this.pointsBlob = pointsBlob;
         }
 
@@ -21,6 +22,11 @@ namespace SpatialitePlaying.NodeIndexBuilding1.WaysIndexing
             get { return mbr; }
         }
 
+        public short Category
+        {
+            get { return category; }
+        }
+
         public byte[] PointsBlob
         {
             get { return pointsBlob; }
@@ -28,6 +34,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1.WaysIndexing
 
         private long wayId;
         private Mbr mbr;
+        private short category;
         private byte[] pointsBlob;
     }
 }

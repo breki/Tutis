@@ -5,16 +5,17 @@ using Brejc.Common.FileSystem;
 using Brejc.Geometry;
 using Brejc.OsmLibrary;
 using SpatialitePlaying.CustomPbf;
+using SpatialitePlaying.NodeIndexBuilding1.Features;
 using SpatialitePlaying.NodeIndexBuilding1.NodeIndexing;
 using SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing;
-using SpatialitePlaying.NodeIndexBuilding1.RTrees;
 
 namespace SpatialitePlaying.NodeIndexBuilding1
 {
     public class OsmFileProcessor : IOsmObjectDiscovery
     {
-        public OsmFileProcessor(IFileSystem fileSystem)
+        public OsmFileProcessor(AreaFeatures areaFeatures, IFileSystem fileSystem)
         {
+            this.areaFeatures = areaFeatures;
             this.fileSystem = fileSystem;
         }
 
@@ -79,65 +80,85 @@ namespace SpatialitePlaying.NodeIndexBuilding1
                 stopwatch.Start();
             }
 
-            cachedWays.Add(way);
+            if (!way.IsClosed)
+                return;
 
-            if (cachedWays.Count > 10000)
-            {
-                SortedSet<long> neededNodes = new SortedSet<long>();
-                foreach (OsmWay cachedWay in cachedWays)
-                {
-                    foreach (long nodeId in cachedWay.Nodes)
-                    {
-                        if (nodeId < 0)
-                            Debugger.Break();
+            short? category = MatchCategory(way);
+            if (category == null)
+                return;
 
-                        neededNodes.Add(nodeId);
-                    }
-                }
+            queuedWays.Add(new Tuple<OsmWay, short>(way, category.Value));
 
-                IDictionary<long, NodeData> nodesDict = nodesBTreeIndex.FetchNodes (neededNodes);
-
-                waysCount += cachedWays.Count;
-
-                foreach (OsmWay cachedWay in cachedWays)
-                {
-                    PointD2List points = new PointD2List(way.NodesCount);
-                    foreach (long nodeId in cachedWay.Nodes)
-                    {
-                        NodeData node = nodesDict[nodeId];
-                        points.AddPoint(node.X, node.Y);
-                    }
-
-                    waysStorageWriter.StoreWay(cachedWay, points);
-                    waysCount++;
-                }
-
-                cachedWays.Clear();
-
-                long elapsedSeconds = stopwatch.ElapsedMilliseconds / 1000;
-                Console.WriteLine (
-                    "Added {0} ways in {1} s ({2} ways/s)",
-                    waysCount,
-                    elapsedSeconds,
-                    ((double)waysCount) / elapsedSeconds);
-            }
+            if (queuedWays.Count > 10000)
+                StoreQueuedWays();
         }
 
         public void ProcessRelation (OsmRelation relation)
         {
             if (waysStorageWriter != null)
             {
+                if (queuedWays.Count > 0)
+                    StoreQueuedWays();
+
                 waysStorageWriter.FinalizeStorage();
                 waysStorageWriter = null;
             }
+        }
+
+        private void StoreQueuedWays()
+        {
+            SortedSet<long> neededNodes = new SortedSet<long>();
+            foreach (Tuple<OsmWay, short> queuedWay in queuedWays)
+            {
+                foreach (long nodeId in queuedWay.Item1.Nodes)
+                    neededNodes.Add(nodeId);
+            }
+
+            IDictionary<long, NodeData> nodesDict = nodesBTreeIndex.FetchNodes(neededNodes);
+
+            waysCount += queuedWays.Count;
+
+            foreach (Tuple<OsmWay, short> queuedWay in queuedWays)
+            {
+                PointD2List points = new PointD2List (queuedWay.Item1.NodesCount);
+                foreach (long nodeId in queuedWay.Item1.Nodes)
+                {
+                    NodeData node = nodesDict[nodeId];
+                    points.AddPoint(node.X, node.Y);
+                }
+
+                waysStorageWriter.StoreWay(queuedWay.Item1, queuedWay.Item2, points);
+                waysCount++;
+            }
+
+            queuedWays.Clear();
+
+            long elapsedSeconds = stopwatch.ElapsedMilliseconds/1000;
+            Console.WriteLine(
+                "Added {0} ways in {1} s ({2} ways/s)",
+                waysCount,
+                elapsedSeconds,
+                ((double)waysCount)/elapsedSeconds);
         }
 
         public void ProcessBoundingBox (OsmBoundingBox box)
         {
         }
 
+        private short? MatchCategory(OsmWay way)
+        {
+            foreach (Tuple<short, string, string> categoryTuple in areaFeatures.Categories)
+            {
+                if (way.HasTag(categoryTuple.Item2, categoryTuple.Item3))
+                    return categoryTuple.Item1;
+            }
+
+            return null;
+        }
+
+        private readonly AreaFeatures areaFeatures;
         private readonly IFileSystem fileSystem;
-        private List<OsmWay> cachedWays = new List<OsmWay>();
+        private List<Tuple<OsmWay, short>> queuedWays = new List<Tuple<OsmWay, short>> ();
         private int nodesCount;
         private long lastNodeId = 0;
         private int waysCount;

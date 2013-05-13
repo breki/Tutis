@@ -5,6 +5,6 @@ namespace SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing
 {
     public interface IIndexedWaysStorageWriter : IIndexedOsmObjectStorageWriter
     {
-        void StoreWay (OsmWay way, IPointD2List points);
+        void StoreWay (OsmWay way, short category, IPointD2List points);
     }
 }
