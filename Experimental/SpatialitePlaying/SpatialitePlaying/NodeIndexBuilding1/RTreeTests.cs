@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
+using System.IO;
 using Brejc.Cartography;
 using Brejc.Common.FileSystem;
 using Brejc.Common.Props;
 using Brejc.Geometry;
 using Brejc.MapProjections;
-using Brejc.SpatialReferencing;
+using Karta.DataSources.WebMaps;
 using Karta.MapProjections.WebMercator;
-using Karta.Painting;
 using SpatialitePlaying.CustomPbf;
 using NUnit.Framework;
 using SpatialitePlaying.NodeIndexBuilding1.Features;
@@ -37,8 +39,8 @@ namespace SpatialitePlaying.NodeIndexBuilding1
                 //osmReader.Settings.SkipRelations = true;
 
                 //osmReader.Read (@"D:\brisi\isle-of-man-latest.osm.pbf", fileSystem, processor);
-                osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, processor);
-                //osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, processor);
+                //osmReader.Read (@"D:\brisi\slovenia-latest.osm.pbf", fileSystem, processor);
+                osmReader.Read (@"D:\brisi\austria-latest.osm.pbf", fileSystem, processor);
                 //osmReader.Read (@"D:\brisi\germany-latest.osm.pbf", fileSystem, processor);
             }
         }
@@ -46,46 +48,85 @@ namespace SpatialitePlaying.NodeIndexBuilding1
         [Test]
         public void RunQuery()
         {
-            ISpatialQuery spatialQuery = new SpatialQuery (new WindowsFileSystem ());
+            IFileSystem fileSystem = new WindowsFileSystem();
+
+            ISpatialQuery spatialQuery = new SpatialQuery (fileSystem);
             Console.WriteLine ("Opening r-tree...");
             spatialQuery.Connect ("experiment", "ways");
 
-            IWaysBTreeIndex waysIdIndex = new WaysBTreeIndex(new WindowsFileSystem());
+            IWaysBTreeIndex waysIdIndex = new WaysBTreeIndex(fileSystem);
             waysIdIndex.Connect("experiment");
 
             //Bounds2 bounds = new Bounds2 (15.4023050143043, 47.0599307403552, 15.4653307104719, 47.0833220386827);
-            Bounds2 bounds = new Bounds2 (15.5438069890848, 46.5102421428415, 15.6504793872489, 46.5756640758013);
-            Mbr queryMbr = new Mbr (bounds, 1000);
+            //Bounds2 bounds = new Bounds2 (15.5438069890848, 46.5102421428415, 15.6504793872489, 46.5756640758013); // Maribor
 
-            Console.WriteLine ("Running r-tree query...");
-            List<long> wayIds = spatialQuery.FindObjects (queryMbr);
-            Console.WriteLine ("Result: {0} ways", wayIds.Count);
-
-            wayIds.Sort((a, b) => a.CompareTo(b));
-            IDictionary<long, WayData> waysData = waysIdIndex.FetchWays(wayIds);
+            //Console.WriteLine ("Running r-tree query...");
+            //Console.WriteLine ("Result: {0} ways", wayIds.Count);
 
             WebMercatorProjection proj = new WebMercatorProjection(new SimpleUserSettings(), null);
+            VirtualMapViewport viewport = new VirtualMapViewport (256, 256);
+            proj.AssignToViewport (viewport);
+            IMapNavigator navigator = proj.CreateNavigator ();
 
-            using (Bitmap bitmap = new Bitmap(1000, 1000))
+            Bounds2 tilingBounds 
+                = new Bounds2(9.48981294106731,46.3329457738125,17.2092414970457,49.0976261744078); // Austria
+                //= new Bounds2 (13.3487707952443, 45.4058476045408, 16.6817730184221, 46.9012278022979); // Slovenia
+            int zoomLevel = 12;
+
+            int maxTileCoord = TilingHelper.MaxTileForZoom (zoomLevel);
+
+            // calculate tile coordinates for the first (lower left) tile
+            Point2<int> firstTileCoords = TilingHelper.CalculateTileCoordinatesWgs84 (
+                tilingBounds.MinX,
+                tilingBounds.MaxY,
+                zoomLevel);
+
+            Point2<int> lastTileCoords = TilingHelper.CalculateTileCoordinatesWgs84 (
+                tilingBounds.MaxX,
+                tilingBounds.MinY,
+                zoomLevel);
+
+            int tilesGenerated = 0;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            using (Bitmap bitmap = new Bitmap(256, 256))
             using (Graphics gfx = Graphics.FromImage(bitmap))
             {
-                gfx.Clear(Color.Wheat);
-
-                VirtualMapViewport viewport = new VirtualMapViewport(1000, 1000);
-                proj.AssignToViewport(viewport);
-                IMapNavigator navigator = proj.CreateNavigator ();
-                navigator.ZoomToArea (bounds, 1);
-
-                foreach (WayData way in waysData.Values)
+                for (int tileY = firstTileCoords.Y; tileY <= lastTileCoords.Y; tileY += 1)
                 {
-                    IPointD2List points = way.GetPointsList();
-                    IPointF2List vpoints = proj.Project(points);
+                    for (int tileX = firstTileCoords.X; tileX <= lastTileCoords.X; tileX += 1)
+                    {
+                        Bounds2 tileBounds = TilingHelper.CalculateTileBoundsWgs84(tileX, tileY, zoomLevel);
 
-                    PointF[] gdiPoints = ConvertToGdiPointsF(vpoints);
-                    gfx.FillPolygon (Brushes.DarkSeaGreen, gdiPoints);
+                        Mbr queryMbr = new Mbr (tileBounds, 1000);
+                        //Console.WriteLine ("Running r-tree query...");
+                        List<long> wayIds = spatialQuery.FindObjects (queryMbr);
+                        wayIds.Sort ((a, b) => a.CompareTo (b));
+                        IDictionary<long, WayData> waysData = waysIdIndex.FetchWays (wayIds);
+
+                        gfx.Clear (Color.Wheat);
+
+                        navigator.ZoomToArea (tileBounds, 1);
+
+                        foreach (WayData way in waysData.Values)
+                        {
+                            IPointD2List points = way.GetPointsList ();
+                            IPointF2List vpoints = proj.Project (points);
+
+                            PointF[] gdiPoints = ConvertToGdiPointsF (vpoints);
+                            gfx.FillPolygon (Brushes.DarkSeaGreen, gdiPoints);
+                        }
+
+                        string fileName = ConstructTileFileName(zoomLevel, tileX, tileY);
+                        fileSystem.EnsureDirectoryExists(Path.GetDirectoryName(fileName));
+                        bitmap.Save (fileName, ImageFormat.Png);
+
+                        tilesGenerated++;
+                        if (tilesGenerated%100 == 0)
+                            Debug.WriteLine("Generated {0} tiles ({1} t/s)", tilesGenerated, tilesGenerated / sw.Elapsed.TotalSeconds);
+                    }
                 }
-
-                bitmap.Save("test.png", ImageFormat.Png);
             }
         }
 
@@ -97,5 +138,17 @@ namespace SpatialitePlaying.NodeIndexBuilding1
 
             return gdiPoints;
         }
+
+        private static string ConstructTileFileName (int zoomLevel, int tileX, int tileY)
+        {
+            return string.Format (
+                CultureInfo.InvariantCulture,
+                @"tiles{3}{0}{3}{1}{3}{2}.png",
+                zoomLevel,
+                tileX,
+                tileY,
+                Path.DirectorySeparatorChar);
+        }
+
     }
 }
