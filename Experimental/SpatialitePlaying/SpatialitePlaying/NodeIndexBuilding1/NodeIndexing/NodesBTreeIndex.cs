@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Brejc.Common.FileSystem;
 using SpatialitePlaying.NodeIndexBuilding1.OsmObjectIndexing;
 

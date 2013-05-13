@@ -23,7 +23,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1.RTrees
                 ReadRTree (reader);
         }
 
-        public IList<long> FindObjects(Mbr insideMbr)
+        public List<long> FindObjects(Mbr insideMbr)
         {
             List<long> ids = new List<long>();
 
