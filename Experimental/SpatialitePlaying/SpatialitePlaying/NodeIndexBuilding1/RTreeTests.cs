@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Drawing.Text;
 using System.Globalization;
 using System.IO;
 using Brejc.Cartography;
@@ -29,7 +31,17 @@ namespace SpatialitePlaying.NodeIndexBuilding1
             AreaFeatures areaFeatures = new AreaFeatures();
             areaFeatures
                 .AddCategory(1, "natural", "wood")
-                .AddCategory(1, "landuse", "forest");
+                .AddCategory(1, "landuse", "forest")
+                .AddCategory(2, "natural", "water")
+                .AddCategory(2, "waterway", "riverbank")
+                .AddCategory(2, "landuse", "reservoir")
+                .AddCategory(3, "landuse", "farm")
+                .AddCategory(3, "landuse", "farmland")
+                .AddCategory(3, "landuse", "vineyard")
+                .AddCategory(4, "landuse", "commercial")
+                .AddCategory(5, "landuse", "industrial")
+                .AddCategory(6, "landuse", "residential")
+                .AddCategory(7, "building", "yes");
 
             OsmFileProcessor processor = new OsmFileProcessor(areaFeatures, new WindowsFileSystem());
 
@@ -93,6 +105,14 @@ namespace SpatialitePlaying.NodeIndexBuilding1
             using (Bitmap bitmap = new Bitmap(256, 256))
             using (Graphics gfx = Graphics.FromImage(bitmap))
             {
+                gfx.CompositingMode = CompositingMode.SourceOver;
+                gfx.CompositingQuality = CompositingQuality.HighQuality;
+                gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                gfx.SmoothingMode = SmoothingMode.HighQuality;
+                gfx.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+                gfx.TextContrast = 0;
+
                 for (int tileY = firstTileCoords.Y; tileY <= lastTileCoords.Y; tileY += 1)
                 {
                     for (int tileX = firstTileCoords.X; tileX <= lastTileCoords.X; tileX += 1)
@@ -105,7 +125,7 @@ namespace SpatialitePlaying.NodeIndexBuilding1
                         wayIds.Sort ((a, b) => a.CompareTo (b));
                         IDictionary<long, WayData> waysData = waysIdIndex.FetchWays (wayIds);
 
-                        gfx.Clear (Color.Wheat);
+                        gfx.Clear (Color.Linen);
 
                         navigator.ZoomToArea (tileBounds, 1);
 
@@ -114,8 +134,22 @@ namespace SpatialitePlaying.NodeIndexBuilding1
                             IPointD2List points = way.GetPointsList ();
                             IPointF2List vpoints = proj.Project (points);
 
+                            Brush brush;
+                            switch (way.Category)
+                            {
+                                case 1:
+                                    brush = Brushes.DarkSeaGreen;
+                                    break;
+                                case 2:
+                                    brush = Brushes.LightBlue;
+                                    break;
+                                default:
+                                    brush = Brushes.DimGray;
+                                    break;
+                            }
+
                             PointF[] gdiPoints = ConvertToGdiPointsF (vpoints);
-                            gfx.FillPolygon (Brushes.DarkSeaGreen, gdiPoints);
+                            gfx.FillPolygon (brush, gdiPoints);
                         }
 
                         string fileName = ConstructTileFileName(zoomLevel, tileX, tileY);
