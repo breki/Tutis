@@ -1,0 +1,1 @@
+"lib\StyleCop\StyleCopSettingsEditor.exe" "Settings.StyleCop"

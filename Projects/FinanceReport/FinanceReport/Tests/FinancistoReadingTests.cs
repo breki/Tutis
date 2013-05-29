@@ -6,11 +6,11 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using FinanceReport.Financisto;
+using log4net;
 using NUnit.Framework;
 using NVelocity;
 using NVelocity.App;
 using NVelocity.Runtime;
-using log4net;
 
 namespace FinanceReport.Tests
 {
@@ -35,7 +35,7 @@ namespace FinanceReport.Tests
                 DateTime date = UnixTimeToDateTime ((string)row.Values["datetime"]);
                 decimal fromAmount = decimal.Parse ((string)row.Values["from_amount"], CultureInfo.InvariantCulture) / 100;
                 decimal toAmount = decimal.Parse ((string)row.Values["to_amount"], CultureInfo.InvariantCulture) / 100;
-                decimal amount = fromAmount;
+                decimal amount;
                 int isTemplate = int.Parse((string)row.Values["is_template"], CultureInfo.InvariantCulture);
                 int parentId = int.Parse((string)row.Values["parent_id"], CultureInfo.InvariantCulture);
                 if (isTemplate > 0 || parentId > 0)
