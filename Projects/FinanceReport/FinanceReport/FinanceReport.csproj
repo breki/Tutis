@@ -56,13 +56,20 @@
     <Compile Include="AmountByRangeAndTime.cs" />
     <Compile Include="BackupStorage\DropBoxBackupStorage.cs" />
     <Compile Include="BackupStorage\IBackupStorage.cs" />
+    <Compile Include="Financisto\CalcBalances.cs" />
+    <Compile Include="Financisto\CalcBalancesDiffs.cs" />
+    <Compile Include="Financisto\CalcBase.cs" />
+    <Compile Include="Financisto\CalcEarningByMonth.cs" />
+    <Compile Include="Financisto\CalcSpendingByMonth.cs" />
     <Compile Include="Financisto\Database.cs" />
     <Compile Include="Financisto\DatabaseTable.cs" />
     <Compile Include="Financisto\FinancistoReader.cs" />
     <Compile Include="Financisto\TableRow.cs" />
+    <Compile Include="Financisto\Transaction.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AmountByTime.cs" />
+    <Compile Include="Reporting\JsonWriter.cs" />
     <Compile Include="Tests\BackupStorageTests.cs" />
     <Compile Include="Tests\FinancistoReadingTests.cs" />
   </ItemGroup>
