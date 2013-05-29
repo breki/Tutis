@@ -52,6 +52,10 @@ namespace FinanceReport.Tests
             properties.Add("EarningData", earningDataBuilder.ToString());
 
             RenderReport(properties);
+
+            // balance trend
+            // spending vs. earning, trend
+            // SM earning, daily, weekly, monthly trend
         }
 
         private static Database FetchLatesFinancistoData()
