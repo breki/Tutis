@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
@@ -10,6 +9,11 @@ namespace FinanceReport.Financisto
         public Database ReadDatabaseFromFile(string fileName)
         {
             using (Stream stream = File.OpenRead(fileName))
+                return ReadDatabaseFromStream(stream);
+        }
+
+        public Database ReadDatabaseFromStream(Stream stream)
+        {
             using (reader = new StreamReader (stream))
             {
                 db = new Database();
