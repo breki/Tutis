@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using FinanceReport.DataModel;
 
-namespace FinanceReport.Financisto
+namespace FinanceReport.Analysis
 {
     public class CalcBalances : CalcBase
     {

@@ -1,4 +1,6 @@
-﻿namespace FinanceReport.Financisto
+using FinanceReport.DataModel;
+
+namespace FinanceReport.Analysis
 {
     public class CalcBalancesDiffs : CalcBase
     {

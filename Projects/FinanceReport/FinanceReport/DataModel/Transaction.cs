@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace FinanceReport.Financisto
+namespace FinanceReport.DataModel
 {
     public class Transaction
     {

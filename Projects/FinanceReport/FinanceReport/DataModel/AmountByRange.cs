@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace FinanceReport
+namespace FinanceReport.DataModel
 {
     public class AmountByRange
     {

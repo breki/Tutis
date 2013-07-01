@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 
-namespace FinanceReport.Financisto
+namespace FinanceReport.DataModel
 {
     public class FinancistoReader
     {
@@ -10,6 +11,28 @@ namespace FinanceReport.Financisto
         {
             using (Stream stream = File.OpenRead(fileName))
                 return ReadDatabaseFromStream(stream);
+        }
+
+        public Database ReadDatabaseFromZipile (string fileName)
+        {
+            using (Stream stream = File.OpenRead (fileName))
+            using (GZipStream gzstream = new GZipStream (stream, CompressionMode.Decompress))
+            using (MemoryStream memStream = new MemoryStream ())
+            {
+                byte[] buffer = new byte[10000];
+
+                while (true)
+                {
+                    int actuallyRead = gzstream.Read (buffer, 0, buffer.Length);
+                    if (actuallyRead == 0)
+                        break;
+
+                    memStream.Write (buffer, 0, actuallyRead);
+                }
+
+                memStream.Seek (0, SeekOrigin.Begin);
+                return ReadDatabaseFromStream (memStream);
+            }
         }
 
         public Database ReadDatabaseFromStream(Stream stream)
