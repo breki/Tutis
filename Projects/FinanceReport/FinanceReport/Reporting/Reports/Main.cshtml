@@ -1,4 +1,6 @@
-﻿<!DOCTYPE HTML>
+﻿@inherits Razor.ReportRazorTemplateBase<Reporting.Models.MainReportModel>
+
+<!DOCTYPE HTML>
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -68,9 +70,14 @@ $(function () {
             series: [{
                 type: 'line',
                 name: 'total balance',
-                data: [$TotalBalanceData]
+                data: [
+                    @foreach (var amount in Model.BalancesDaily.Amounts) {
+                        @amount.ToJson();
+                    }
+                ]
             }]
         });
+
 
         chart = new Highcharts.Chart({
             chart: {
@@ -125,13 +132,22 @@ $(function () {
             series: [{
                 type: 'column',
                 name: 'spending',
-                data: [$SpendingData]
+                data: [
+                    @foreach (var amount in Model.SpendingByMonth.Amounts) {
+                        @amount.ToJsonNegative();
+                    }
+                ]
             }, {
                 type: 'column',
                 name: 'earning',
-                data: [$EarningData]
+                data: [
+                    @foreach (var amount in Model.EarningByMonth.Amounts) {
+                        @amount.ToJson();
+                    }
+                ]
 			}]
         });
+
 
         chart = new Highcharts.Chart({
             chart: {
@@ -180,25 +196,20 @@ $(function () {
             },
     
             series: [
+                @foreach (var catPair in Model.MonthlySpendingByCategories.CategoryNames)
+                {
+                    @:{ name: '@catPair.Value', data: [
 
-#foreach($catNamesPair in $MonthlySpendingByCategories.CategoryNames)
-			{
-                name: '$catNamesPair.Value',
-                data: [
-
-#set ($index = $catNamesPair.Key)
-
-#foreach($amountPair in $MonthlySpendingByCategories.GetAmountsForCategory($index).Amounts)
-				$amountPair.Value,
-#end
-				]
-            },
-#end
-			]
+                    foreach (var amount in Model.MonthlySpendingByCategories.Amounts[catPair.Key].Amounts)
+                    {
+                        @amount.ToJsonNegative();
+                    }
+                    @:]},
+                }
+                ]
         });
 
-    });
-    
+    });    
 });
 		</script>
 	</head>

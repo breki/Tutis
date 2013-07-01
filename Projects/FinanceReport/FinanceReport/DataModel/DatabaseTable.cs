@@ -9,9 +9,9 @@ namespace FinanceReport.DataModel
             this.tableName = tableName;
         }
 
-        public IEnumerable<TableRow> Rows
+        public SortedList<int, TableRow> Rows
         {
-            get { return rows.Values; }
+            get { return rows; }
         }
 
         public TableRow CreateRow(int rowId)
