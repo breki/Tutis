@@ -20,6 +20,9 @@ namespace FinanceReport.Analysis
 
         public CategoriesRangesAmounts Calc ()
         {
+            DateTime now = DateTime.Now;
+            int nowMonthIndex = GetMonthIndex (now) - GetMonthIndex (new DateTime (2011, 1, 1));
+
             CategoriesRangesAmounts all = new CategoriesRangesAmounts ();
 
             DatabaseTable txTable = db.Tables["transactions"];
@@ -29,19 +32,19 @@ namespace FinanceReport.Analysis
             {
                 Transaction tx = new Transaction(row);
 
-                if (tx.IsTemplate || tx.ParentId > 0)
+                if (!tx.IsExpenseTransaction)
+                {
+                    Debug.WriteLine ("Rejected: {0}", tx, null);
                     continue;
+                }
 
-                if (tx.Category <= 0)
-                    continue;
-
-                TableRow categoryRow = categoriesTable.Rows[tx.Category];
-                if (((string)categoryRow.Values["type"]) == "1")
-                    continue;
+                Debug.WriteLine ("Accepted: {0}", tx, null);
 
                 int groupId = FindGroupId(tx.Category);
 
                 int monthIndex = GetMonthIndex(tx.Date) - GetMonthIndex(new DateTime(2011, 1, 1));
+                if (nowMonthIndex - monthIndex > 13)
+                    continue;
 
                 all.AddAmount(
                     groupId, 
@@ -61,8 +64,6 @@ namespace FinanceReport.Analysis
                 if (group.HasCategory(category))
                     return groupId;
             }
-
-            Debug.WriteLine (category);
 
             return groups.Count - 1;
         }

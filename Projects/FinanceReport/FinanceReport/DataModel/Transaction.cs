@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Text;
 
 namespace FinanceReport.DataModel
 {
@@ -58,10 +59,28 @@ namespace FinanceReport.DataModel
             get { return toAccountId; }
         }
 
+        public bool IsExpenseTransaction
+        {
+            get { return !IsTemplate && ParentId == 0 && ToAccountId == 0 && FromAmount < 0; }
+        }
+
         public static DateTime UnixTimeToDateTime (string text)
         {
             double seconds = double.Parse (text, CultureInfo.InvariantCulture);
             return Epoch.AddMilliseconds (seconds);
+        }
+
+        public override string ToString ()
+        {
+            StringBuilder s = new StringBuilder();
+            s.Append(date.ToString("dd.MM.yy", CultureInfo.InvariantCulture));
+            s.AppendFormat(CultureInfo.InvariantCulture, " {0} EUR, from {1} to {2}, cat {3}", fromAmount, fromAccountId, toAccountId, category);
+            if (isTemplate)
+                s.Append(" template");
+            if (parentId != 0)
+                s.Append(" parent");
+
+            return s.ToString();
         }
 
         private static readonly DateTime Epoch = new DateTime (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
