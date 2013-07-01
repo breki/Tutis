@@ -10,6 +10,7 @@ namespace FinanceReport.DataModel
             date = UnixTimeToDateTime ((string)row.Values["datetime"]);
             fromAmount = decimal.Parse ((string)row.Values["from_amount"], CultureInfo.InvariantCulture) / 100;
             toAmount = decimal.Parse ((string)row.Values["to_amount"], CultureInfo.InvariantCulture) / 100;
+            category = int.Parse ((string)row.Values["category_id"], CultureInfo.InvariantCulture);
             isTemplate = int.Parse ((string)row.Values["is_template"], CultureInfo.InvariantCulture) > 0;
             parentId = int.Parse ((string)row.Values["parent_id"], CultureInfo.InvariantCulture);
 
@@ -20,6 +21,11 @@ namespace FinanceReport.DataModel
         public DateTime Date
         {
             get { return date; }
+        }
+
+        public int Category
+        {
+            get { return category; }
         }
 
         public decimal FromAmount
@@ -60,6 +66,7 @@ namespace FinanceReport.DataModel
 
         private static readonly DateTime Epoch = new DateTime (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private DateTime date;
+        private int category;
         private decimal fromAmount;
         private decimal toAmount;
         private bool isTemplate;

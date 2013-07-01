@@ -47,10 +47,22 @@ namespace FinanceReport.Tests
                 JsonWriter.WriteData (earningDataBuilder, date, entry.Value);
             }
 
+            CalcMonthlyBalancesByGroups calcMonthlyBalancesByGroups = new CalcMonthlyBalancesByGroups(db);
+            calcMonthlyBalancesByGroups
+                .AddGroup("bencin", 2)
+                .AddGroup("avto - ostali stroški", 3, 16, 17, 18, 6, 30)
+                .AddGroup("hrana in nakupi", 4, 5, 10)
+                .AddGroup("kredit", 19)
+                .AddGroup("stanovanje", 12, 34, 35)
+                .AddGroup("ostalo");
+
+            CategoriesRangesAmounts monthlySpendingByCategories = calcMonthlyBalancesByGroups.Calc();
+
             Hashtable properties = new Hashtable ();
             properties.Add("TotalBalanceData", totalBalanceDataBuilder.ToString());
             properties.Add("SpendingData", spendingDataBuilder.ToString());
             properties.Add("EarningData", earningDataBuilder.ToString());
+            properties.Add ("MonthlySpendingByCategories", monthlySpendingByCategories);
 
             RenderReport(properties);
 
@@ -61,7 +73,7 @@ namespace FinanceReport.Tests
             // SM earning, daily, weekly, monthly trend
         }
 
-        private static Database FetchLatestFinancistoData()
+        public static Database FetchLatestFinancistoData()
         {
             DropBoxBackupStorage backupStorage = new DropBoxBackupStorage();
             string financistoBackupFileName = backupStorage.FindLatestBackupFile();

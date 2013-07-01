@@ -133,6 +133,70 @@ $(function () {
 			}]
         });
 
+        chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'SpendingByCategoriesContainer',
+				type: 'column',
+                zoomType: 'x',
+                spacingRight: 20
+            },
+            title: {
+                text: 'Monthly Spending By Categories'
+            },
+            xAxis: {
+                type: 'datetime',
+                maxZoom: 14 * 24 * 3600000, // fourteen days
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'EUR'
+                },
+				min: 0,
+                stackLabels: {
+                    enabled: true,
+                    style: {
+                        fontWeight: 'bold',
+                        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                    }
+                }
+            },
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                enabled: true
+            },
+            plotOptions: {
+                column: {
+                    stacking: 'normal',
+                    dataLabels: {
+                        enabled: true,
+                        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+                    }
+                }
+            },
+    
+            series: [
+
+#foreach($catNamesPair in $MonthlySpendingByCategories.CategoryNames)
+			{
+                name: '$catNamesPair.Value',
+                data: [
+
+#set ($index = $catNamesPair.Key)
+
+#foreach($amountPair in $MonthlySpendingByCategories.GetAmountsForCategory($index).Amounts)
+				$amountPair.Value,
+#end
+				]
+            },
+#end
+			]
+        });
+
     });
     
 });
@@ -144,6 +208,7 @@ $(function () {
 
 <div id="TotalBalanceContainer" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
 <div id="SpendingContainer" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+<div id="SpendingByCategoriesContainer" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
 
 	</body>
 </html>
