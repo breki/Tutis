@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace FinanceReport.Financisto
+namespace FinanceReport.DataModel
 {
     public class TableRow
     {

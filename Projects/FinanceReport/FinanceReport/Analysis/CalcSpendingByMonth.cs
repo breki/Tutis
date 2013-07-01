@@ -1,8 +1,9 @@
-﻿using System;
+using System;
+using FinanceReport.DataModel;
 
-namespace FinanceReport.Financisto
+namespace FinanceReport.Analysis
 {
-    public class CalcEarningByMonth : CalcBase
+    public class CalcSpendingByMonth : CalcBase
     {
         public static AmountByRange Calc(Database db)
         {
@@ -17,7 +18,7 @@ namespace FinanceReport.Financisto
                 if (tx.IsTemplate || tx.ParentId > 0)
                     continue;
 
-                if (tx.ToAccountId == 0 && tx.FromAmount >= 0)
+                if (tx.ToAccountId == 0 && tx.FromAmount < 0)
                     data.AddAmount (
                         GetMonthIndex (tx.Date) - GetMonthIndex (new DateTime (2011, 1, 1)), tx.FromAmount);
             }

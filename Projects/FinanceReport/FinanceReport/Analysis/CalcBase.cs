@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace FinanceReport.Financisto
+namespace FinanceReport.Analysis
 {
     public abstract class CalcBase
     {

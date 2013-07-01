@@ -5,8 +5,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Text;
+using FinanceReport.Analysis;
 using FinanceReport.BackupStorage;
-using FinanceReport.Financisto;
+using FinanceReport.DataModel;
 using FinanceReport.Reporting;
 using log4net;
 using NUnit.Framework;
@@ -21,7 +22,7 @@ namespace FinanceReport.Tests
         [Test]
         public void Test()
         {
-            Database db = FetchLatesFinancistoData();
+            Database db = FetchLatestFinancistoData();
 
             AmountByTime balancesDailyDiffs = CalcBalancesDiffs.Calc(db);
             AmountByRange spendingByMonth = CalcSpendingByMonth.Calc (db);
@@ -53,38 +54,20 @@ namespace FinanceReport.Tests
 
             RenderReport(properties);
 
+            // monthly spending by categories
             // balance trend
+            // monthly balance change trend
             // spending vs. earning, trend
             // SM earning, daily, weekly, monthly trend
         }
 
-        private static Database FetchLatesFinancistoData()
+        private static Database FetchLatestFinancistoData()
         {
             DropBoxBackupStorage backupStorage = new DropBoxBackupStorage();
             string financistoBackupFileName = backupStorage.FindLatestBackupFile();
 
-            Database db;
-
-            using (Stream stream = File.OpenRead(financistoBackupFileName))
-            using (GZipStream gzstream = new GZipStream(stream, CompressionMode.Decompress))
-            using (MemoryStream memStream = new MemoryStream())
-            {
-                byte[] buffer = new byte[10000];
-
-                while (true)
-                {
-                    int actuallyRead = gzstream.Read(buffer, 0, buffer.Length);
-                    if (actuallyRead == 0)
-                        break;
-
-                    memStream.Write(buffer, 0, actuallyRead);
-                }
-
-                memStream.Seek(0, SeekOrigin.Begin);
-                FinancistoReader reader = new FinancistoReader();
-                db = reader.ReadDatabaseFromStream(memStream);
-            }
-            return db;
+            FinancistoReader reader = new FinancistoReader ();
+            return reader.ReadDatabaseFromZipile(financistoBackupFileName);
         }
 
         private static void RenderReport(Hashtable properties)
