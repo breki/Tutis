@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using FinanceReport.DataModel;
 
 namespace FinanceReport.Analysis
@@ -21,12 +22,21 @@ namespace FinanceReport.Analysis
         {
             CategoriesRangesAmounts all = new CategoriesRangesAmounts ();
 
-            DatabaseTable table = db.Tables["transactions"];
-            foreach (TableRow row in table.Rows)
+            DatabaseTable txTable = db.Tables["transactions"];
+            DatabaseTable categoriesTable = db.Tables["category"];
+
+            foreach (TableRow row in txTable.Rows.Values)
             {
                 Transaction tx = new Transaction(row);
 
                 if (tx.IsTemplate || tx.ParentId > 0)
+                    continue;
+
+                if (tx.Category <= 0)
+                    continue;
+
+                TableRow categoryRow = categoriesTable.Rows[tx.Category];
+                if (((string)categoryRow.Values["type"]) == "1")
                     continue;
 
                 int groupId = FindGroupId(tx.Category);
@@ -51,6 +61,8 @@ namespace FinanceReport.Analysis
                 if (group.HasCategory(category))
                     return groupId;
             }
+
+            Debug.WriteLine (category);
 
             return groups.Count - 1;
         }

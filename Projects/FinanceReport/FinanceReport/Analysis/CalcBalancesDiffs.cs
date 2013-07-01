@@ -9,7 +9,7 @@ namespace FinanceReport.Analysis
             AmountByTime balances = new AmountByTime ();
 
             DatabaseTable table = db.Tables["transactions"];
-            foreach (TableRow row in table.Rows)
+            foreach (TableRow row in table.Rows.Values)
             {
                 Transaction tx = new Transaction (row);
 

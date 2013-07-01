@@ -23,7 +23,7 @@ namespace FinanceReport.Tests
                 .AddGroup("stanovanje", 12, 34, 35)
                 .AddGroup("ostalo");
 
-            foreach (TableRow row in categoriesTable.Rows)
+            foreach (TableRow row in categoriesTable.Rows.Values)
             {
                 Debug.WriteLine(row);
             }

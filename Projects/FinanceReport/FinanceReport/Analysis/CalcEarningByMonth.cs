@@ -11,7 +11,7 @@ namespace FinanceReport.Analysis
 
             AmountByRange data = new AmountByRange ();
 
-            foreach (TableRow row in table.Rows)
+            foreach (TableRow row in table.Rows.Values)
             {
                 Transaction tx = new Transaction (row);
 

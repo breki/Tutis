@@ -1,20 +1,34 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 
 namespace FinanceReport.Reporting
 {
-    public class JsonWriter
+    public static class JsonWriter
     {
-         public static void WriteData(StringBuilder stringBuilder, DateTime date, object value)
-         {
-             stringBuilder.AppendFormat (
-                 CultureInfo.InvariantCulture,
-                 "[Date.UTC({0}, {1}, {2}), {3}],",
-                 date.Year,
-                 date.Month - 1,
-                 date.Day,
-                 value);
-         }
+        public static string ToJson(this KeyValuePair<DateTime, decimal> pair)
+        {
+            DateTime date = pair.Key;
+
+            return string.Format(
+                CultureInfo.InvariantCulture,
+                "[Date.UTC({0}, {1}, {2}), {3:F0}],",
+                date.Year,
+                date.Month - 1,
+                date.Day,
+                pair.Value);
+        }
+
+        public static string ToJson(this KeyValuePair<int, decimal> pair)
+        {
+            DateTime date = new DateTime (2011, 1, 1).AddMonths (pair.Key);
+            return new KeyValuePair<DateTime, decimal>(date, pair.Value).ToJson();
+        }
+
+        public static string ToJsonNegative(this KeyValuePair<int, decimal> pair)
+        {
+            DateTime date = new DateTime (2011, 1, 1).AddMonths (pair.Key);
+            return new KeyValuePair<DateTime, decimal>(date, -pair.Value).ToJson();
+        }
     }
 }

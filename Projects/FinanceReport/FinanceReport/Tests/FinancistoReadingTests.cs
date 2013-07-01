@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text;
+using Brejc.Common.FileSystem;
 using FinanceReport.Analysis;
 using FinanceReport.BackupStorage;
 using FinanceReport.DataModel;
-using FinanceReport.Reporting;
+using FinanceReport.Razor;
+using FinanceReport.Reporting.Models;
 using log4net;
 using NUnit.Framework;
-using NVelocity;
-using NVelocity.App;
-using NVelocity.Runtime;
 
 namespace FinanceReport.Tests
 {
@@ -24,28 +18,30 @@ namespace FinanceReport.Tests
         {
             Database db = FetchLatestFinancistoData();
 
-            AmountByTime balancesDailyDiffs = CalcBalancesDiffs.Calc(db);
-            AmountByRange spendingByMonth = CalcSpendingByMonth.Calc (db);
-            AmountByRange earningByMonth = CalcEarningByMonth.Calc (db);
-            AmountByTime balancesDaily = CalcBalances.Calc(balancesDailyDiffs);
+            MainReportModel model = new MainReportModel();
 
-            StringBuilder totalBalanceDataBuilder = new StringBuilder();
-            foreach (KeyValuePair<DateTime, decimal> balance in balancesDaily.Amounts)
-                JsonWriter.WriteData(totalBalanceDataBuilder, balance.Key, balance.Value);
+            model.BalancesDailyDiffs = CalcBalancesDiffs.Calc(db);
+            model.SpendingByMonth = CalcSpendingByMonth.Calc (db);
+            model.EarningByMonth = CalcEarningByMonth.Calc (db);
+            model.BalancesDaily = CalcBalances.Calc (model.BalancesDailyDiffs);
 
-            StringBuilder spendingDataBuilder = new StringBuilder ();
-            foreach (KeyValuePair<int, decimal> entry in spendingByMonth.Amounts)
-            {
-                DateTime date = new DateTime(2011, 1, 1).AddMonths(entry.Key);
-                JsonWriter.WriteData (spendingDataBuilder, date, -entry.Value);
-            }
+            //StringBuilder totalBalanceDataBuilder = new StringBuilder();
+            //foreach (KeyValuePair<DateTime, decimal> balance in balancesDaily.Amounts)
+            //    JsonWriter.WriteData(totalBalanceDataBuilder, balance.Key, balance.Value);
 
-            StringBuilder earningDataBuilder = new StringBuilder ();
-            foreach (KeyValuePair<int, decimal> entry in earningByMonth.Amounts)
-            {
-                DateTime date = new DateTime (2011, 1, 1).AddMonths (entry.Key);
-                JsonWriter.WriteData (earningDataBuilder, date, entry.Value);
-            }
+            //StringBuilder spendingDataBuilder = new StringBuilder ();
+            //foreach (KeyValuePair<int, decimal> entry in spendingByMonth.Amounts)
+            //{
+            //    DateTime date = new DateTime(2011, 1, 1).AddMonths(entry.Key);
+            //    JsonWriter.WriteData (spendingDataBuilder, date, -entry.Value);
+            //}
+
+            //StringBuilder earningDataBuilder = new StringBuilder ();
+            //foreach (KeyValuePair<int, decimal> entry in earningByMonth.Amounts)
+            //{
+            //    DateTime date = new DateTime (2011, 1, 1).AddMonths (entry.Key);
+            //    JsonWriter.WriteData (earningDataBuilder, date, entry.Value);
+            //}
 
             CalcMonthlyBalancesByGroups calcMonthlyBalancesByGroups = new CalcMonthlyBalancesByGroups(db);
             calcMonthlyBalancesByGroups
@@ -56,15 +52,15 @@ namespace FinanceReport.Tests
                 .AddGroup("stanovanje", 12, 34, 35)
                 .AddGroup("ostalo");
 
-            CategoriesRangesAmounts monthlySpendingByCategories = calcMonthlyBalancesByGroups.Calc();
+            model.MonthlySpendingByCategories = calcMonthlyBalancesByGroups.Calc();
 
-            Hashtable properties = new Hashtable ();
-            properties.Add("TotalBalanceData", totalBalanceDataBuilder.ToString());
-            properties.Add("SpendingData", spendingDataBuilder.ToString());
-            properties.Add("EarningData", earningDataBuilder.ToString());
-            properties.Add ("MonthlySpendingByCategories", monthlySpendingByCategories);
+            //Hashtable properties = new Hashtable ();
+            //properties.Add("TotalBalanceData", totalBalanceDataBuilder.ToString());
+            //properties.Add("SpendingData", spendingDataBuilder.ToString());
+            //properties.Add("EarningData", earningDataBuilder.ToString());
+            //properties.Add ("MonthlySpendingByCategories", monthlySpendingByCategories);
 
-            RenderReport(properties);
+            RenderReport(model);
 
             // monthly spending by categories
             // balance trend
@@ -82,22 +78,28 @@ namespace FinanceReport.Tests
             return reader.ReadDatabaseFromZipile(financistoBackupFileName);
         }
 
-        private static void RenderReport(Hashtable properties)
+        private static void RenderReport(MainReportModel model)
         {
-            VelocityEngine velocity = new VelocityEngine();
-            velocity.SetProperty(RuntimeConstants.RESOURCE_LOADER, "file");
-            velocity.Init();
+            WindowsFileSystem fileSystem = new WindowsFileSystem();
+            IReportRenderingEngine reportRenderingEngine = new RazorReportRenderingEngine(fileSystem);
+            string body = reportRenderingEngine.RenderView(model);
 
-            Template template = velocity.GetTemplate("Reporting/ReportTemplates/index.htm.vm");
+            fileSystem.WriteFile("Main.html", body, Encoding.UTF8);
 
-            using (Stream stream = File.Open("Reporting/ReportTemplates/index.htm", FileMode.Create))
-            {
-                using (TextWriter writer = new StreamWriter(stream))
-                {
-                    VelocityContext velocityContext = new VelocityContext(properties);
-                    template.Merge(velocityContext, writer);
-                }
-            }
+            //VelocityEngine velocity = new VelocityEngine();
+            //velocity.SetProperty(RuntimeConstants.RESOURCE_LOADER, "file");
+            //velocity.Init();
+
+            //Template template = velocity.GetTemplate("Reporting/ReportTemplates/index.htm.vm");
+
+            //using (Stream stream = File.Open("Reporting/ReportTemplates/index.htm", FileMode.Create))
+            //{
+            //    using (TextWriter writer = new StreamWriter(stream))
+            //    {
+            //        VelocityContext velocityContext = new VelocityContext(properties);
+            //        template.Merge(velocityContext, writer);
+            //    }
+            //}
         }
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
