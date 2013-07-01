@@ -15,12 +15,8 @@ namespace FinanceReport.Analysis
             {
                 Transaction tx = new Transaction (row);
 
-                if (tx.IsTemplate || tx.ParentId > 0)
-                    continue;
-
-                if (tx.ToAccountId == 0 && tx.FromAmount < 0)
-                    data.AddAmount (
-                        GetMonthIndex (tx.Date) - GetMonthIndex (new DateTime (2011, 1, 1)), tx.FromAmount);
+                if (tx.IsExpenseTransaction)
+                    data.AddAmount (GetMonthIndex (tx.Date) - GetMonthIndex (new DateTime (2011, 1, 1)), tx.FromAmount);
             }
 
             return data;
