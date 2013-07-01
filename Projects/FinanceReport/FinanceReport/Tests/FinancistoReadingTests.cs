@@ -22,7 +22,9 @@ namespace FinanceReport.Tests
 
             model.BalancesDailyDiffs = CalcBalancesDiffs.Calc(db);
             model.SpendingByMonth = CalcSpendingByMonth.Calc (db);
+            model.SpendingByMonthTrend = model.SpendingByMonth.CalculateTrend(3);
             model.EarningByMonth = CalcEarningByMonth.Calc (db);
+            model.EarningByMonthTrend = model.EarningByMonth.CalculateTrend(3);
             model.BalancesDaily = CalcBalances.Calc (model.BalancesDailyDiffs);
 
             //StringBuilder totalBalanceDataBuilder = new StringBuilder();

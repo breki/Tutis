@@ -16,10 +16,22 @@ namespace FinanceReport.Reporting.Models
             set { spendingByMonth = value; }
         }
 
+        public AmountByRange SpendingByMonthTrend
+        {
+            get { return spendingByMonthTrend; }
+            set { spendingByMonthTrend = value; }
+        }
+
         public AmountByRange EarningByMonth
         {
             get { return earningByMonth; }
             set { earningByMonth = value; }
+        }
+
+        public AmountByRange EarningByMonthTrend
+        {
+            get { return earningByMonthTrend; }
+            set { earningByMonthTrend = value; }
         }
 
         public AmountByTime BalancesDaily
@@ -36,7 +48,9 @@ namespace FinanceReport.Reporting.Models
 
         private AmountByTime balancesDailyDiffs;
         private AmountByRange spendingByMonth;
+        private AmountByRange spendingByMonthTrend;
         private AmountByRange earningByMonth;
+        private AmountByRange earningByMonthTrend;
         private AmountByTime balancesDaily;
         private CategoriesRangesAmounts monthlySpendingByCategories;
     }

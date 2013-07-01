@@ -33,12 +33,7 @@ namespace FinanceReport.Analysis
                 Transaction tx = new Transaction(row);
 
                 if (!tx.IsExpenseTransaction)
-                {
-                    Debug.WriteLine ("Rejected: {0}", tx, null);
                     continue;
-                }
-
-                Debug.WriteLine ("Accepted: {0}", tx, null);
 
                 int groupId = FindGroupId(tx.Category);
 
