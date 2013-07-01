@@ -250,7 +250,24 @@ var highchartsOptions = Highcharts.setOptions(Highcharts.theme);
                         @amount.ToJson();
                     }
                 ]
-			}]
+			}, {
+                type: 'spline',
+                name: 'spending trend',
+                data: [
+                    @foreach (var amount in Model.SpendingByMonthTrend.Amounts) {
+                        @amount.ToJsonNegative();
+                    }
+                ]			    
+			}, {
+                type: 'spline',
+                name: 'earning trend',
+                data: [
+                    @foreach (var amount in Model.EarningByMonthTrend.Amounts) {
+                        @amount.ToJson();
+                    }
+                ]			    
+			}
+            ]
         });
 
 
