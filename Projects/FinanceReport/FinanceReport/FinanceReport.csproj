@@ -57,11 +57,14 @@
     <Compile Include="Analysis\CalcBase.cs" />
     <Compile Include="Analysis\CalcEarningByMonth.cs" />
     <Compile Include="Analysis\CalcSpendingByMonth.cs" />
+    <Compile Include="Analysis\CalcMonthlyBalancesByGroups.cs" />
     <Compile Include="BackupStorage\DropBoxBackupStorage.cs" />
     <Compile Include="BackupStorage\IBackupStorage.cs" />
     <Compile Include="DataModel\AmountByRange.cs" />
     <Compile Include="DataModel\AmountByRangeAndTime.cs" />
     <Compile Include="DataModel\AmountByTime.cs" />
+    <Compile Include="DataModel\CategoriesGroup.cs" />
+    <Compile Include="DataModel\CategoriesRangesAmounts.cs" />
     <Compile Include="DataModel\Database.cs" />
     <Compile Include="DataModel\DatabaseTable.cs" />
     <Compile Include="DataModel\FinancistoReader.cs" />
@@ -72,6 +75,7 @@
     <Compile Include="Reporting\JsonWriter.cs" />
     <Compile Include="Tests\BackupStorageTests.cs" />
     <Compile Include="Tests\FinancistoReadingTests.cs" />
+    <Compile Include="Tests\MonthlyBalancesByGroupsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
