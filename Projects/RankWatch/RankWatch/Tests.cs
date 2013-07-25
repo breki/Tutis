@@ -30,35 +30,38 @@ namespace RankWatch
                     requestBuilder.GetUserAgent ());
                 scraper.SaveHtml (@"output.html");
 
-                while (scraper.FindNext("<div class=\"kv kva"))
-                {
-                }
-
-                if (!scraper.FindNext("<div class=\"f kv"))
-                    break;
-
                 while (true)
                 {
-                    // <div class="kv kva ads-visurl">
-                    // <div class="f kv" style="white-space: nowrap;">
-                    if (!scraper.FindNext("<cite"))
+                    int foundIndex = scraper.FindNextOneOf("<div class=\"kv kva", "<div class=\"f kv");
+                    if (foundIndex == -1)
                         break;
 
-                    if (!scraper.FindNext(">"))
-                        throw new InvalidOperationException("BUG 1");
+                    if (foundIndex == 0)
+                        continue;
 
-                    string resultUrl = scraper.ExtractUntil("</cite>");
-                    resultUrl = resultUrl.Replace("<b>", string.Empty);
-                    resultUrl = resultUrl.Replace("</b>", string.Empty);
-
-                    Debug.WriteLine("{0}: {1}", resultCount + 1, resultUrl);
-
-                    resultCount++;
-
-                    if (resultUrl.StartsWith("scalablemaps.com"))
+                    while (true)
                     {
-                        endSearch = true;
-                        break;
+                        // <div class="kv kva ads-visurl">
+                        // <div class="f kv" style="white-space: nowrap;">
+                        if (!scraper.FindNext("<cite"))
+                            break;
+
+                        if (!scraper.FindNext(">"))
+                            throw new InvalidOperationException("BUG 1");
+
+                        string resultUrl = scraper.ExtractUntil("</cite>");
+                        resultUrl = resultUrl.Replace("<b>", string.Empty);
+                        resultUrl = resultUrl.Replace("</b>", string.Empty);
+
+                        Debug.WriteLine("{0}: {1}", resultCount + 1, resultUrl);
+
+                        resultCount++;
+
+                        if (resultUrl.StartsWith("scalablemaps.com"))
+                        {
+                            endSearch = true;
+                            break;
+                        }
                     }
                 }
 

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Net;
 
 namespace RankWatch
@@ -29,6 +30,34 @@ namespace RankWatch
 
             index = pos + text.Length;
             return true;
+        }
+
+        public int FindNextOneOf(params string[] texts)
+        {
+            int? minPos = null;
+            int? foundIndex = null;
+
+            for (int i = 0; i < texts.Length; i++)
+            {
+                string text = texts[i];
+
+                int pos = html.IndexOf(text, this.index, System.StringComparison.Ordinal);
+                if (pos == -1)
+                    continue;
+
+                if (!minPos.HasValue || pos < minPos)
+                {
+                    minPos = pos;
+                    foundIndex = i;
+                }
+            }
+
+            if (!foundIndex.HasValue)
+                return -1;
+
+            string foundText = texts[foundIndex.Value];
+            index = minPos.Value + foundText.Length;
+            return foundIndex.Value;
         }
 
         public string ExtractUntil(string text)
