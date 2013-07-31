@@ -5,11 +5,15 @@ namespace RankWatch
 {
     public class RankFinder
     {
-        public RankInfo FindRank(string searchKeyword, int maxPages = 10)
+        public RankInfo FindRank(
+            GoogleSearchRequestBuilder requestBuilder,
+            string searchKeyword, 
+            int maxPages = 10)
         {
+            Console.WriteLine("Finding rank for {0}", searchKeyword);
+
             RankInfo rankInfo = new RankInfo(searchKeyword);
 
-            GoogleSearchRequestBuilder requestBuilder = new GoogleSearchRequestBuilder ();
             HtmlScraper scraper = new HtmlScraper ();
             //scraper.LoadFile(@"..\..\..\data\sample-serp.html");
             //scraper.Download (requestBuilder.ConstructUrl("vector map of USA", 0), requestBuilder.GetUserAgent());
@@ -22,8 +26,10 @@ namespace RankWatch
             int pageNumber = 0;
             int resultCount = 0;
 
-            while (pageNumber < maxPages)
+            bool shouldFinish = false;
+            while (maxPages == -1 || pageNumber < maxPages)
             {
+                requestBuilder.WaitForNextPageQuery ();
                 scraper.Download (
                     requestBuilder.ConstructUrl (searchKeyword, pageNumber),
                     requestBuilder.GetUserAgent ());
@@ -49,16 +55,24 @@ namespace RankWatch
                         resultUrl = resultUrl.Replace ("<b>", string.Empty);
                         resultUrl = resultUrl.Replace ("</b>", string.Empty);
 
-                        Debug.WriteLine ("{0}: {1}", resultCount + 1, resultUrl);
+                        Console.WriteLine ("{0}: {1}", resultCount + 1, resultUrl);
 
                         resultCount++;
 
-                        if (resultUrl.StartsWith ("scalablemaps.com"))
-                            rankInfo.Ranks.Add (resultCount);
+                        if (resultUrl.StartsWith("scalablemaps.com"))
+                        {
+                            rankInfo.Ranks.Add(resultCount);
+                            if (maxPages == -1)
+                            {
+                                shouldFinish = true;
+                                break;
+                            }
+                        }
                     }
                 }
 
-                requestBuilder.WaitForNextPageQuery ();
+                if (shouldFinish)
+                    break;
 
                 pageNumber++;
             }

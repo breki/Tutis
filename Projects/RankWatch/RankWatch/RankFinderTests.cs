@@ -3,13 +3,16 @@ using NUnit.Framework;
 
 namespace RankWatch
 {
-    public class Tests
+    public class RankFinderTests
     {
         [Test]
         public void Test()
         {
+            GoogleSearchRequestBuilder requestBuilder = new GoogleSearchRequestBuilder ();
+
             RankFinder finder = new RankFinder();
             RankInfo rankInfo = finder.FindRank(
+                requestBuilder,
                 "toronto vector map", 
                 //"vector map of europe", 
                 10);
