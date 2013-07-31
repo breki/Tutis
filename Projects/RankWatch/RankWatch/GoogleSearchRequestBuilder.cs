@@ -29,9 +29,12 @@ namespace RankWatch
 
         public void WaitForNextPageQuery ()
         {
-            int waitSeconds = rnd.Next(25, 40);
-            Debug.WriteLine("Waiting {0} secs...", waitSeconds);
-            Thread.Sleep(waitSeconds * 1000);
+            if (queryCounter++ > 0)
+            {
+                int waitSeconds = rnd.Next(25, 40);
+                Console.WriteLine("Waiting {0} secs...", waitSeconds);
+                Thread.Sleep(waitSeconds*1000);
+            }
         }
 
         private string[] userAgents = new[]
@@ -41,5 +44,6 @@ namespace RankWatch
             };
 
         private Random rnd = new Random();
+        private int queryCounter;
     }
 }
