@@ -11,7 +11,7 @@ namespace FinanceReport.Tests
         [Test]
         public void Test()
         {
-            Database db = FinancistoReadingTests.FetchLatestFinancistoData();
+            Database db = Program.FetchLatestFinancistoData();
             DatabaseTable categoriesTable = db.Tables["category"];
 
             CalcMonthlyBalancesByGroups calc = new CalcMonthlyBalancesByGroups(db);
