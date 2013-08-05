@@ -15,3 +15,4 @@ StyleCop.Cache
 Builds/
 *.BuildNumber.txt
 *.user
+Experimental/AmazonS3/s3-credentials.txt
