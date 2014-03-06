@@ -1,29 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Brejc.Common.FileSystem;
+using ICSharpCode.SharpZipLib.BZip2;
 
 namespace SamsungTvChannelsTool
 {
     public class Program
     {
-        public static void Main (string[] args)
+        public static int Main (string[] args)
         {
-            IFileSystem fileSystem = new WindowsFileSystem();
-            IZipper zipper = new Zipper(fileSystem);
-            ScmFileReader reader = new ScmFileReader(fileSystem, zipper);
-            ChannelsInfo channels = reader.ReadScmFile(args[0]);
+            IFileSystem fileSystem = new WindowsFileSystem ();
+            IZipper zipper = new Zipper (fileSystem);
 
-            int currentChannelNumber = 1;
-            foreach (ChannelInfo channelInfo in channels.Channels)
+            List<ICommand> commands = new List<ICommand> ();
+            HelpCommand helpCommand = new HelpCommand (commands);
+
+            commands.Add (new GenerateChannelsOrderCommand (fileSystem, zipper));
+            commands.Add(helpCommand);
+
+            ICommand commandToExecute = helpCommand;
+            if (args.Length > 0)
             {
-                if (channelInfo.ChannelNumber == 0 || channelInfo.ChannelNumber > 200)
-                    break;
-
-                while (currentChannelNumber < channelInfo.ChannelNumber)
-                    Console.Out.WriteLine("{0}: ---", currentChannelNumber++);
-
-                Console.Out.WriteLine (channelInfo);
-                currentChannelNumber++;
+                commandToExecute = commands.FirstOrDefault(x => x.CommandName == args[0]);
+                if (commandToExecute == null)
+                    commandToExecute = helpCommand;
             }
+
+            return commandToExecute.Execute(args);
         }
     }
 }

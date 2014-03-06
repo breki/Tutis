@@ -51,6 +51,9 @@
   <ItemGroup>
     <Compile Include="ChannelInfo.cs" />
     <Compile Include="ChannelsInfo.cs" />
+    <Compile Include="GenerateChannelsOrderCommand.cs" />
+    <Compile Include="HelpCommand.cs" />
+    <Compile Include="ICommand.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScmFileReader.cs" />
