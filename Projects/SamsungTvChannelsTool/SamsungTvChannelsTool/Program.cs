@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Brejc.Common.FileSystem;
-using ICSharpCode.SharpZipLib.BZip2;
 
 namespace SamsungTvChannelsTool
 {
@@ -17,6 +15,7 @@ namespace SamsungTvChannelsTool
             HelpCommand helpCommand = new HelpCommand (commands);
 
             commands.Add (new GenerateChannelsOrderCommand (fileSystem, zipper));
+            commands.Add (new ApplyChannelsOrderCommand (fileSystem, zipper));
             commands.Add(helpCommand);
 
             ICommand commandToExecute = helpCommand;
