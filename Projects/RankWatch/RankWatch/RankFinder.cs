@@ -8,6 +8,7 @@ namespace RankWatch
         public RankInfo FindRank(
             GoogleSearchRequestBuilder requestBuilder,
             string searchKeyword, 
+            bool endOnFirstFind,
             int maxPages = 10)
         {
             Console.WriteLine("Finding rank for {0}", searchKeyword);
@@ -27,7 +28,7 @@ namespace RankWatch
             int resultCount = 0;
 
             bool shouldFinish = false;
-            while (maxPages == -1 || pageNumber < maxPages)
+            while (!shouldFinish && pageNumber < maxPages)
             {
                 requestBuilder.WaitForNextPageQuery ();
                 scraper.Download (
@@ -62,7 +63,7 @@ namespace RankWatch
                         if (resultUrl.StartsWith("scalablemaps.com"))
                         {
                             rankInfo.Ranks.Add(resultCount);
-                            if (maxPages == -1)
+                            if (endOnFirstFind)
                             {
                                 shouldFinish = true;
                                 break;
@@ -70,9 +71,6 @@ namespace RankWatch
                         }
                     }
                 }
-
-                if (shouldFinish)
-                    break;
 
                 pageNumber++;
             }

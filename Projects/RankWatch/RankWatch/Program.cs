@@ -17,7 +17,7 @@ namespace RankWatch
             serializer.Formatting = Formatting.Indented;
 
             DateTime now = DateTime.Now;
-            IList<string> keywords = LoadKeywords(args[0]);
+            IEnumerable<string> keywords = LoadKeywords(args[0]);
 
             string historyFileName = args[1];
             RanksDb db;
@@ -36,24 +36,30 @@ namespace RankWatch
             RankFinder rankFinder = new RankFinder();
             foreach (string keyword in keywords)
             {
-                RankInfo rank = rankFinder.FindRank(requestBuilder, keyword, -1);
+                RankInfo rank = rankFinder.FindRank(requestBuilder, keyword, true, 10);
 
                 if (rank.Ranks.Count > 0)
+                {
                     db.AddRank(now, keyword, rank.Ranks[0]);
+                    UpdateHistoryFile (historyFileName, serializer, db);
+                }
             }
+        }
 
+        private static IEnumerable<string> LoadKeywords(string fileName)
+        {
+            return File.ReadAllLines(fileName).Where(x => x.Trim().Length > 0).ToList();
+        }
+
+        private static void UpdateHistoryFile(string historyFileName, JsonSerializer serializer, RanksDb db)
+        {
             string historyDir = Path.GetDirectoryName(historyFileName);
             if (!String.IsNullOrWhiteSpace(historyDir) && !Directory.Exists(historyDir))
                 Directory.CreateDirectory(historyDir);
-            
-            using (Stream file = File.Open(historyFileName, FileMode.Create, FileAccess.Write))
-            using (StreamWriter sw = new StreamWriter (file, Encoding.UTF8))
-                serializer.Serialize(sw, db);
-        }
 
-        private static IList<string> LoadKeywords(string fileName)
-        {
-            return File.ReadAllLines(fileName).Where(x => x.Trim().Length > 0).ToList();
+            using (Stream file = File.Open(historyFileName, FileMode.Create, FileAccess.Write))
+            using (StreamWriter sw = new StreamWriter(file, Encoding.UTF8))
+                serializer.Serialize(sw, db);
         }
     }
 }
