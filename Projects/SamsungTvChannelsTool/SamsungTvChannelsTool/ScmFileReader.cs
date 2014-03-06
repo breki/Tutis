@@ -6,21 +6,28 @@ namespace SamsungTvChannelsTool
 {
     public class ScmFileReader
     {
-        public ScmFileReader(IFileSystem fileSystem)
+        public ScmFileReader(IFileSystem fileSystem, IZipper zipper)
         {
             this.fileSystem = fileSystem;
+            this.zipper = zipper;
         }
 
         public ChannelsInfo ReadScmFile(string scmFileName)
         {
-            using (Stream stream = fileSystem.OpenFileToRead(scmFileName))
+            const string UnzipDir = "temp";
+            zipper.Unzip(scmFileName, UnzipDir);
+
+            string channelsFileName = Path.Combine (UnzipDir, "map-CableD");
+            long channelsFileSize = fileSystem.GetFileInformation(channelsFileName).Length;
+
+            using (Stream stream = fileSystem.OpenFileToRead (channelsFileName))
             using (BinaryReader reader = new BinaryReader(stream))
                 return ReadScmFileFromStream(reader);
         }
 
         private static ChannelsInfo ReadScmFileFromStream(BinaryReader reader)
         {
-            ChannelsInfo channels = new ChannelsInfo();
+            ChannelsInfo channels = new ChannelsInfo ();
 
             while (true)
             {
@@ -36,41 +43,14 @@ namespace SamsungTvChannelsTool
 
         private static ChannelInfo ReadChannelInfo(BinaryReader reader)
         {
-            short channelNumber = ReadInt16LittleEndian(reader);
-            short vpid = ReadInt16BigEndian(reader);
-            short mpid = ReadInt16BigEndian(reader);
-
-            reader.ReadBytes(4);
-
-            short symbolRate = ReadInt16BigEndian (reader);
-
-            reader.ReadBytes (4);
-
-            byte network = reader.ReadByte();
-
-            reader.ReadBytes (2);
-
-            char[] chrs = reader.ReadChars(200);
-
-            throw new NotImplementedException();
-        }
-
-        private static short ReadInt16LittleEndian(BinaryReader reader)
-        {
-            byte b1 = reader.ReadByte ();
-            byte b2 = reader.ReadByte ();
-
-            return (short)(b1 | b2 << 8);
-        }
-
-        private static short ReadInt16BigEndian(BinaryReader reader)
-        {
-            byte b1 = reader.ReadByte ();
-            byte b2 = reader.ReadByte ();
-
-            return (short)(b1 << 8 | b2);
+            const int RecordSize = 320;
+            byte[] rawData = reader.ReadBytes(RecordSize);
+            if (rawData.Length == 0)
+                return null;
+            return new ChannelInfo(rawData);
         }
 
         private readonly IFileSystem fileSystem;
+        private readonly IZipper zipper;
     }
 }
