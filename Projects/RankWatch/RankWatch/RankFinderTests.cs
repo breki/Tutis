@@ -15,6 +15,7 @@ namespace RankWatch
                 requestBuilder,
                 "toronto vector map", 
                 //"vector map of europe", 
+                true,
                 10);
 
             Debug.WriteLine("Ranks: ");
