@@ -5,14 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{F42CAC98-67A0-4941-AABD-20E6F5D14814}</ProjectGuid>
+    <ProjectGuid>{4462410E-4F50-4530-8A0F-382E921C7E98}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RankWatch</RootNamespace>
-    <AssemblyName>RankWatch</AssemblyName>
+    <RootNamespace>SamsungTvChannelsTool</RootNamespace>
+    <AssemblyName>SamsungTvChannelsTool</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -36,24 +35,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Brejc.Common.Library">
-      <HintPath>..\lib\Brejc\Brejc.Common.Library.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net">
-      <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\..\RankWatch\lib\Brejc\Brejc.Common.Library.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Razor.Unofficial">
-      <HintPath>..\packages\System.Web.Razor.Unofficial.2.0.2\lib\net40\System.Web.Razor.Unofficial.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -61,30 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GoogleSearchRequestBuilder.cs" />
-    <Compile Include="HtmlScraper.cs" />
-    <Compile Include="JsonTests.cs" />
-    <Compile Include="RankHistory.cs" />
+    <Compile Include="ChannelInfo.cs" />
+    <Compile Include="ChannelsInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RankFinder.cs" />
-    <Compile Include="RankInfo.cs" />
-    <Compile Include="RanksDb.cs" />
-    <Compile Include="RankFinderTests.cs" />
-    <Compile Include="Razor\InMemoryRazorEngine.cs" />
-    <Compile Include="Razor\IReportRenderingEngine.cs" />
-    <Compile Include="Razor\RazorReportRenderingEngine.cs" />
-    <Compile Include="Razor\ReportRazorTemplateBase.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\data\keywords.txt">
-      <Link>keywords.txt</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Compile Include="ScmFileReader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
