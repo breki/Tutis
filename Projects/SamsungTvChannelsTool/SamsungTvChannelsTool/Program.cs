@@ -9,7 +9,7 @@ namespace SamsungTvChannelsTool
         public static int Main (string[] args)
         {
             IFileSystem fileSystem = new WindowsFileSystem ();
-            IZipper zipper = new Zipper (fileSystem);
+            IZipper2 zipper = new Zipper2 (fileSystem);
 
             List<ICommand> commands = new List<ICommand> ();
             HelpCommand helpCommand = new HelpCommand (commands);

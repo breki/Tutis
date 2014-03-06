@@ -1,33 +1,40 @@
 ﻿using System;
 using System.IO;
 using Brejc.Common.FileSystem;
+using Brejc.Common.Tasks;
 
 namespace SamsungTvChannelsTool
 {
-    public class ScmFileReader
+    public class ScmFileHandler
     {
-        public ScmFileReader(IFileSystem fileSystem, IZipper zipper)
+        public const int RecordSize = 320;
+
+        public ScmFileHandler(IFileSystem fileSystem, IZipper2 zipper)
         {
             this.fileSystem = fileSystem;
             this.zipper = zipper;
         }
 
-        public ChannelsInfo ReadScmFile(string scmFileName)
+        public ChannelsInfo UnpackScmFile(string scmFileName)
         {
-            const string UnzipDir = "temp";
-            zipper.Unzip(scmFileName, UnzipDir);
+            packageFiles = zipper.Unzip(scmFileName, UnzipDir);
 
             string channelsFileName = Path.Combine (UnzipDir, "map-CableD");
             long channelsFileSize = fileSystem.GetFileInformation(channelsFileName).Length;
 
             using (Stream stream = fileSystem.OpenFileToRead (channelsFileName))
             using (BinaryReader reader = new BinaryReader(stream))
-                return ReadScmFileFromStream(reader);
+                return ReadScmFileFromStream(reader, channelsFileName);
         }
 
-        private static ChannelsInfo ReadScmFileFromStream(BinaryReader reader)
+        public void PackScmFile(string scmFileName)
         {
-            ChannelsInfo channels = new ChannelsInfo ();
+            zipper.Zip(new NullTaskExecutionContext(), scmFileName, packageFiles, null);
+        }
+
+        private static ChannelsInfo ReadScmFileFromStream(BinaryReader reader, string channelsFileName)
+        {
+            ChannelsInfo channels = new ChannelsInfo (channelsFileName);
 
             while (true)
             {
@@ -43,14 +50,15 @@ namespace SamsungTvChannelsTool
 
         private static ChannelInfo ReadChannelInfo(BinaryReader reader)
         {
-            const int RecordSize = 320;
             byte[] rawData = reader.ReadBytes(RecordSize);
             if (rawData.Length == 0)
                 return null;
             return new ChannelInfo(rawData);
         }
 
+        private const string UnzipDir = "temp";
         private readonly IFileSystem fileSystem;
-        private readonly IZipper zipper;
+        private readonly IZipper2 zipper;
+        private FileSet packageFiles;
     }
 }

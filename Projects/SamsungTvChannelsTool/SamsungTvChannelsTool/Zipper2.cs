@@ -7,9 +7,9 @@ using ICSharpCode.SharpZipLib.Zip;
 
 namespace SamsungTvChannelsTool
 {
-    public class Zipper : IZipper
+    public class Zipper2 : IZipper2
     {
-        public Zipper (IFileSystem fileSystem)
+        public Zipper2 (IFileSystem fileSystem)
         {
             this.fileSystem = fileSystem;
         }
@@ -61,9 +61,10 @@ namespace SamsungTvChannelsTool
                 fileSystem.DeleteFile (zipFileName, false);
         }
 
-        public void Unzip (string zipFileName, string destinationDir)
+        public FileSet Unzip (string zipFileName, string destinationDir)
         {
             this.destinationDir = destinationDir;
+            FileSet unzippedFiles = new FileSet();
 
             using (Stream stream = fileSystem.OpenFileToRead (zipFileName))
             using (zipFile = new ZipFile (stream))
@@ -71,41 +72,16 @@ namespace SamsungTvChannelsTool
                 foreach (ZipEntry entry in zipFile)
                 {
                     if (entry.IsFile)
-                        ExtractEntry (entry);
+                    {
+                        ExtractEntry(entry);
+                        unzippedFiles.AddFile(entry.Name);
+                    }
                     else if (entry.IsDirectory)
-                        ExtractEntry (entry);
+                        ExtractEntry(entry);
                 }
             }
 
-            //using (FileStream fileStream = File.Open(zipFileName, FileMode.Open, FileAccess.Read))
-            //{
-            //    using (ZipInputStream zipStream = new ZipInputStream(fileStream))
-            //    {
-            //        while (true)
-            //        {
-            //            ZipEntry entry = zipStream.GetNextEntry();
-            //            if (entry == null)
-            //                break;
-
-            //            entry.IsDirectory;
-            //            Console.Out.WriteLine(entry.Name);
-            //        }
-            //    }
-            //}
-
-            //FastZip fastZip = new FastZip ();
-            //fastZip.NameTransform = this;
-            ////fastZip.EntryFactory = this;
-
-            //fastZip.CreateEmptyDirectories = true;
-            //fastZip.ExtractZip (
-            //    zipFileName,
-            //    destinationDir,
-            //    FastZip.Overwrite.Always,
-            //    null,
-            //    null,
-            //    null,
-            //    true);
+            return unzippedFiles;
         }
 
         private void AddFileToZip (string fileName, string basedFileName, ZipOutputStream zipStream)
@@ -114,12 +90,6 @@ namespace SamsungTvChannelsTool
             {
                 string fileHeader = string.Empty;
                 string fileFooter = string.Empty;
-
-                //if (zipFileHeaderCallback != null)
-                //    fileHeader = zipFileHeaderCallback(fileName);
-
-                //if (zipFileFooterCallback != null)
-                //    fileFooter = zipFileFooterCallback(fileName);
 
                 ZipEntry entry = new ZipEntry (basedFileName);
                 entry.DateTime = File.GetLastWriteTime (fileName);

@@ -7,7 +7,7 @@ namespace SamsungTvChannelsTool
 {
     public class GenerateChannelsOrderCommand : ICommand
     {
-        public GenerateChannelsOrderCommand(IFileSystem fileSystem, IZipper zipper)
+        public GenerateChannelsOrderCommand(IFileSystem fileSystem, IZipper2 zipper)
         {
             this.fileSystem = fileSystem;
             this.zipper = zipper;
@@ -36,28 +36,20 @@ namespace SamsungTvChannelsTool
             string scmFileName = args[1];
             string channelsOrderFileName = args[2];
 
-            ScmFileReader reader = new ScmFileReader (fileSystem, zipper);
-            ChannelsInfo channels = reader.ReadScmFile (scmFileName);
+            ScmFileHandler handler = new ScmFileHandler (fileSystem, zipper);
+            ChannelsInfo channels = handler.UnpackScmFile (scmFileName);
 
-            using (Stream stream = fileSystem.OpenFileToWrite(channelsOrderFileName))
-            using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8))
+            ChannelsOrderFile channelsOrderFile = new ChannelsOrderFile (fileSystem);
+
+            foreach (ChannelInfo channelInfo in channels.Channels)
             {
-                int currentChannelNumber = 1;
-                foreach (ChannelInfo channelInfo in channels.Channels)
-                {
-                    if (channelInfo.ChannelNumber == 0)
-                        break;
+                if (channelInfo.ChannelNumber == 0)
+                    break;
 
-                    while (currentChannelNumber < channelInfo.ChannelNumber)
-                    {
-                        writer.WriteLine();
-                        currentChannelNumber++;
-                    }
-
-                    writer.WriteLine(channelInfo.Name);
-                    currentChannelNumber++;
-                }
+                channelsOrderFile.AddChannel(channelInfo.ChannelNumber, channelInfo.Name);
             }
+
+            channelsOrderFile.Write(channelsOrderFileName);
 
             Console.Out.WriteLine("Channel order file written");
 
@@ -65,6 +57,6 @@ namespace SamsungTvChannelsTool
         }
 
         private readonly IFileSystem fileSystem;
-        private readonly IZipper zipper;
+        private readonly IZipper2 zipper;
     }
 }
