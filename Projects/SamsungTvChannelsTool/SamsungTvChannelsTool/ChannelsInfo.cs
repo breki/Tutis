@@ -4,6 +4,11 @@ namespace SamsungTvChannelsTool
 {
     public class ChannelsInfo
     {
+        public IList<ChannelInfo> Channels
+        {
+            get { return channels; }
+        }
+
         public void AddChannel(ChannelInfo channel)
         {
             channels.Add(channel);
