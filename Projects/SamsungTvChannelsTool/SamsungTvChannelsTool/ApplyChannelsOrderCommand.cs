@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Brejc.Common;
 using Brejc.Common.FileSystem;
 
@@ -64,6 +65,9 @@ namespace SamsungTvChannelsTool
                     if (!indexedChannels.TryGetValue(channelName, out channelInfo))
                         throw new InvalidOperationException("Channel '{0}' does not exist".Fmt(channelName));
 
+                    // remove the channel from the index so we know it has been used
+                    indexedChannels.Remove(channelName);
+
                     channelInfo.ChannelNumber = (short)channelNumber;
                     channelInfo.RecalculateChecksum();
 
@@ -87,6 +91,8 @@ namespace SamsungTvChannelsTool
 
             handler.PackScmFile (outputScmFileName);
 
+            WriteOutUnusedChannels(indexedChannels);
+
             return 0;
         }
 
@@ -96,10 +102,9 @@ namespace SamsungTvChannelsTool
 
             foreach (ChannelInfo channel in channels.Channels)
             {
-                Console.Out.WriteLine ("{0}: Channel '{1}'".Fmt (channel.ChannelNumber, channel.Name));
-
                 if (indexedChannels.ContainsKey(channel.Name))
                 {
+                    Console.Out.WriteLine();
                     Console.Out.WriteLine(
                         "Channel '{0}' appears more than once, ignoring the second one: {1} / {2}", channel.Name, indexedChannels[channel.Name], channel);
                 }
@@ -108,6 +113,15 @@ namespace SamsungTvChannelsTool
             }
 
             return indexedChannels;
+        }
+
+        private static void WriteOutUnusedChannels(IDictionary<string, ChannelInfo> indexedChannels)
+        {
+            if (indexedChannels.Count > 0)
+                Console.Out.WriteLine("These channels are not in your order list:");
+
+            foreach (KeyValuePair<string, ChannelInfo> unusedChannel in indexedChannels.OrderBy(x => x.Value.Name))
+                Console.Out.WriteLine(unusedChannel);
         }
 
         private readonly IFileSystem fileSystem;

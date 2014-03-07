@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Brejc.Common.FileSystem;
 
@@ -26,7 +27,15 @@ namespace SamsungTvChannelsTool
                     commandToExecute = helpCommand;
             }
 
-            return commandToExecute.Execute(args);
+            try
+            {
+                return commandToExecute.Execute(args);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.Out.WriteLine(ex.Message);
+                return 1;
+            }
         }
     }
 }
