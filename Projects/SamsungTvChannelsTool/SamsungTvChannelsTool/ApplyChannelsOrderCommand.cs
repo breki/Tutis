@@ -48,7 +48,6 @@ namespace SamsungTvChannelsTool
             Dictionary<string, ChannelInfo> indexedChannels = IndexChannelsByName(channels);
 
             // start preparing a new CableD file
-            // save the file in place of the existing one
             using (Stream writeStream = fileSystem.OpenFileToWrite (channels.FileName))
             using (BinaryWriter writer = new BinaryWriter(writeStream))
             {
@@ -77,11 +76,16 @@ namespace SamsungTvChannelsTool
                 {
                     for (int i = 0; i < ScmFileHandler.RecordSize; i++)
                         writer.Write((byte)0);
+                    channelsCount++;
                 }
             }
 
-            // zip back the SCM file
-            handler.PackScmFile (scmFileName);
+            // zip the new SCM file
+            string outputScmFileName = Path.Combine (
+                Path.GetDirectoryName (scmFileName),
+                Path.GetFileNameWithoutExtension (scmFileName) + "_new" + Path.GetExtension (scmFileName));
+
+            handler.PackScmFile (outputScmFileName);
 
             return 0;
         }
@@ -91,7 +95,17 @@ namespace SamsungTvChannelsTool
             Dictionary<string, ChannelInfo> indexedChannels = new Dictionary<string, ChannelInfo>();
 
             foreach (ChannelInfo channel in channels.Channels)
-                indexedChannels.Add(channel.Name, channel);
+            {
+                Console.Out.WriteLine ("{0}: Channel '{1}'".Fmt (channel.ChannelNumber, channel.Name));
+
+                if (indexedChannels.ContainsKey(channel.Name))
+                {
+                    Console.Out.WriteLine(
+                        "Channel '{0}' appears more than once, ignoring the second one: {1} / {2}", channel.Name, indexedChannels[channel.Name], channel);
+                }
+                else
+                    indexedChannels.Add(channel.Name, channel);
+            }
 
             return indexedChannels;
         }

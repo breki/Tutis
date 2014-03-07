@@ -23,6 +23,26 @@ namespace SamsungTvChannelsTool
             get { return RemoveNulls(Encoding.BigEndianUnicode.GetString(rawData, 64, 100)); }
         }
 
+        public short Network
+        {
+            get { return ReadInt16LittleEndian(34); }
+        }
+
+        public short ServiceId
+        {
+            get { return ReadInt16LittleEndian(6); }
+        }
+
+        public short MultiplexTsid
+        {
+            get { return ReadInt16LittleEndian(48); }
+        }
+
+        public short MultiplexOnid
+        {
+            get { return ReadInt16LittleEndian(32); }
+        }
+
         public void RecalculateChecksum()
         {
             byte ck = 0;
@@ -39,7 +59,7 @@ namespace SamsungTvChannelsTool
 
         public override string ToString()
         {
-            return "{0}: '{1}'".Fmt(ChannelNumber, Name);
+            return "{0}: '{1}', network={2}, tsid={3}, onid={4}".Fmt(ChannelNumber, Name, Network, MultiplexTsid, MultiplexOnid);
         }
 
         private short ReadInt16LittleEndian (int index)

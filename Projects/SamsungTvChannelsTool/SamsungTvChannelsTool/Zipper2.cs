@@ -39,15 +39,19 @@ namespace SamsungTvChannelsTool
                             break;
                         }
 
-                        int skipChar = 0;
+                        string basedFileName;
+                        if (!string.IsNullOrEmpty(files.BaseDir))
+                        {
+                            char lastChar = files.BaseDir[files.BaseDir.Length - 1];
+                            int skipCharIndex = 0;
+                            if (lastChar != '\\' && lastChar != '/')
+                                skipCharIndex++;
 
-                        if (false == string.IsNullOrEmpty (files.BaseDir)
-                            && (files.BaseDir[files.BaseDir.Length - 1] == '\\'
-                                || files.BaseDir[files.BaseDir.Length - 1] == '/'))
-                            skipChar++;
-
-                        // cut off the leading part of the path (up to the root directory of the package)
-                        string basedFileName = fileName.Substring (files.BaseDir.Length + skipChar);
+                            // cut off the leading part of the path (up to the root directory of the package)
+                            basedFileName = fileName.Substring (files.BaseDir.Length + skipCharIndex);
+                        }
+                        else
+                            basedFileName = fileName;
 
                         basedFileName = ZipEntry.CleanName (basedFileName);
 

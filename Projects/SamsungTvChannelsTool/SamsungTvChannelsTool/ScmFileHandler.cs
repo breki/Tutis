@@ -20,7 +20,6 @@ namespace SamsungTvChannelsTool
             packageFiles = zipper.Unzip(scmFileName, UnzipDir);
 
             string channelsFileName = Path.Combine (UnzipDir, "map-CableD");
-            long channelsFileSize = fileSystem.GetFileInformation(channelsFileName).Length;
 
             using (Stream stream = fileSystem.OpenFileToRead (channelsFileName))
             using (BinaryReader reader = new BinaryReader(stream))
@@ -29,7 +28,13 @@ namespace SamsungTvChannelsTool
 
         public void PackScmFile(string scmFileName)
         {
-            zipper.Zip(new NullTaskExecutionContext(), scmFileName, packageFiles, null);
+            FileSet newPackageFiles = new FileSet();
+            newPackageFiles.BaseDir = UnzipDir + Path.DirectorySeparatorChar;
+
+            foreach (string file in packageFiles.Files)
+                newPackageFiles.AddFile(Path.Combine(UnzipDir, file));
+
+            zipper.Zip(new NullTaskExecutionContext(), scmFileName, newPackageFiles, null);
         }
 
         private static ChannelsInfo ReadScmFileFromStream(BinaryReader reader, string channelsFileName)
@@ -41,6 +46,9 @@ namespace SamsungTvChannelsTool
                 ChannelInfo channel = ReadChannelInfo(reader);
                 if (channel == null)
                     break;
+
+                if (channel.ChannelNumber == 0)
+                    continue;
 
                 channels.AddChannel(channel);
             }
