@@ -91,7 +91,7 @@ namespace SamsungTvChannelsTool
 
             handler.PackScmFile (outputScmFileName);
 
-            WriteOutUnusedChannels(indexedChannels);
+            WriteOutUnusedChannels (indexedChannels, channelsOrderFile);
 
             return 0;
         }
@@ -115,13 +115,17 @@ namespace SamsungTvChannelsTool
             return indexedChannels;
         }
 
-        private static void WriteOutUnusedChannels(IDictionary<string, ChannelInfo> indexedChannels)
+        private static void WriteOutUnusedChannels(IDictionary<string, ChannelInfo> indexedChannels, ChannelsOrderFile channelsOrderFile)
         {
-            if (indexedChannels.Count > 0)
+            IEnumerable<KeyValuePair<string, ChannelInfo>> unusedChannels = indexedChannels.Where(x => !channelsOrderFile.IsIgnoredChannel(x.Key));
+
+            if (unusedChannels.Any())
+            {
                 Console.Out.WriteLine("These channels are not in your order list:");
 
-            foreach (KeyValuePair<string, ChannelInfo> unusedChannel in indexedChannels.OrderBy(x => x.Value.Name))
-                Console.Out.WriteLine(unusedChannel);
+                foreach (KeyValuePair<string, ChannelInfo> unusedChannel in unusedChannels.OrderBy(x => x.Value.Name))
+                    Console.Out.WriteLine(unusedChannel);
+            }
         }
 
         private readonly IFileSystem fileSystem;
