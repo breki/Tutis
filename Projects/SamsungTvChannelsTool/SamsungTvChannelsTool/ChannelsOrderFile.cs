@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Brejc.Common.FileSystem;
 
@@ -8,7 +9,9 @@ namespace SamsungTvChannelsTool
 {
     public class ChannelsOrderFile
     {
-        public ChannelsOrderFile(IFileSystem fileSystem)
+        public const string IgnoreHeader = "---IGNORE---";
+
+        public ChannelsOrderFile (IFileSystem fileSystem)
         {
             this.fileSystem = fileSystem;
         }
@@ -21,6 +24,11 @@ namespace SamsungTvChannelsTool
         public void AddChannel (int channelNumber, string channelName)
         {
             channels.Add(channelNumber, channelName);
+        }
+
+        public bool IsIgnoredChannel(string channelName)
+        {
+            return ignoredChannels.Contains(channelName);
         }
 
         public void Write(string fileName)
@@ -47,19 +55,42 @@ namespace SamsungTvChannelsTool
         {
             ChannelsOrderFile channelsOrderFile = new ChannelsOrderFile(fileSystem);
 
-            int channelNumber = 1;
-            foreach (string channelName in fileSystem.ReadFileAsStringLines (channelsOrderFileName))
+            string[] lines = fileSystem.ReadFileAsStringLines(channelsOrderFileName).ToArray();
+            for (int lineIndex = 0; lineIndex < lines.Length; lineIndex++)
             {
-                if (!String.IsNullOrEmpty(channelName))
-                    channelsOrderFile.AddChannel(channelNumber, channelName.Trim());
+                int channelNumber = lineIndex+1;
 
-                channelNumber++;
+                string channelName = lines[lineIndex].Trim();
+
+                if (channelName == IgnoreHeader)
+                {
+                    ReadIgnoredChannels (channelsOrderFile, lines, lineIndex);
+                    break;
+                }
+                
+                if (!String.IsNullOrEmpty(channelName))
+                    channelsOrderFile.AddChannel(channelNumber, channelName);
             }
 
             return channelsOrderFile;
         }
 
+        private static void ReadIgnoredChannels(ChannelsOrderFile channelsOrderFile, string[] lines, int ignoredHeaderLineIndex)
+        {
+            for (int lineIndex = ignoredHeaderLineIndex+1; lineIndex < lines.Length; lineIndex++)
+            {
+                string channelName = lines[lineIndex].Trim ();
+                channelsOrderFile.AddIgnoredChannel(channelName);
+            }
+        }
+
+        private void AddIgnoredChannel(string channelName)
+        {
+            ignoredChannels.Add(channelName);
+        }
+
         private readonly IFileSystem fileSystem;
         private SortedList<int, string> channels = new SortedList<int, string> ();
+        private HashSet<string> ignoredChannels = new HashSet<string>();
     }
 }
