@@ -19,16 +19,16 @@ namespace LruCaching
 
         public void Add(K key, V value)
         {
-            CachedItem<K, V> cachedItem;
+            LinkedListNode<CachedItem<K, V>> cachedItemNode;
 
             // is the item already cached?
-            if (cachedItems.TryGetValue(key, out cachedItem))
+            if (cachedItems.TryGetValue(key, out cachedItemNode))
             {
                 // replace the old value with new one
-                cachedItem.Value = value;
+                cachedItemNode.Value.Value = value;
                 // mark the item as last used
-                cachedItemsByUsage.Remove(cachedItem);
-                cachedItemsByUsage.AddLast(cachedItem);
+                cachedItemsByUsage.Remove(cachedItemNode);
+                cachedItemsByUsage.AddLast(cachedItemNode);
                 return;
             }
 
@@ -37,11 +37,11 @@ namespace LruCaching
 
         public V Get(K key)
         {
-            CachedItem<K, V> item;
+            LinkedListNode<CachedItem<K, V>> itemNode;
 
             // is the item already cached?
-            if (cachedItems.TryGetValue(key, out item))
-                return item.Value;
+            if (cachedItems.TryGetValue(key, out itemNode))
+                return itemNode.Value.Value;
 
             V value = readItemFunc(key);
             SaveNewItemToCache(key, value);
@@ -57,8 +57,8 @@ namespace LruCaching
         private void SaveNewItemToCache(K key, V value)
         {
             CachedItem<K, V> newItem = new CachedItem<K, V>(key, value, true);
-            cachedItems.Add(key, newItem);
-            cachedItemsByUsage.AddLast(newItem);
+            LinkedListNode<CachedItem<K, V>> newItemNode = cachedItemsByUsage.AddLast(newItem);
+            cachedItems.Add(key, newItemNode);
 
             if (Count > cacheSize)
                 RemoveItemFromCache();
@@ -121,7 +121,7 @@ namespace LruCaching
         private readonly int cacheSize;
         private readonly Func<K, V> readItemFunc;
         private readonly Action<K, V> writeItemAction;
-        private Dictionary<K, CachedItem<K, V>> cachedItems = new Dictionary<K, CachedItem<K, V>>();
+        private Dictionary<K, LinkedListNode<CachedItem<K, V>>> cachedItems = new Dictionary<K, LinkedListNode<CachedItem<K, V>>>();
         private LinkedList<CachedItem<K, V>> cachedItemsByUsage = new LinkedList<CachedItem<K, V>>();
     }
 }
