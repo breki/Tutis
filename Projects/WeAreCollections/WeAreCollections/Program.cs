@@ -8,9 +8,10 @@ namespace WeAreCollections
         public static void Main (string[] args)
         {
             List<IPerformanceTest> tests = new List<IPerformanceTest>();
-            tests.Add(new SortedSetAddingUniqueTest());
-            tests.Add(new SortedDictionaryAddingUniqueTest());
-            tests.Add(new SortedListAddingUniqueTest());
+            //tests.Add(new SortedSetAddingUniqueTest());
+            //tests.Add(new SortedDictionaryAddingUniqueTest());
+            //tests.Add(new SortedListAddingUniqueTest());
+            tests.Add(new HeapAddingUniqueTest());
 
             ExecuteTests(tests);
         }
