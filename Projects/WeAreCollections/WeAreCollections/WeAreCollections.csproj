@@ -43,11 +43,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomDataStructures\Heaps\Heap.cs" />
+    <Compile Include="CustomDataStructures\Heaps\IHeap.cs" />
+    <Compile Include="CustomDataStructures\Heaps\MaxHeap.cs" />
     <Compile Include="IPerformanceTest.cs" />
     <Compile Include="PerformanceTestsExecutor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestHelper.cs" />
+    <Compile Include="Tests\HeapAddingUniqueTest.cs" />
     <Compile Include="Tests\SortedDictionaryAddingUniqueTest.cs" />
     <Compile Include="Tests\SortedListAddingUniqueTest.cs" />
     <Compile Include="Tests\SortedSetAddingUniqueTest.cs" />
