@@ -4,22 +4,22 @@ using System.Globalization;
 
 namespace WeAreCollections.Tests
 {
-    public class SortedSetAddingUniqueTest : IPerformanceTest
+    public class SortedListAddingUniqueTest : IPerformanceTest
     {
         public int SuggestedTestStepsCount
         {
-            get { return 2000000; }
+            get { return 200000; }
         }
 
-        public string GetTestDescription(int expectedTestStepsCount)
+        public string GetTestDescription (int expectedTestStepsCount)
         {
-            return string.Format (CultureInfo.InvariantCulture, "SortedSet: adding {0:n0} unique elements", expectedTestStepsCount);
+            return string.Format (CultureInfo.InvariantCulture, "SortedList: adding {0:n0} unique elements", expectedTestStepsCount);
         }
 
         public void Initialize(Random rnd, int expectedTestStepsCount)
         {
             this.expectedTestStepsCount = expectedTestStepsCount;
-            testedSet = new SortedSet<int> ();
+            testedSet = new SortedList<int, int>();
 
             valuesToUse = TestHelper.GenerateRandomUniqueTestSet(rnd, expectedTestStepsCount);
         }
@@ -29,7 +29,7 @@ namespace WeAreCollections.Tests
             int value = valuesToUse[step];
 
             // tested code
-            testedSet.Add (value);
+            testedSet.Add (value, value);
         }
 
         public void AssertValidity()
@@ -38,7 +38,7 @@ namespace WeAreCollections.Tests
                 throw new InvalidOperationException ("testedSet.Count != expectedTestStepsCount");
         }
 
-        private SortedSet<int> testedSet;
+        private SortedList<int, int> testedSet;
         private int[] valuesToUse;
         private int expectedTestStepsCount;
     }
