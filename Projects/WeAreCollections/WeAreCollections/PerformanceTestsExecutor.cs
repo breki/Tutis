@@ -13,7 +13,7 @@ namespace WeAreCollections
                 Random rnd = new Random(1);
                 Stopwatch watch = new Stopwatch();
 
-                Console.Out.WriteLine("Test: {0}...", test.TestDescription);
+                Console.Out.WriteLine("Test: {0}...", test.GetTestDescription(test.SuggestedTestStepsCount));
                 Console.Out.WriteLine("Initializing test...");
 
                 watch.Start ();
