@@ -11,7 +11,10 @@ namespace WeAreCollections
             //tests.Add(new SortedSetAddingUniqueTest());
             //tests.Add(new SortedDictionaryAddingUniqueTest());
             //tests.Add(new SortedListAddingUniqueTest());
-            tests.Add(new HeapAddingUniqueTest());
+            //tests.Add(new HeapAddingUniqueTest());
+            tests.Add(new BufferBlockCopyTest());
+            tests.Add(new ArrayCopyTest());
+            tests.Add(new BufferBlockCopyTest());
 
             ExecuteTests(tests);
         }
