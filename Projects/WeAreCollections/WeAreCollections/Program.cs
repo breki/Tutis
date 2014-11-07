@@ -12,9 +12,13 @@ namespace WeAreCollections
             //tests.Add(new SortedDictionaryAddingUniqueTest());
             //tests.Add(new SortedListAddingUniqueTest());
             //tests.Add(new HeapAddingUniqueTest());
-            tests.Add(new BufferBlockCopyTest());
-            tests.Add(new ArrayCopyTest());
-            tests.Add(new BufferBlockCopyTest());
+
+            //tests.Add(new BufferBlockCopyTest());
+            //tests.Add(new ArrayCopyTest());
+
+            tests.Add(new ForEachLoopTest());
+            tests.Add(new ForLoopWithCachedCountTest());
+            tests.Add(new ForLoopWithoutCachedCountTest());
 
             ExecuteTests(tests);
         }
