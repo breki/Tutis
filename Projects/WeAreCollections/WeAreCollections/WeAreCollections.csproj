@@ -54,6 +54,7 @@
     <Compile Include="Tests\ArrayCopyTest.cs" />
     <Compile Include="Tests\BufferBlockCopyTest.cs" />
     <Compile Include="Tests\ForEachLoopTest.cs" />
+    <Compile Include="Tests\ForLoopTestBase.cs" />
     <Compile Include="Tests\ForLoopWithCachedCountTest.cs" />
     <Compile Include="Tests\ForLoopWithoutCachedCountTest.cs" />
     <Compile Include="Tests\HeapAddingUniqueTest.cs" />

@@ -13,17 +13,18 @@ namespace WeAreCollections
                 Random rnd = new Random(1);
                 Stopwatch watch = new Stopwatch();
 
+                Console.Out.WriteLine();
                 Console.Out.WriteLine("Test: {0}...", test.GetTestDescription(test.SuggestedTestStepsCount));
-                Console.Out.WriteLine("Initializing test...");
+                Console.Out.WriteLine("   Initializing test...");
 
                 watch.Start ();
 
                 test.Initialize(rnd, test.SuggestedTestStepsCount);
                 test.ExecuteStep(0);
 
-                Console.Out.WriteLine ("Test initialized in {0} ms", watch.ElapsedMilliseconds);
+                Console.Out.WriteLine ("   Test initialized in {0} ms", watch.ElapsedMilliseconds);
 
-                Console.Out.WriteLine ("Executing test...");
+                Console.Out.WriteLine ("   Executing test...");
 
                 watch.Restart();
                 for (int i = 1; i < test.SuggestedTestStepsCount; i++)
@@ -31,7 +32,10 @@ namespace WeAreCollections
 
                 test.AssertValidity();
                 
-                Console.Out.WriteLine("Time taken: {0} ms", watch.ElapsedMilliseconds);
+                Console.Out.WriteLine(
+                    "   Time taken: (all steps) {0} ms, {1} ms/step", 
+                    watch.ElapsedMilliseconds,
+                    watch.ElapsedMilliseconds / (test.SuggestedTestStepsCount-1));
             }
         }
     }
