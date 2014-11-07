@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Globalization;
 
 namespace WeAreCollections.Tests
 {
-    public class ForEachLoopTest : IPerformanceTest
+    public class ForEachLoopTest : ForLoopTestBase
     {
-        public const int ListSize = 100000000;
-
-        public int SuggestedTestStepsCount
+        public ForEachLoopTest(int listSize, int steps) : base(listSize, steps)
         {
-            get { return 10; }
         }
 
         public int Sum
@@ -17,31 +14,19 @@ namespace WeAreCollections.Tests
             get { return sum; }
         }
 
-        public string GetTestDescription(int expectedTestStepsCount)
+        public override string GetTestDescription(int expectedTestStepsCount)
         {
-            return "Runs foreach loop on a List<>";
+            return string.Format(CultureInfo.InvariantCulture, "Runs foreach loop on a List<> of {0} elements", ListSize);
         }
 
-        public void Initialize(Random rnd, int expectedTestStepsCount)
-        {
-            list = new List<int>(ListSize);
-
-            for (int i = 0; i < ListSize; i++)
-                list.Add(rnd.Next());
-        }
-
-        public void ExecuteStep(int step)
+        public override void ExecuteStep (int step)
         {
             sum = 0;
+            List<int> list = List;
             foreach (int item in list)
                 sum += item;
         }
 
-        public void AssertValidity()
-        {
-        }
-
-        private List<int> list;
         private int sum;
     }
 }

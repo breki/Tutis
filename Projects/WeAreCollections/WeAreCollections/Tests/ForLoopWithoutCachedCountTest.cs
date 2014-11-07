@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Globalization;
 
 namespace WeAreCollections.Tests
 {
-    public class ForLoopWithoutCachedCountTest : IPerformanceTest
+    public class ForLoopWithoutCachedCountTest : ForLoopTestBase
     {
-        public int SuggestedTestStepsCount
+        public ForLoopWithoutCachedCountTest(int listSize, int steps) : base(listSize, steps)
         {
-            get { return 10; }
         }
 
         public int Sum
@@ -15,22 +14,15 @@ namespace WeAreCollections.Tests
             get { return sum; }
         }
 
-        public string GetTestDescription(int expectedTestStepsCount)
+        public override string GetTestDescription(int expectedTestStepsCount)
         {
-            return "Runs for loop on a List<> without cached list size";
+            return string.Format (CultureInfo.InvariantCulture, "Runs for loop on a List<> of {0} elements (without cached list size)", ListSize);
         }
 
-        public void Initialize(Random rnd, int expectedTestStepsCount)
-        {
-            list = new List<int> (ForEachLoopTest.ListSize);
-
-            for (int i = 0; i < ForEachLoopTest.ListSize; i++)
-                list.Add(rnd.Next());
-        }
-
-        public void ExecuteStep(int step)
+        public override void ExecuteStep(int step)
         {
             sum = 0;
+            List<int> list = List;
             for (int i = 0; i < list.Count; i++)
             {
                 int item = list[i];
@@ -38,11 +30,6 @@ namespace WeAreCollections.Tests
             }
         }
 
-        public void AssertValidity()
-        {
-        }
-
-        private List<int> list;
         private int sum;
     }
 }

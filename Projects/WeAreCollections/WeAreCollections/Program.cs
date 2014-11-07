@@ -16,9 +16,23 @@ namespace WeAreCollections
             //tests.Add(new BufferBlockCopyTest());
             //tests.Add(new ArrayCopyTest());
 
-            tests.Add(new ForEachLoopTest());
-            tests.Add(new ForLoopWithCachedCountTest());
-            tests.Add(new ForLoopWithoutCachedCountTest());
+            int listSize = 100000000;
+            int steps = 10;
+            tests.Add(new ForEachLoopTest(listSize, steps));
+            tests.Add (new ForLoopWithCachedCountTest (listSize, steps));
+            tests.Add (new ForLoopWithoutCachedCountTest (listSize, steps));
+
+            listSize = 100;
+            steps = 1000000;
+            tests.Add(new ForEachLoopTest(listSize, steps));
+            tests.Add (new ForLoopWithCachedCountTest (listSize, steps));
+            tests.Add (new ForLoopWithoutCachedCountTest (listSize, steps));
+
+            listSize = 10;
+            steps = 10000000;
+            tests.Add(new ForEachLoopTest(listSize, steps));
+            tests.Add (new ForLoopWithCachedCountTest (listSize, steps));
+            tests.Add (new ForLoopWithoutCachedCountTest (listSize, steps));
 
             ExecuteTests(tests);
         }
