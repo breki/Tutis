@@ -45,8 +45,8 @@ namespace SamsungTvChannelsTool
             ScmFileHandler handler = new ScmFileHandler (fileSystem, zipper);
             ChannelsInfo channels = handler.UnpackScmFile (scmFileName);
 
-            // read all records from the CableD and index them by the channel name
-            Dictionary<string, ChannelInfo> indexedChannels = IndexChannelsByName(channels);
+            // read all records from the CableD 
+            ChannelsInfo workingChannels = channels.Clone();
 
             // start preparing a new CableD file
             using (Stream writeStream = fileSystem.OpenFileToWrite (channels.FileName))
@@ -55,18 +55,19 @@ namespace SamsungTvChannelsTool
                 int channelsCount = 0;
 
                 // for each record in channels order file
-                foreach (KeyValuePair<int, string> channelPair in channelsOrderFile.Channels)
+                foreach (KeyValuePair<int, Tuple<string, int?>> channelPair in channelsOrderFile.Channels)
                 {
                     // insert the CableD record (with the channel number and checksum corrected)
                     int channelNumber = channelPair.Key;
-                    string channelName = channelPair.Value;
+                    string channelName = channelPair.Value.Item1;
+                    int? channelTsid = channelPair.Value.Item2;
 
-                    ChannelInfo channelInfo;
-                    if (!indexedChannels.TryGetValue(channelName, out channelInfo))
-                        throw new InvalidOperationException("Channel '{0}' does not exist".Fmt(channelName));
+                    ChannelInfo channelInfo = workingChannels.FindChannel(channelName, channelTsid);
+                    if (channelInfo == null)
+                        throw new InvalidOperationException("Channel '{0} #{1}' does not exist".Fmt(channelName, channelTsid));
 
                     // remove the channel from the index so we know it has been used
-                    indexedChannels.Remove(channelName);
+                    workingChannels.RemoveChannel(channelInfo);
 
                     channelInfo.ChannelNumber = (short)channelNumber;
                     channelInfo.RecalculateChecksum();
@@ -91,39 +92,21 @@ namespace SamsungTvChannelsTool
 
             handler.PackScmFile (outputScmFileName);
 
-            WriteOutUnusedChannels (indexedChannels, channelsOrderFile);
+            WriteOutUnusedChannels (workingChannels, channelsOrderFile);
 
             return 0;
         }
 
-        private static Dictionary<string, ChannelInfo> IndexChannelsByName(ChannelsInfo channels)
+        private static void WriteOutUnusedChannels(
+            ChannelsInfo channels, ChannelsOrderFile channelsOrderFile)
         {
-            Dictionary<string, ChannelInfo> indexedChannels = new Dictionary<string, ChannelInfo>();
-
-            foreach (ChannelInfo channel in channels.Channels)
-            {
-                if (indexedChannels.ContainsKey(channel.Name))
-                {
-                    Console.Out.WriteLine();
-                    Console.Out.WriteLine(
-                        "Channel '{0}' appears more than once, ignoring the second one: {1} / {2}", channel.Name, indexedChannels[channel.Name], channel);
-                }
-                else
-                    indexedChannels.Add(channel.Name, channel);
-            }
-
-            return indexedChannels;
-        }
-
-        private static void WriteOutUnusedChannels(IDictionary<string, ChannelInfo> indexedChannels, ChannelsOrderFile channelsOrderFile)
-        {
-            IEnumerable<KeyValuePair<string, ChannelInfo>> unusedChannels = indexedChannels.Where(x => !channelsOrderFile.IsIgnoredChannel(x.Key));
+            IEnumerable<ChannelInfo> unusedChannels = channels.Channels.Where(x => !channelsOrderFile.IsIgnoredChannel(x.Name));
 
             if (unusedChannels.Any())
             {
                 Console.Out.WriteLine("These channels are not in your order list:");
 
-                foreach (KeyValuePair<string, ChannelInfo> unusedChannel in unusedChannels.OrderBy(x => x.Value.Name))
+                foreach (ChannelInfo unusedChannel in unusedChannels.OrderBy(x => x.Name))
                     Console.Out.WriteLine(unusedChannel);
             }
         }

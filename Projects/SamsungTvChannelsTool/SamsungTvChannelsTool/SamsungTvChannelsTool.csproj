@@ -60,6 +60,7 @@
     <Compile Include="HelpCommand.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="IZipper2.cs" />
+    <Compile Include="ListChannelsInfoCommand.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScmFileHandler.cs" />

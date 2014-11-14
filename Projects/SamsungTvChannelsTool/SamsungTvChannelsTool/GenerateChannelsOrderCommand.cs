@@ -46,7 +46,7 @@ namespace SamsungTvChannelsTool
                 if (channelInfo.ChannelNumber == 0)
                     break;
 
-                channelsOrderFile.AddChannel(channelInfo.ChannelNumber, channelInfo.Name);
+                channelsOrderFile.AddChannel(channelInfo.ChannelNumber, channelInfo.Name, channelInfo.MultiplexTsid);
             }
 
             channelsOrderFile.Write(channelsOrderFileName);
