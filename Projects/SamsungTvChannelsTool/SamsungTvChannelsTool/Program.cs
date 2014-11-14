@@ -15,6 +15,7 @@ namespace SamsungTvChannelsTool
             List<ICommand> commands = new List<ICommand> ();
             HelpCommand helpCommand = new HelpCommand (commands);
 
+            commands.Add (new ListChannelsInfoCommand(fileSystem, zipper));
             commands.Add (new GenerateChannelsOrderCommand (fileSystem, zipper));
             commands.Add (new ApplyChannelsOrderCommand (fileSystem, zipper));
             commands.Add(helpCommand);

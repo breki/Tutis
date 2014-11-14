@@ -16,14 +16,14 @@ namespace SamsungTvChannelsTool
             this.fileSystem = fileSystem;
         }
 
-        public SortedList<int, string> Channels
+        public SortedList<int, Tuple<string, int?>> Channels
         {
             get { return channels; }
         }
 
-        public void AddChannel (int channelNumber, string channelName)
+        public void AddChannel (int channelNumber, string channelName, int? tsid)
         {
-            channels.Add(channelNumber, channelName);
+            channels.Add(channelNumber, new Tuple<string, int?>(channelName, tsid));
         }
 
         public bool IsIgnoredChannel(string channelName)
@@ -37,7 +37,7 @@ namespace SamsungTvChannelsTool
             using (StreamWriter writer = new StreamWriter (stream, Encoding.UTF8))
             {
                 int currentChannelNumber = 1;
-                foreach (KeyValuePair<int, string> channelPair in channels)
+                foreach (KeyValuePair<int, Tuple<string, int?>> channelPair in channels)
                 {
                     while (currentChannelNumber < channelPair.Key)
                     {
@@ -45,7 +45,7 @@ namespace SamsungTvChannelsTool
                         currentChannelNumber++;
                     }
 
-                    writer.WriteLine (channelPair.Value);
+                    writer.WriteLine ("{0} ###{1}", channelPair.Value.Item1, channelPair.Value.Item2);
                     currentChannelNumber++;
                 }
             }
@@ -59,8 +59,19 @@ namespace SamsungTvChannelsTool
             for (int lineIndex = 0; lineIndex < lines.Length; lineIndex++)
             {
                 int channelNumber = lineIndex+1;
+                
+                string line = lines[lineIndex].Trim();
 
-                string channelName = lines[lineIndex].Trim();
+                string channelName;
+                int? tsid = null;
+                int tsidIndex = line.IndexOf("###");
+                if (tsidIndex != -1)
+                {
+                    channelName = line.Substring(0, tsidIndex).Trim();
+                    tsid = int.Parse(line.Substring(tsidIndex + 3));
+                }
+                else
+                    channelName = line;
 
                 if (channelName == IgnoreHeader)
                 {
@@ -69,7 +80,7 @@ namespace SamsungTvChannelsTool
                 }
                 
                 if (!String.IsNullOrEmpty(channelName))
-                    channelsOrderFile.AddChannel(channelNumber, channelName);
+                    channelsOrderFile.AddChannel(channelNumber, channelName, tsid);
             }
 
             return channelsOrderFile;
@@ -90,7 +101,7 @@ namespace SamsungTvChannelsTool
         }
 
         private readonly IFileSystem fileSystem;
-        private SortedList<int, string> channels = new SortedList<int, string> ();
+        private SortedList<int, Tuple<string, int?>> channels = new SortedList<int, Tuple<string, int?>> ();
         private HashSet<string> ignoredChannels = new HashSet<string>();
     }
 }
