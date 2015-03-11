@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocGenerator", "DocGenerator\DocGenerator.csproj", "{1204A4D7-2207-4278-8214-7337F555F2E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocGenerator.Tests", "DocGenerator.Tests\DocGenerator.Tests.csproj", "{FD062A3A-7EC2-4209-AB4E-9AD45E3AB904}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{F89B2FC0-B023-402B-A858-13C19DD21B2D}"
+	ProjectSection(SolutionItems) = preProject
+		samples\sample.markdown = samples\sample.markdown
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1204A4D7-2207-4278-8214-7337F555F2E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1204A4D7-2207-4278-8214-7337F555F2E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1204A4D7-2207-4278-8214-7337F555F2E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1204A4D7-2207-4278-8214-7337F555F2E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD062A3A-7EC2-4209-AB4E-9AD45E3AB904}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD062A3A-7EC2-4209-AB4E-9AD45E3AB904}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD062A3A-7EC2-4209-AB4E-9AD45E3AB904}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD062A3A-7EC2-4209-AB4E-9AD45E3AB904}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
