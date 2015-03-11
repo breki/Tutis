@@ -10,9 +10,9 @@ namespace DocGenerator
             try
             {
                 string inputDir = ".";
-                string outputDir = ".";
+                string outputDir = @".\output";
                 string layoutFileName = null;
-                string cssFileName = null;
+                string contentDir = @".\content";
 
                 foreach (string arg in args)
                 {
@@ -22,8 +22,8 @@ namespace DocGenerator
                         outputDir = FetchArgValue (arg);
                     else if (arg.StartsWith ("-lay", StringComparison.OrdinalIgnoreCase))
                         layoutFileName = FetchArgValue (arg);
-                    else if (arg.StartsWith("-css", StringComparison.OrdinalIgnoreCase))
-                        cssFileName = FetchArgValue(arg);
+                    else if (arg.StartsWith("-c", StringComparison.OrdinalIgnoreCase))
+                        contentDir = FetchArgValue(arg);
                     else
                     {
                         string errorMessage = string.Format(CultureInfo.InvariantCulture, "Unknown command line parameter '{0}'", arg);
@@ -32,7 +32,7 @@ namespace DocGenerator
                 }
 
                 MarkdownToHtmlGenerator generator = new MarkdownToHtmlGenerator();
-                generator.Generate(inputDir, outputDir, layoutFileName, cssFileName);
+                generator.Generate(inputDir, outputDir, layoutFileName, contentDir);
             }
             catch (CommandLineException ex)
             {
@@ -40,9 +40,9 @@ namespace DocGenerator
                 Console.Out.WriteLine ();
                 Console.Out.WriteLine ("USAGE:");
                 Console.Out.WriteLine ("-i:<dir> - input directory (default is current dir)");
-                Console.Out.WriteLine ("-o:<dir> - output directory (default is current dir)");
+                Console.Out.WriteLine ("-o:<dir> - output directory (default is ./output)");
                 Console.Out.WriteLine ("-lay:<file> - HTML layout file name");
-                Console.Out.WriteLine ("-css:<file> - CSS file name");
+                Console.Out.WriteLine ("-c:<file> - content directory (default is ./content");
             }
         }
 

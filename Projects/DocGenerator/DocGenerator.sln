@@ -9,6 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocGenerator.Tests", "DocGe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{F89B2FC0-B023-402B-A858-13C19DD21B2D}"
 	ProjectSection(SolutionItems) = preProject
+		samples\sample-layout.html = samples\sample-layout.html
 		samples\sample.markdown = samples\sample.markdown
 	EndProjectSection
 EndProject
