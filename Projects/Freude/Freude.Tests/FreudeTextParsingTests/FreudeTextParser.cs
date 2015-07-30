@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Brejc.Common;
 
 namespace Freude.Tests.FreudeTextParsingTests
 {
@@ -6,44 +8,91 @@ namespace Freude.Tests.FreudeTextParsingTests
     {
         public DocumentDef ParseText(string text)
         {
-            DocumentDef doc = new DocumentDef();
+            doc = new DocumentDef();
+
+            IList<string> lines = text.SplitIntoLines();
+
+            for (int line = 0; line < lines.Count; line++)
+                ParseLine(lines, line);
+
+            return doc;
+        }
+
+        private void ParseLine(IList<string> lines, int line)
+        {
+            string lineText = lines[line].Trim();
+
+            if (lineText.Length == 0)
+            {
+                currentParagraph = null;
+                return;
+            }
 
             int cursor = 0;
             while (true)
             {
-                int i = text.IndexOf("[[", cursor, StringComparison.Ordinal);
+                int i = lineText.IndexOf("[[", cursor, StringComparison.Ordinal);
 
                 if (i != -1)
                 {
-                    string part = text.Substring(cursor, i - cursor).Trim();
+                    string part = lineText.Substring(cursor, i - cursor).Trim();
                     if (part.Length > 0)
-                    {
-                        TextElement textElement = new TextElement(part);
-                        doc.Children.Add(textElement);
-                    }
+                        AddTextToParagraph(part);
 
-                    int j = text.IndexOf("]]", i, StringComparison.Ordinal);
+                    int j = lineText.IndexOf("]]", i, StringComparison.Ordinal);
 
-                    string url = text.Substring(i + 2, j - (i + 2));
+                    string url = lineText.Substring(i + 2, j - (i + 2));
                     ImageElement imageElement = new ImageElement(url);
-                    doc.Children.Add(imageElement);
+                    AddElement(imageElement);
 
                     cursor = j + 2;
                 }
                 else
                 {
-                    string part = text.Substring (cursor).Trim ();
+                    string part = lineText.Substring(cursor).Trim();
                     if (part.Length > 0)
-                    {
-                        TextElement textElement = new TextElement (part);
-                        doc.Children.Add (textElement);
-                    }
+                        AddTextToParagraph(part);
 
                     break;
                 }
             }
-
-            return doc;
         }
+
+        private void AddTextToParagraph(string text)
+        {
+            CreateParagraphIfNoneIsAlreadyOpen();
+
+            int childrenCount = currentParagraph.Children.Count;
+            if (childrenCount > 0)
+            {
+                IDocumentElement lastChild = currentParagraph.Children[childrenCount - 1];
+                if (lastChild is TextElement)
+                {
+                    ((TextElement)lastChild).AppendText(text);
+                    return;
+                }
+            }
+
+            AddElement(new TextElement(text));
+        }
+
+        private void AddElement(IDocumentElement textElement)
+        {
+            CreateParagraphIfNoneIsAlreadyOpen();
+
+            currentParagraph.Children.Add(textElement);
+        }
+
+        private void CreateParagraphIfNoneIsAlreadyOpen()
+        {
+            if (currentParagraph == null)
+            {
+                currentParagraph = new ParagraphElement();
+                doc.Children.Add(currentParagraph);
+            }
+        }
+
+        private DocumentDef doc;
+        private ParagraphElement currentParagraph;
     }
 }

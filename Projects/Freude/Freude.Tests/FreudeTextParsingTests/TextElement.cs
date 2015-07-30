@@ -12,6 +12,11 @@
             get { return text; }
         }
 
-        private readonly string text;
+        public void AppendText(string textToAppend)
+        {
+            text += ' ' + textToAppend.Trim();
+        }
+
+        private string text;
     }
 }
