@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{67BC74E2-8AB9-401B-95AC-F08EEFC54216}"
+	ProjectSection(SolutionItems) = preProject
+		todo.txt = todo.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{DA1C2976-9FC0-413C-8E9E-27689A0B9112}"
+	ProjectSection(SolutionItems) = preProject
+		samples\weather.txt = samples\weather.txt
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Freude.Tests", "Freude.Tests\Freude.Tests.csproj", "{469E7640-54E3-4896-AA5A-9B317CCCCC70}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{469E7640-54E3-4896-AA5A-9B317CCCCC70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{469E7640-54E3-4896-AA5A-9B317CCCCC70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{469E7640-54E3-4896-AA5A-9B317CCCCC70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{469E7640-54E3-4896-AA5A-9B317CCCCC70}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
