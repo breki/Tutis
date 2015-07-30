@@ -1,0 +1,10 @@
+- minimum viable product: something that I can use to prepare and publish the new weather page
+	- support for images
+	- simple writing language
+		- wikitext or markdown
+	- support for semantics
+	- can do FTP uploading
+	- support for additional .css files
+	- convention-based
+		- include .css, .js files
+	- support for style classes
