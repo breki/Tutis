@@ -52,6 +52,7 @@
     <Compile Include="FreudeTextParsingTests\IDocumentElement.cs" />
     <Compile Include="FreudeTextParsingTests\IDocumentElementContainer.cs" />
     <Compile Include="FreudeTextParsingTests\ImageElement.cs" />
+    <Compile Include="FreudeTextParsingTests\ParagraphElement.cs" />
     <Compile Include="FreudeTextParsingTests\TextElement.cs" />
     <Compile Include="TestHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
