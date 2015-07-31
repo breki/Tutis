@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Brejc.Common;
+using Freude.DocModel;
 
-namespace Freude.Tests.FreudeTextParsingTests
+namespace Freude.Parsing
 {
     public class FreudeTextParser
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Freude.Tests.FreudeTextParsingTests
+namespace Freude.DocModel
 {
     public class DocumentDef : IDocumentElementContainer
     {

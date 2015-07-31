@@ -1,4 +1,4 @@
-﻿namespace Freude.Tests.FreudeTextParsingTests
+﻿namespace Freude.DocModel
 {
     public class ImageElement : IDocumentElement
     {

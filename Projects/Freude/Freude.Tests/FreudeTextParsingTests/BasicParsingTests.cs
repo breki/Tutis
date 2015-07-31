@@ -1,4 +1,6 @@
 ﻿using System;
+using Freude.DocModel;
+using Freude.Parsing;
 using NUnit.Framework;
 
 namespace Freude.Tests.FreudeTextParsingTests
