@@ -21,15 +21,32 @@ namespace Freude.Parsing
 
         private void ParseLine(IList<string> lines, int line)
         {
-            string lineText = lines[line].Trim();
+            string lineText = lines[line];
 
-            if (lineText.Length == 0)
+            // we can ignore lines with nothing but whitespace
+            if (lineText.Trim().Length == 0)
             {
                 currentParagraph = null;
                 return;
             }
 
             int cursor = 0;
+
+            char startingChar = lineText[cursor];
+            if (startingChar == '#')
+            {
+                currentParagraph = null;
+
+                while (lineText[cursor] == '#')
+                    cursor++;
+
+                string headerText = lineText.Substring(cursor).Trim();
+
+                HeaderElement headerElement = new HeaderElement(headerText, cursor);
+                doc.Children.Add(headerElement);
+                return;
+            }
+
             while (true)
             {
                 int i = lineText.IndexOf("[[", cursor, StringComparison.Ordinal);
@@ -95,5 +112,12 @@ namespace Freude.Parsing
 
         private DocumentDef doc;
         private ParagraphElement currentParagraph;
+        //private LineMode currentLineMode;
+
+        //private enum LineMode
+        //{
+        //    Paragraph,
+        //    Header
+        //}
     }
 }

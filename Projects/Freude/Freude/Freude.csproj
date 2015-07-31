@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DocModel\DocumentDef.cs" />
+    <Compile Include="DocModel\HeaderElement.cs" />
     <Compile Include="DocModel\IDocumentElement.cs" />
     <Compile Include="DocModel\IDocumentElementContainer.cs" />
     <Compile Include="DocModel\ImageElement.cs" />

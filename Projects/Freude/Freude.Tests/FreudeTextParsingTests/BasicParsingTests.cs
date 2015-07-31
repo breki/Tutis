@@ -43,6 +43,23 @@ par 2 line 2 ");
         }
 
         [Test]
+        public void MultipleEmptyLinesBetweenParagraphsAreTreatedAsSingleOne()
+        {
+            doc = parser.ParseText (@" par 1 line 1
+   par 1 line 2
+
+   
+
+par 2 line 1
+par 2 line 2 ");
+            Assert.AreEqual (2, doc.Children.Count);
+            var par = AssertElement<ParagraphElement> (doc, 0);
+            AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 1 line 1 par 1 line 2", x.Text));
+            par = AssertElement<ParagraphElement> (doc, 1);
+            AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 2 line 1 par 2 line 2", x.Text));
+        }
+
+        [Test]
         public void EmptyLineCanHaveWhitespaceThatIsIgnored()
         {
             doc = parser.ParseText (@" par 1 line 1
@@ -85,6 +102,29 @@ par 2 line 2 ");
             AssertElement<TextElement>(par, 0, x => Assert.AreEqual ("text before", x.Text));
             AssertElement<ImageElement>(par, 1, x => Assert.AreEqual ("http://www.arso.gov.si/vreme/napovedi%20in%20podatki/radar_anim.gif", x.ImageUrl));
             AssertElement<TextElement>(par, 2, x => Assert.AreEqual ("text after", x.Text));
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void StartingHashIsHeaderPrefix(int headerLevel)
+        {
+            doc = parser.ParseText (new string('#', headerLevel) + " header");
+            Assert.AreEqual (1, doc.Children.Count);
+            AssertElement<HeaderElement> (doc, 0, x =>
+            {
+                Assert.AreEqual("header", x.HeaderText);
+                Assert.AreEqual (headerLevel, x.HeaderLevel);
+            });            
+        }
+
+        [Test]
+        public void WhitespaceBeforeHashIsNotHeaderPrefix()
+        {
+            doc = parser.ParseText (@"  # header");
+            var par = AssertElement<ParagraphElement> (doc, 0);
+            Assert.AreEqual (1, par.Children.Count);
+            AssertElement<TextElement> (par, 0, x => Assert.AreEqual ("# header", x.Text));            
         }
 
         [SetUp]
