@@ -127,6 +127,22 @@ par 2 line 2 ");
             AssertElement<TextElement> (par, 0, x => Assert.AreEqual ("# header", x.Text));            
         }
 
+        [Test]
+        public void HeaderBetweenParagraphs()
+        {
+            doc = parser.ParseText (@" par 1 line 1
+   par 1 line 2
+#header
+par 2 line 1
+par 2 line 2 ");
+            Assert.AreEqual (3, doc.Children.Count);
+            var par = AssertElement<ParagraphElement> (doc, 0);
+            AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 1 line 1 par 1 line 2", x.Text));
+            AssertElement<HeaderElement> (doc, 1, x => Assert.AreEqual (@"header", x.HeaderText));
+            par = AssertElement<ParagraphElement> (doc, 2);
+            AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 2 line 1 par 2 line 2", x.Text));
+        }
+
         [SetUp]
         public void Setup()
         {
