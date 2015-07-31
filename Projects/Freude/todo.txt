@@ -1,3 +1,6 @@
+- handle parsing errors
+	- provide a way to report them
+
 - minimum viable product: something that I can use to prepare and publish the new weather page
 	- support for images
 	- simple writing language
