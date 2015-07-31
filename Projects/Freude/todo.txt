@@ -1,5 +1,15 @@
 - handle parsing errors
 	- provide a way to report them
+- templating using Razor
+- how to specify properties?
+- how to specify style classes?
+- how to specify semantic info
+	- categories etc.
+- how to specify assets?
+- generates site structure which is then deployed
+- command for generating new site
+- command for serving the site locally
+- template (script) for generating HTML files
 
 - minimum viable product: something that I can use to prepare and publish the new weather page
 	- support for images
