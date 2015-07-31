@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{469E7640-54E3-4896-AA5A-9B317CCCCC70}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{25193F76-4FA7-48D8-BE66-42A575EA9A4D}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Freude.Tests</RootNamespace>
-    <AssemblyName>Freude.Tests</AssemblyName>
+    <RootNamespace>Freude</RootNamespace>
+    <AssemblyName>Freude</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -33,10 +35,6 @@
     <Reference Include="Brejc.Common.Library">
       <HintPath>..\lib\Brejc\Brejc.Common.Library.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,18 +44,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FreudeTextParsingTests\BasicParsingTests.cs" />
-    <Compile Include="TestHelper.cs" />
+    <Compile Include="DocModel\DocumentDef.cs" />
+    <Compile Include="DocModel\IDocumentElement.cs" />
+    <Compile Include="DocModel\IDocumentElementContainer.cs" />
+    <Compile Include="DocModel\ImageElement.cs" />
+    <Compile Include="DocModel\ParagraphElement.cs" />
+    <Compile Include="DocModel\TextElement.cs" />
+    <Compile Include="Parsing\FreudeTextParser.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Freude\Freude.csproj">
-      <Project>{25193f76-4fa7-48d8-be66-42a575ea9a4d}</Project>
-      <Name>Freude</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
