@@ -37,13 +37,10 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\BuildCommand.cs" />
     <Compile Include="DocModel\DocumentDef.cs" />
     <Compile Include="DocModel\HeaderElement.cs" />
     <Compile Include="DocModel\IDocumentElement.cs" />
@@ -51,6 +48,7 @@
     <Compile Include="DocModel\ImageElement.cs" />
     <Compile Include="DocModel\ParagraphElement.cs" />
     <Compile Include="DocModel\TextElement.cs" />
+    <Compile Include="HtmlGenerating\HtmlGenerator.cs" />
     <Compile Include="Parsing\FreudeTextParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

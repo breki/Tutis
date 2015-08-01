@@ -1,3 +1,7 @@
+- build site command
+	- razor template for the HTML page
+	- 
+
 - handle parsing errors
 	- provide a way to report them
 - templating using Razor
