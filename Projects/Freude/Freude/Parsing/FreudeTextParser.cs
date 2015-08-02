@@ -5,7 +5,7 @@ using Freude.DocModel;
 
 namespace Freude.Parsing
 {
-    public class FreudeTextParser
+    public class FreudeTextParser : IFreudeTextParser
     {
         public DocumentDef ParseText(string text)
         {
@@ -59,7 +59,7 @@ namespace Freude.Parsing
 
                     int j = lineText.IndexOf("]]", i, StringComparison.Ordinal);
 
-                    string url = lineText.Substring(i + 2, j - (i + 2));
+                    Uri url = new Uri(lineText.Substring(i + 2, j - (i + 2)));
                     ImageElement imageElement = new ImageElement(url);
                     AddElement(imageElement);
 
@@ -84,9 +84,10 @@ namespace Freude.Parsing
             if (childrenCount > 0)
             {
                 IDocumentElement lastChild = currentParagraph.Children[childrenCount - 1];
-                if (lastChild is TextElement)
+                TextElement textChild = lastChild as TextElement;
+                if (textChild != null)
                 {
-                    ((TextElement)lastChild).AppendText(text);
+                    textChild.AppendText(text);
                     return;
                 }
             }

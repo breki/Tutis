@@ -6,11 +6,9 @@ namespace Freude.Commands
     {
         public BuildCommand ()
         {
-            AddArg ("template ID", "map template to use").Value ((x, env) => templateId = x);
-            AddArg ("theme ID", "map theme to use. If not specified, all themes will be used").Value ((x, env) => themeId = x).IsOptional ();
-            AddSwitch ("downloadOsm", "forces re-downloading of OSM data", (x, env) => forceOsmRedownload = x).Alias ("dlosm");
-            AddSwitch ("recreateDB", "forces recreation of geo DB", (x, env) => forceRecreateDb = x).Alias ("rcrdb");
-            AddSwitch ("debug", "switches on the debug rendering mode", (x, env) => debugMode = x);
+            AddArg ("site source dir", "path to the site source directory").Value ((x, env) => siteSourceDirectory = x);
+            AddArg ("template file", "path to the template file").Value ((x, env) => templateFileName = x);
+            AddArg ("build dir", "path to the destination directory where the site will be built").Value ((x, env) => buildDirectory = x);
         }
 
         public override string CommandId
@@ -28,10 +26,8 @@ namespace Freude.Commands
             return 0;
         }
 
-        private string templateId;
-        private string themeId;
-        private bool forceOsmRedownload;
-        private bool forceRecreateDb;
-        private bool debugMode;
+        private string templateFileName;
+        private string siteSourceDirectory;
+        private string buildDirectory;
     }
 }

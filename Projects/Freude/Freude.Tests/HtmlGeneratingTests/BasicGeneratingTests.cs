@@ -1,4 +1,5 @@
-﻿using Freude.DocModel;
+﻿using System;
+using Freude.DocModel;
 using Freude.HtmlGenerating;
 using NUnit.Framework;
 
@@ -33,12 +34,12 @@ namespace Freude.Tests.HtmlGeneratingTests
         {
             ParagraphElement par = new ParagraphElement();
             par.Children.Add(new TextElement("text before"));
-            par.Children.Add (new ImageElement ("http://www.arso.gov.si/vreme/napovedi%20in%20podatki/radar_anim.gif"));
+            par.Children.Add (new ImageElement (new Uri("http://www.arso.gov.si/vreme/napovedi%20in%20podatki/radar_anim.gif")));
             par.Children.Add(new TextElement("text after"));
             doc.Children.Add(par);
 
             string html = generator.GenerateHtml(doc);
-            Assert.AreEqual ("<p>text before<img src=\"http://www.arso.gov.si/vreme/napovedi%20in%20podatki/radar_anim.gif\" />text after</p>", html);
+            Assert.AreEqual ("<p>text before<img src=\"http://www.arso.gov.si/vreme/napovedi in podatki/radar_anim.gif\" />text after</p>", html);
         }
 
         [Test]

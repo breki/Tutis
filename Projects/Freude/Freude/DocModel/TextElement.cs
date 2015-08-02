@@ -1,4 +1,6 @@
-﻿namespace Freude.DocModel
+﻿using System;
+
+namespace Freude.DocModel
 {
     public class TextElement : IDocumentElement
     {
@@ -14,6 +16,9 @@
 
         public void AppendText(string textToAppend)
         {
+            if (textToAppend == null)
+                throw new ArgumentNullException("textToAppend");
+
             text += ' ' + textToAppend.Trim();
         }
 

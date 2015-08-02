@@ -8,10 +8,13 @@ using Freude.DocModel;
 
 namespace Freude.HtmlGenerating
 {
-    public class HtmlGenerator
+    public class HtmlGenerator : IHtmlGenerator
     {
         public string GenerateHtml(DocumentDef doc)
         {
+            if (doc == null)
+                throw new ArgumentNullException("doc");
+
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.ConformanceLevel = ConformanceLevel.Fragment;
             settings.Encoding = Encoding.UTF8;
@@ -29,6 +32,7 @@ namespace Freude.HtmlGenerating
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]
         private static void RenderElement(IDocumentElement element, XmlWriter writer)
         {
             if (element is HeaderElement)
@@ -53,7 +57,7 @@ namespace Freude.HtmlGenerating
         private static void RenderImageElement(ImageElement element, XmlWriter writer)
         {
             writer.WriteStartElement("img");
-            writer.WriteAttributeString("src", element.ImageUrl);
+            writer.WriteAttributeString("src", element.ImageUrl.ToString());
             writer.WriteEndElement();
         }
 
