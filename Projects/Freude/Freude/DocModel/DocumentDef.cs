@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Freude.DocModel
 {
@@ -6,9 +7,13 @@ namespace Freude.DocModel
     {
         public IList<IDocumentElement> Children
         {
-            get { return children; }
+            get
+            {
+                Contract.Ensures (Contract.Result<System.Collections.Generic.IList<Freude.DocModel.IDocumentElement>> () != null); 
+                return children;
+            }
         }
 
-        private List<IDocumentElement> children = new List<IDocumentElement>();
+        private readonly List<IDocumentElement> children = new List<IDocumentElement>();
     }
 }
