@@ -1,17 +1,19 @@
-﻿namespace Freude.DocModel
+﻿using System;
+
+namespace Freude.DocModel
 {
     public class ImageElement : IDocumentElement
     {
-        public ImageElement(string imageUrl)
+        public ImageElement(Uri imageUrl)
         {
             this.imageUrl = imageUrl;
         }
 
-        public string ImageUrl
+        public Uri ImageUrl
         {
             get { return imageUrl; }
         }
 
-        private readonly string imageUrl;
+        private readonly Uri imageUrl;
     }
 }
