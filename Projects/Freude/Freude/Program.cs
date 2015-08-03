@@ -2,7 +2,9 @@
 using System.Diagnostics;
 using System.Reflection;
 using Brejc.Common.Console;
+using Brejc.Common.FileSystem;
 using Freude.Commands;
+using Freude.Parsing;
 using log4net;
 using log4net.Config;
 
@@ -17,8 +19,11 @@ namespace Freude
 
             XmlConfigurator.Configure ();
 
+            IFileSystem fileSystem = new WindowsFileSystem ();
+            IFreudeTextParser freudeTextParser = new FreudeTextParser ();
+
             ConsoleShell consoleShell = new ConsoleShell ("ScalableMaps.Mapmaker.exe");
-            consoleShell.RegisterCommand (new BuildCommand ());
+            consoleShell.RegisterCommand (new BuildCommand (fileSystem, freudeTextParser));
 
             try
             {

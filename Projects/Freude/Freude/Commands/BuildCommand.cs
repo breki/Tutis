@@ -43,13 +43,9 @@ namespace Freude.Commands
             {
                 string fileName = fileInfo.FullName;
                 if (Path.GetExtension(fileName) == ".freude")
-                {
                     ProcessFreudeFile(fileName);
-                }
                 else
-                {
-                    fileSystem.CopyFile(fileName,);
-                }
+                    CopyFileToBuildDir(fileName);
             }
 
             foreach (IDirectoryInformation dirInfo in fileSystem.GetDirectorySubdirectories (siteSourceDirectory))
@@ -60,6 +56,11 @@ namespace Freude.Commands
         {
             string freudeText = fileSystem.ReadFileAsString(fileName);
             DocumentDef doc = freudeTextParser.ParseText(freudeText);
+        }
+
+        private void CopyFileToBuildDir(string fileName)
+        {
+            throw new System.NotImplementedException();
         }
 
         private string templateFileName;
