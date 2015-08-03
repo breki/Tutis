@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics.Contracts;
+using System.IO;
 using Brejc.Common.Console;
 using Brejc.Common.FileSystem;
 using Freude.DocModel;
@@ -12,6 +13,9 @@ namespace Freude.Commands
             IFileSystem fileSystem, 
             IFreudeTextParser freudeTextParser)
         {
+            Contract.Requires(fileSystem != null);
+            Contract.Requires(freudeTextParser != null);
+
             this.fileSystem = fileSystem;
             this.freudeTextParser = freudeTextParser;
             AddArg ("site source dir", "path to the site source directory").Value ((x, env) => siteSourceDirectory = x);
@@ -31,6 +35,9 @@ namespace Freude.Commands
 
         public override int Execute (IConsoleEnvironment env)
         {
+            Contract.Assume(buildDirectory != null);
+            Contract.Assume(siteSourceDirectory != null);
+
             fileSystem.DeleteDirectory(buildDirectory);
             ProcessDirectory(siteSourceDirectory);
 
@@ -39,7 +46,7 @@ namespace Freude.Commands
 
         private void ProcessDirectory(string dir)
         {
-            foreach (IFileInformation fileInfo in fileSystem.GetDirectoryFiles(dir))
+            foreach (IFileInformation fileInfo in fileSystem.GetDirectoryFiles (dir))
             {
                 string fileName = fileInfo.FullName;
                 if (Path.GetExtension(fileName) == ".freude")
@@ -47,6 +54,8 @@ namespace Freude.Commands
                 else
                     CopyFileToBuildDir(fileName);
             }
+
+            Contract.Assume (siteSourceDirectory != null);
 
             foreach (IDirectoryInformation dirInfo in fileSystem.GetDirectorySubdirectories (siteSourceDirectory))
                 ProcessDirectory (dirInfo.FullName);
@@ -58,7 +67,7 @@ namespace Freude.Commands
             DocumentDef doc = freudeTextParser.ParseText(freudeText);
         }
 
-        private void CopyFileToBuildDir(string fileName)
+        private static void CopyFileToBuildDir(string fileName)
         {
             throw new System.NotImplementedException();
         }

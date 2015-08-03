@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using Brejc.Common;
 using Freude.DocModel;
 
@@ -21,8 +22,10 @@ namespace Freude.Parsing
 
         private void ParseLine(IList<string> lines, int line)
         {
-            string lineText = lines[line];
+            Contract.Assume (lines[line] != null);
 
+            string lineText = lines[line];
+            
             // we can ignore lines with nothing but whitespace
             if (lineText.Trim().Length == 0)
             {
