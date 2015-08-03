@@ -12,9 +12,6 @@ namespace Freude.HtmlGenerating
     {
         public string GenerateHtml(DocumentDef doc)
         {
-            if (doc == null)
-                throw new ArgumentNullException("doc");
-
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.ConformanceLevel = ConformanceLevel.Fragment;
             settings.Encoding = Encoding.UTF8;
@@ -49,7 +46,8 @@ namespace Freude.HtmlGenerating
 
         private static void RenderHeaderElement(HeaderElement element, XmlWriter writer)
         {
-            writer.WriteStartElement ("h" + element.HeaderLevel.ToString(CultureInfo.InvariantCulture));
+            string elName = "h{0}".Fmt(element.HeaderLevel);
+            writer.WriteStartElement (elName);
             writer.WriteValue(element.HeaderText);
             writer.WriteEndElement ();
         }
