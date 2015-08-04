@@ -5,8 +5,10 @@ using Brejc.Common.Console;
 using Brejc.Common.FileSystem;
 using Freude.Commands;
 using Freude.Parsing;
+using Freude.Templating;
 using log4net;
 using log4net.Config;
+using Syborg.Razor;
 
 namespace Freude
 {
@@ -21,9 +23,11 @@ namespace Freude
 
             IFileSystem fileSystem = new WindowsFileSystem ();
             IFreudeTextParser freudeTextParser = new FreudeTextParser ();
+            IRazorCompiler razorCompiler = new InMemoryRazorCompiler ();
+            IFreudeTemplatingEngine freudeTemplatingEngine = new FreudeTemplatingEngine (razorCompiler);
 
             ConsoleShell consoleShell = new ConsoleShell ("ScalableMaps.Mapmaker.exe");
-            consoleShell.RegisterCommand (new BuildCommand (fileSystem, freudeTextParser));
+            consoleShell.RegisterCommand (new BuildCommand (fileSystem, freudeTextParser, freudeTemplatingEngine));
 
             try
             {
