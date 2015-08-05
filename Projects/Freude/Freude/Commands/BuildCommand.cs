@@ -14,6 +14,8 @@ namespace Freude.Commands
 {
     public class BuildCommand : StandardConsoleCommandBase
     {
+        public const string BuildMarkerFileName = "freude-build.txt";
+
         public BuildCommand (
             IFileSystem fileSystem, 
             IFreudeTextParser freudeTextParser,
@@ -51,10 +53,19 @@ namespace Freude.Commands
             FreudeProject project = new FreudeProject();
             CompileTemplate(project);
 
-            fileSystem.DeleteDirectory(buildDirectory);
+            PrepareBuildDir();
             ProcessDirectory(project, projectSourceDirectory);
+            WriteBuildMarkerFile();
 
             return 0;
+        }
+
+        private void PrepareBuildDir()
+        {
+            if (fileSystem.DoesFileExist(Path.Combine(buildDirectory, BuildMarkerFileName)))
+                fileSystem.DeleteDirectory(buildDirectory);
+
+            fileSystem.EnsureDirectoryExists(buildDirectory);
         }
 
         private void CompileTemplate(FreudeProject project)
@@ -86,6 +97,11 @@ namespace Freude.Commands
                 ProcessDirectory (project, dirInfo.FullName);
         }
 
+        private void WriteBuildMarkerFile()
+        {
+            fileSystem.WriteFile(Path.Combine(buildDirectory, BuildMarkerFileName), string.Empty, Encoding.UTF8);
+        }
+
         private void ProcessFreudeFile(FreudeProject project, string fileName)
         {
             string freudeText = fileSystem.ReadFileAsString(fileName);
@@ -97,6 +113,7 @@ namespace Freude.Commands
             string destinationFileName = ConstructDestinationFileName (fileName);
             destinationFileName = Path.ChangeExtension(destinationFileName, expandedFileExtension);
 
+            fileSystem.EnsureDirectoryExists(Path.GetDirectoryName(destinationFileName));
             fileSystem.WriteFile(destinationFileName, expandedBody, Encoding.UTF8);
         }
 
@@ -104,7 +121,8 @@ namespace Freude.Commands
         {
             string destinationFileName = ConstructDestinationFileName(fileName);
 
-            fileSystem.CopyFile(fileName, destinationFileName);
+            fileSystem.EnsureDirectoryExists (Path.GetDirectoryName (destinationFileName));
+            fileSystem.CopyFile (fileName, destinationFileName);
             log.InfoFormat("Copied file '{0}' to '{1}'", fileName, destinationFileName);
         }
 

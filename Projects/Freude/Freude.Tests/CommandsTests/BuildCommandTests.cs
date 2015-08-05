@@ -14,8 +14,9 @@ namespace Freude.Tests.CommandsTests
 {
     public class BuildCommandTests
     {
-        [Test]
-        public void TestCompilingOfAProject()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestCompilingOfAProject(bool withBuildDirDeletion)
         {
             ICompiledRazorTemplate compiledTemplate = MockRepository.GenerateMock<ICompiledRazorTemplate> ();
 
@@ -29,8 +30,18 @@ namespace Freude.Tests.CommandsTests
             templatingEngine.Stub(x => x.CompileTemplate(TemplateBody)).Return(compiledTemplate);
             templatingEngine.Stub(x => x.ExpandTemplate(null, null, null)).IgnoreArguments().Return(ExpandedBody);
 
+            if (withBuildDirDeletion)
+            {
+                fileSystem.Stub(x => x.DoesFileExist(Path.Combine(BuildDir, BuildCommand.BuildMarkerFileName)))
+                    .Return(true);
+                fileSystem.Expect(x => x.DeleteDirectory(BuildDir)).Repeat.Once();
+            }
+            else
+                fileSystem.Expect(x => x.DeleteDirectory(BuildDir)).Repeat.Never();
+
             fileSystem.Expect(x => x.CopyFile(Path.Combine(ProjectDir, "site.css"), Path.Combine(BuildDir, "site.css")));
             fileSystem.Expect(x => x.WriteFile(Path.Combine(BuildDir, "weather.html"), ExpandedBody, Encoding.UTF8));
+            fileSystem.Expect(x => x.WriteFile(Path.Combine(BuildDir, BuildCommand.BuildMarkerFileName), string.Empty, Encoding.UTF8));
 
             cmd.ParseArgs(consoleEnv, new[] { ProjectDir, TemplateFileName, BuildDir, ".html" });
             cmd.Execute(consoleEnv);
