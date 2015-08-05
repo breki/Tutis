@@ -27,9 +27,9 @@ namespace Freude.Commands
             this.freudeTextParser = freudeTextParser;
             this.freudeTemplatingEngine = freudeTemplatingEngine;
 
-            AddArg ("site source dir", "path to the site source directory").Value ((x, env) => siteSourceDirectory = x);
+            AddArg ("project source dir", "path to the project source directory").Value ((x, env) => projectSourceDirectory = x);
             AddArg ("template file", "path to the template file").Value ((x, env) => templateFileName = x);
-            AddArg ("build dir", "path to the destination directory where the site will be built").Value ((x, env) => buildDirectory = x);
+            AddArg ("build dir", "path to the destination directory where the project will be built").Value ((x, env) => buildDirectory = x);
             AddArg ("extension", "the file extension to be used for files expanded from the template").Value ((x, env) => expandedFileExtension = x);
         }
 
@@ -46,13 +46,13 @@ namespace Freude.Commands
         public override int Execute (IConsoleEnvironment env)
         {
             Contract.Assume(buildDirectory != null);
-            Contract.Assume(siteSourceDirectory != null);
+            Contract.Assume(projectSourceDirectory != null);
 
             FreudeProject project = new FreudeProject();
             CompileTemplate(project);
 
             fileSystem.DeleteDirectory(buildDirectory);
-            ProcessDirectory(project, siteSourceDirectory);
+            ProcessDirectory(project, projectSourceDirectory);
 
             return 0;
         }
@@ -80,9 +80,9 @@ namespace Freude.Commands
                     CopyFileToBuildDir(fileName);
             }
 
-            Contract.Assume (siteSourceDirectory != null);
+            Contract.Assume (projectSourceDirectory != null);
 
-            foreach (IDirectoryInformation dirInfo in fileSystem.GetDirectorySubdirectories (siteSourceDirectory))
+            foreach (IDirectoryInformation dirInfo in fileSystem.GetDirectorySubdirectories (sourceDirectory))
                 ProcessDirectory (project, dirInfo.FullName);
         }
 
@@ -94,7 +94,7 @@ namespace Freude.Commands
             ICompiledRazorTemplate template = project.GetTemplate("default");
             string expandedBody = freudeTemplatingEngine.ExpandTemplate(template, doc, project);
 
-            string destinationFileName = ConstructDestinatioFileName (fileName);
+            string destinationFileName = ConstructDestinationFileName (fileName);
             destinationFileName = Path.ChangeExtension(destinationFileName, expandedFileExtension);
 
             fileSystem.WriteFile(destinationFileName, expandedBody, Encoding.UTF8);
@@ -102,22 +102,21 @@ namespace Freude.Commands
 
         private void CopyFileToBuildDir(string fileName)
         {
-            string destinationFileName = ConstructDestinatioFileName(fileName);
+            string destinationFileName = ConstructDestinationFileName(fileName);
 
             fileSystem.CopyFile(fileName, destinationFileName);
             log.InfoFormat("Copied file '{0}' to '{1}'", fileName, destinationFileName);
         }
 
-        private string ConstructDestinatioFileName(string fileName)
+        private string ConstructDestinationFileName(string fileName)
         {
-            PathBuilder filePath = new PathBuilder(fileName);
-            filePath = filePath.DebasePath(siteSourceDirectory, false);
+            PathBuilder filePath = new PathBuilder (projectSourceDirectory).DebasePath(fileName, false);
             string destinationFileName = Path.Combine(buildDirectory, filePath.ToString());
             return destinationFileName;
         }
 
         private string templateFileName;
-        private string siteSourceDirectory;
+        private string projectSourceDirectory;
         private string buildDirectory;
         private string expandedFileExtension;
         private readonly IFileSystem fileSystem;
