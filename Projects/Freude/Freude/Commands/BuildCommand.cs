@@ -42,7 +42,7 @@ namespace Freude.Commands
 
         public override object Description
         {
-            get { return "build the site"; }
+            get { return "build the project"; }
         }
 
         public override int Execute (IConsoleEnvironment env)
