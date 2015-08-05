@@ -6,6 +6,11 @@ namespace Freude.DocModel
 {
     public class FreudeProject
     {
+        public string BuildDir
+        {
+            get; set; 
+        }
+
         public ICompiledRazorTemplate GetTemplate(string templateId)
         {
             Contract.Requires(templateId != null);
