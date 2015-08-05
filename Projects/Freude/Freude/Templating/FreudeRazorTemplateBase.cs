@@ -7,7 +7,6 @@ using System.Text;
 using System.Web;
 using Brejc.Common;
 using log4net;
-using Syborg.Razor;
 
 namespace Freude.Templating
 {
@@ -53,7 +52,7 @@ namespace Freude.Templating
             }
         }
 
-        public RazorTemplateBase InnerTemplate
+        public FreudeRazorTemplateBase InnerTemplate
         {
             get { return innerTemplate; }
             set { innerTemplate = value; }
@@ -65,7 +64,7 @@ namespace Freude.Templating
             set { innerTemplateBody = value; }
         }
 
-        public RazorTemplateBase OuterTemplate
+        public FreudeRazorTemplateBase OuterTemplate
         {
             get { return outerTemplate; }
             set { outerTemplate = value; }
@@ -88,9 +87,7 @@ namespace Freude.Templating
             params object[] args)
         {
             Contract.Requires (args != null);
-
-            if (args.Length < 3)
-                throw new InvalidOperationException ("parms.Length < 3");
+            Contract.Requires (args.Length >= 3);
 
             string prefix = ((Tuple<string, int>)args[0]).Item1;
             string suffix = ((Tuple<string, int>)args[1]).Item1;
@@ -105,26 +102,28 @@ namespace Freude.Templating
 
                 object arg = args[i];
 
-                if (arg is Tuple<Tuple<string, int>, Tuple<string, int>, bool>)
-                {
-                    Tuple<Tuple<string, int>, Tuple<string, int>, bool> token = (Tuple<Tuple<string, int>, Tuple<string, int>, bool>)arg;
+                var stringToken = arg as Tuple<Tuple<string, int>, Tuple<string, int>, bool>;
 
-                    valuePrefix = token.Item1.Item1;
-                    value = valuePrefix + token.Item2.Item1;
+                if (stringToken != null)
+                {
+                    valuePrefix = stringToken.Item1.Item1;
+                    value = valuePrefix + stringToken.Item2.Item1;
 
                     //log.DebugFormat ("Write1 ('{0}'), token.Item1.Item1='{1}'", value, token.Item1.Item1);
                 }
-                else if (arg is Tuple<Tuple<string, int>, Tuple<object, int>, bool>)
-                {
-                    Tuple<Tuple<string, int>, Tuple<object, int>, bool> token = (Tuple<Tuple<string, int>, Tuple<object, int>, bool>)arg;
-
-                    valuePrefix = token.Item1.Item1;
-                    value = valuePrefix + token.Item2.Item1;
-
-                    //log.DebugFormat ("Write ('{0}'), token.Item1.Item1='{1}'", value, token.Item1.Item1);
-                }
                 else
-                    throw new InvalidOperationException ("Unsupported token type: {0}".Fmt (arg.GetType ()));
+                {
+                    var objectToken = arg as Tuple<Tuple<string, int>, Tuple<object, int>, bool>;
+                    if (objectToken != null)
+                    {
+                        valuePrefix = objectToken.Item1.Item1;
+                        value = valuePrefix + objectToken.Item2.Item1;
+
+                        //log.DebugFormat ("Write ('{0}'), token.Item1.Item1='{1}'", value, token.Item1.Item1);
+                    }
+                    else
+                        throw new InvalidOperationException ("Unsupported token type: {0}".Fmt (arg.GetType ()));
+                }
 
                 Write (value);
             }
@@ -132,6 +131,7 @@ namespace Freude.Templating
             Write (suffix);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         public void WriteSection (string name, Action contents)
         {
             throw new NotImplementedException ("WriteSection");
@@ -175,7 +175,7 @@ namespace Freude.Templating
                     return null;
 
                 if (required)
-                    throw new ApplicationException ("Section not defined: " + sectionName);
+                    throw new InvalidOperationException("Section not defined: " + sectionName);
 
                 //log.DebugFormat ("Section '{0}' not defined", sectionName);
 

@@ -8,6 +8,7 @@ using Freude.DocModel;
 using Freude.Parsing;
 using Freude.Templating;
 using log4net;
+using Syborg.Razor;
 
 namespace Freude.Commands
 {
@@ -47,12 +48,20 @@ namespace Freude.Commands
             Contract.Assume(buildDirectory != null);
             Contract.Assume(siteSourceDirectory != null);
 
-            string templateBody = ReadTemplateFile();
+            FreudeProject project = new FreudeProject();
+            CompileTemplate(project);
 
             fileSystem.DeleteDirectory(buildDirectory);
-            ProcessDirectory(siteSourceDirectory, templateBody);
+            ProcessDirectory(project, siteSourceDirectory);
 
             return 0;
+        }
+
+        private void CompileTemplate(FreudeProject project)
+        {
+            string templateBody = ReadTemplateFile();
+            ICompiledRazorTemplate compiledTemplate = freudeTemplatingEngine.CompileTemplate(templateBody);
+            project.RegisterTemplate("default", compiledTemplate);
         }
 
         private string ReadTemplateFile()
@@ -60,13 +69,13 @@ namespace Freude.Commands
             return fileSystem.ReadFileAsString(templateFileName);
         }
 
-        private void ProcessDirectory(string sourceDirectory, string templateBody)
+        private void ProcessDirectory(FreudeProject project, string sourceDirectory)
         {
             foreach (IFileInformation fileInfo in fileSystem.GetDirectoryFiles (sourceDirectory))
             {
                 string fileName = fileInfo.FullName;
                 if (Path.GetExtension(fileName) == ".freude")
-                    ProcessFreudeFile(fileName, templateBody);
+                    ProcessFreudeFile(project, fileName);
                 else
                     CopyFileToBuildDir(fileName);
             }
@@ -74,15 +83,16 @@ namespace Freude.Commands
             Contract.Assume (siteSourceDirectory != null);
 
             foreach (IDirectoryInformation dirInfo in fileSystem.GetDirectorySubdirectories (siteSourceDirectory))
-                ProcessDirectory (dirInfo.FullName, templateBody);
+                ProcessDirectory (project, dirInfo.FullName);
         }
 
-        private void ProcessFreudeFile(string fileName, string templateBody)
+        private void ProcessFreudeFile(FreudeProject project, string fileName)
         {
             string freudeText = fileSystem.ReadFileAsString(fileName);
             DocumentDef doc = freudeTextParser.ParseText(freudeText);
 
-            string expandedBody = freudeTemplatingEngine.ExpandTemplate(templateBody, doc);
+            ICompiledRazorTemplate template = project.GetTemplate("default");
+            string expandedBody = freudeTemplatingEngine.ExpandTemplate(template, doc, project);
 
             string destinationFileName = ConstructDestinatioFileName (fileName);
             destinationFileName = Path.ChangeExtension(destinationFileName, expandedFileExtension);

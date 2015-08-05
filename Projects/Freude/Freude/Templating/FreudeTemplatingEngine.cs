@@ -14,20 +14,26 @@ namespace Freude.Templating
             this.razorCompiler = razorCompiler;
         }
 
-        public string ExpandTemplate(string templateText, DocumentDef doc)
+        public ICompiledRazorTemplate CompileTemplate(string templateText)
         {
             RazorEngineCompileSettings razorEngineCompileSettings = new RazorEngineCompileSettings ();
-            razorEngineCompileSettings.DefaultNamespace = "Syborg.Tests";
-            razorEngineCompileSettings.DefaultClassName = "SyborgTestRazorTemplate";
+            razorEngineCompileSettings.DefaultNamespace = "Freude";
+            razorEngineCompileSettings.DefaultClassName = "FreudeRazorTemplate";
             razorEngineCompileSettings.NamespaceImports.Add ("System");
             razorEngineCompileSettings.NamespaceImports.Add ("System.Collections");
             razorEngineCompileSettings.NamespaceImports.Add ("System.Collections.Generic");
             razorEngineCompileSettings.DefaultBaseClass = typeof(RazorTemplateBase).FullName;
             razorEngineCompileSettings.ReferenceAssemblies.Add (typeof(HtmlString).Assembly);
 
-            ICompiledRazorTemplate compiledTemplate = razorCompiler.Compile (templateText, razorEngineCompileSettings);
+            return razorCompiler.Compile (templateText, razorEngineCompileSettings);
+        }
+
+        public string ExpandTemplate (ICompiledRazorTemplate template, DocumentDef doc, FreudeProject project)
+        {
             RazorEngineExecutionSettings executionSettings = new RazorEngineExecutionSettings ();
-            return compiledTemplate.Execute (executionSettings);
+            executionSettings.Properties.Add("Doc", doc);
+            executionSettings.Properties.Add("Project", project);
+            return template.Execute (executionSettings);
         }
 
         private readonly IRazorCompiler razorCompiler;
