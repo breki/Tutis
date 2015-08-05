@@ -16,6 +16,7 @@ namespace Freude
 {
     public static class Program
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         public static int Main (string[] args)
         {
             Stopwatch commandStopwatch = new Stopwatch ();

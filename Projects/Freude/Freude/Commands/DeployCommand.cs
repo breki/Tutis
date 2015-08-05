@@ -24,8 +24,8 @@ namespace Freude.Commands
             this.ftpSessionFactory = ftpSessionFactory;
             AddArg ("project build dir", "path to the directory where the project was built").Value ((x, env) => buildDirectory = x);
             AddArg ("server", "server IP or hostname").Value ((x, env) => server = x);
-            AddArg ("FTP username", null).Value ((x, env) => userName = x);
-            AddArg ("FTP password", null).Value ((x, env) => password = x);
+            AddArg ("FTP username", "username for the FTP server").Value ((x, env) => userName = x);
+            AddArg ("FTP password", "password for the FTP server").Value ((x, env) => password = x);
             AddSetting("port", "FTP port number").IntValue((x, env) => port = x);
             AddSetting("remote-dir", "the root remote dir where the project files will be deployed (uploaded)").Value ((x, env) => remoteRootDirectory = x);
         }

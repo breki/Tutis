@@ -100,6 +100,7 @@
     <Compile Include="CommandsTests\DeployCommandTests.cs" />
     <Compile Include="FreudeTextParsingTests\BasicParsingTests.cs" />
     <Compile Include="HtmlGeneratingTests\BasicGeneratingTests.cs" />
+    <Compile Include="ProjectServicesTests\ProjectBuilderTests.cs" />
     <Compile Include="TemplatingTests\GenerateFromTemplateTests.cs" />
     <Compile Include="TestHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

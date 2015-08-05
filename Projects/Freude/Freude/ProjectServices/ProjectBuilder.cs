@@ -15,7 +15,19 @@ namespace Freude.ProjectServices
 
         public IEnumerable<string> ListBuiltFiles(FreudeProject project)
         {
-            throw new System.NotImplementedException();
+            return ListBuildFilesPrivate (project.BuildDir);
+        }
+
+        private IEnumerable<string> ListBuildFilesPrivate(string dir)
+        {
+            foreach (IFileInformation fileInfo in fileSystem.GetDirectoryFiles(dir))
+                yield return fileInfo.FullName;
+
+            foreach (IDirectoryInformation dirInfo in fileSystem.GetDirectorySubdirectories(dir))
+            {
+                foreach (string fileName in ListBuildFilesPrivate(dirInfo.FullName))
+                    yield return fileName;
+            }
         }
 
         private readonly IFileSystem fileSystem;
