@@ -17,6 +17,7 @@ namespace Freude.ProjectServices
         IEnumerable<string> IProjectBuilder.ListBuiltFiles(FreudeProject project)
         {
             Contract.Requires(project != null);
+            Contract.Requires(project.BuildDir != null);
             Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
             throw new System.NotImplementedException();
         }
