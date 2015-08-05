@@ -85,7 +85,7 @@
   <ItemGroup>
     <Reference Include="Brejc.Common.Library, Version=1.0.0.0, Culture=neutral, PublicKeyToken=268ea5e39f968da4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Brejc\Brejc.Common.Library.dll</HintPath>
+      <HintPath>..\lib\Syborg\Brejc.Common.Library.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>

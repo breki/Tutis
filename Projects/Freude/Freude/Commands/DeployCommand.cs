@@ -14,25 +14,20 @@ namespace Freude.Commands
     public class DeployCommand : StandardConsoleCommandBase
     {
         public DeployCommand(
-            IFileSystem fileSystem,
             IProjectBuilder projectBuilder,
-            IFtpChannelFactory ftpChannelFactory, 
-            IFtpCommunicator ftpCommunicator)
+            IFtpSessionFactory ftpSessionFactory)
         {
-            Contract.Requires(fileSystem != null);
             Contract.Requires(projectBuilder != null);
-            Contract.Requires(ftpChannelFactory != null);
-            Contract.Requires(ftpCommunicator != null);
+            Contract.Requires(ftpSessionFactory != null);
 
-            this.fileSystem = fileSystem;
             this.projectBuilder = projectBuilder;
-            this.ftpChannelFactory = ftpChannelFactory;
-            this.ftpCommunicator = ftpCommunicator;
+            this.ftpSessionFactory = ftpSessionFactory;
             AddArg ("project build dir", "path to the directory where the project was built").Value ((x, env) => buildDirectory = x);
             AddArg ("server", "server IP or hostname").Value ((x, env) => server = x);
             AddArg ("FTP username", null).Value ((x, env) => userName = x);
             AddArg ("FTP password", null).Value ((x, env) => password = x);
             AddSetting("port", "FTP port number").IntValue((x, env) => port = x);
+            AddSetting("remote-dir", "the root remote dir where the project files will be deployed (uploaded)").Value ((x, env) => remoteRootDirectory = x);
         }
 
         public override string CommandId
@@ -50,7 +45,7 @@ namespace Freude.Commands
             FreudeProject project = new FreudeProject();
             project.BuildDir = buildDirectory;
 
-            using (IFtpSession ftpSession = new FtpSession(ftpChannelFactory, ftpCommunicator, fileSystem))
+            using (IFtpSession ftpSession = ftpSessionFactory.CreateSession())
             {
                 FtpConnectionData connData = new FtpConnectionData();
 
@@ -62,24 +57,33 @@ namespace Freude.Commands
 
                 ftpSession.BeginSession(connData);
 
+                PathBuilder buildDirPath = new PathBuilder(buildDirectory);
                 foreach (string sourceFileName in projectBuilder.ListBuiltFiles(project))
                 {
-                    log.InfoFormat (CultureInfo.InvariantCulture, "Uploading file {0} to {1}...", sourceFileName, destFile);
-                    ftpSession.UploadFile (sourceFileName, destFile);
-                    
-                }
+                    PathBuilder sourceFileNameDebasedBuilder = buildDirPath.DebasePath(sourceFileName, false);
+                    PathBuilder destinationFileName;
+                    if (remoteRootDirectory != null)
+                        destinationFileName = new PathBuilder(remoteRootDirectory).CombineWith(sourceFileNameDebasedBuilder);
+                    else
+                        destinationFileName = sourceFileNameDebasedBuilder;
 
+                    string destinationFileNameUnixStyle = destinationFileName.ToUnixPath();
+
+                    log.InfoFormat (CultureInfo.InvariantCulture, "Uploading file {0} to {1}...", sourceFileName, destinationFileNameUnixStyle);
+                    ftpSession.UploadFile (sourceFileName, destinationFileNameUnixStyle);
+                }
             }
+
+            return 0;
         }
 
-        private readonly IFileSystem fileSystem;
         private readonly IProjectBuilder projectBuilder;
-        private readonly IFtpChannelFactory ftpChannelFactory;
-        private readonly IFtpCommunicator ftpCommunicator;
+        private readonly IFtpSessionFactory ftpSessionFactory;
         private string buildDirectory;
         private string server;
         private string userName;
         private string password;
+        private string remoteRootDirectory;
         private int? port;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }

@@ -3,8 +3,10 @@ using System.Diagnostics;
 using System.Reflection;
 using Brejc.Common.Console;
 using Brejc.Common.FileSystem;
+using Brejc.Common.Ftp;
 using Freude.Commands;
 using Freude.Parsing;
+using Freude.ProjectServices;
 using Freude.Templating;
 using log4net;
 using log4net.Config;
@@ -25,9 +27,14 @@ namespace Freude
             IFreudeTextParser freudeTextParser = new FreudeTextParser ();
             IRazorCompiler razorCompiler = new InMemoryRazorCompiler ();
             IFreudeTemplatingEngine freudeTemplatingEngine = new FreudeTemplatingEngine (razorCompiler);
+            IProjectBuilder projectBuilder = new ProjectBuilder (fileSystem);
+            IFtpChannelFactory ftpChannelFactory = new FtpChannelFactoryUsingSockets ();
+            IFtpCommunicator ftpCommunicator = new FtpCommunicator ();
+            IFtpSessionFactory ftpSessionFactory = new FtpSessionFactory(ftpChannelFactory, ftpCommunicator, fileSystem);
 
             ConsoleShell consoleShell = new ConsoleShell ("ScalableMaps.Mapmaker.exe");
             consoleShell.RegisterCommand (new BuildCommand (fileSystem, freudeTextParser, freudeTemplatingEngine));
+            consoleShell.RegisterCommand (new DeployCommand(projectBuilder, ftpSessionFactory));
 
             try
             {
