@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandsTests\BuildCommandTests.cs" />
+    <Compile Include="CommandsTests\DeployCommandTests.cs" />
     <Compile Include="FreudeTextParsingTests\BasicParsingTests.cs" />
     <Compile Include="HtmlGeneratingTests\BasicGeneratingTests.cs" />
     <Compile Include="TemplatingTests\GenerateFromTemplateTests.cs" />
