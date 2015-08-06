@@ -6,6 +6,11 @@ namespace Freude.DocModel
 {
     public class FreudeProject
     {
+        public string SourceDir
+        {
+            get; set;
+        }
+
         public string BuildDir
         {
             get; set; 

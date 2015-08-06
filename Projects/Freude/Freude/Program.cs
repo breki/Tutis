@@ -34,7 +34,7 @@ namespace Freude
             IFtpSessionFactory ftpSessionFactory = new FtpSessionFactory(ftpChannelFactory, ftpCommunicator, fileSystem);
 
             ConsoleShell consoleShell = new ConsoleShell ("ScalableMaps.Mapmaker.exe");
-            consoleShell.RegisterCommand (new BuildCommand (fileSystem, freudeTextParser, freudeTemplatingEngine));
+            consoleShell.RegisterCommand (new BuildCommand (fileSystem, projectBuilder, freudeTextParser, freudeTemplatingEngine));
             consoleShell.RegisterCommand (new DeployCommand(projectBuilder, ftpSessionFactory));
 
             try

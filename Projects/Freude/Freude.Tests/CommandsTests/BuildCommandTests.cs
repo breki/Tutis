@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using Brejc.Common.Console;
 using Brejc.Common.FileSystem;
 using Freude.Commands;
 using Freude.Parsing;
+using Freude.ProjectServices;
 using Freude.Templating;
 using NUnit.Framework;
 using Rhino.Mocks;
@@ -20,10 +20,8 @@ namespace Freude.Tests.CommandsTests
         {
             ICompiledRazorTemplate compiledTemplate = MockRepository.GenerateMock<ICompiledRazorTemplate> ();
 
-            AddProjectFile("site.css");
-            AddProjectFile("weather.freude");
-            fileSystem.Stub(x => x.GetDirectoryFiles(ProjectDir)).Return(projectFiles.ToArray());
-            fileSystem.Stub(x => x.GetDirectorySubdirectories(ProjectDir)).Return(new IDirectoryInformation[0]);
+            projectBuilder.Stub(x => x.ListProjectFiles(null))
+                .IgnoreArguments ().Return (new[] { @"projDir\weather.freude", @"projDir\site.css", @"projDir\content\other.css" });
 
             fileSystem.Stub(x => x.ReadFileAsString(TemplateFileName)).Return(TemplateBody);
             fileSystem.Stub(x => x.ReadFileAsString(Path.Combine(ProjectDir, "weather.freude"))).Return(FreudeFileBody);
@@ -40,6 +38,11 @@ namespace Freude.Tests.CommandsTests
                 fileSystem.Expect(x => x.DeleteDirectory(BuildDir)).Repeat.Never();
 
             fileSystem.Expect(x => x.CopyFile(Path.Combine(ProjectDir, "site.css"), Path.Combine(BuildDir, "site.css")));
+            // a file in a subdirectory should also be copied
+            fileSystem.Expect (x => x.CopyFile(Path.Combine (ProjectDir, @"content\other.css"), Path.Combine (BuildDir, @"content\other.css")));
+            // subdirectories staring with underscore should be ignored
+            fileSystem.Expect (x => x.CopyFile(Path.Combine(ProjectDir, @"_templates\template.cshtml"), Path.Combine (BuildDir, @"_templates\template.cshtml")))
+                .Repeat.Never();
             fileSystem.Expect(x => x.WriteFile(Path.Combine(BuildDir, "weather.html"), ExpandedBody, Encoding.UTF8));
             fileSystem.Expect(x => x.WriteFile(Path.Combine(BuildDir, BuildCommand.BuildMarkerFileName), string.Empty, Encoding.UTF8));
 
@@ -53,18 +56,12 @@ namespace Freude.Tests.CommandsTests
         public void Setup()
         {
             fileSystem = MockRepository.GenerateMock<IFileSystem>();
+            projectBuilder = MockRepository.GenerateMock<IProjectBuilder>();
             textParser = MockRepository.GenerateMock<IFreudeTextParser>();
             templatingEngine = MockRepository.GenerateMock<IFreudeTemplatingEngine>();
             consoleEnv = new ConsoleShell("x");
 
-            cmd = new BuildCommand(fileSystem, textParser, templatingEngine); 
-        }
-
-        private void AddProjectFile(string fileName)
-        {
-            IFileInformation fileInfo = MockRepository.GenerateStub<IFileInformation>();
-            fileInfo.Stub(x => x.FullName).Return(Path.Combine(ProjectDir, fileName));
-            projectFiles.Add(fileInfo);
+            cmd = new BuildCommand(fileSystem, projectBuilder, textParser, templatingEngine); 
         }
 
         private BuildCommand cmd;
@@ -72,7 +69,7 @@ namespace Freude.Tests.CommandsTests
         private IFreudeTextParser textParser;
         private IFreudeTemplatingEngine templatingEngine;
         private IConsoleEnvironment consoleEnv;
-        private List<IFileInformation> projectFiles = new List<IFileInformation>();
+        private IProjectBuilder projectBuilder;
         private const string TemplateFileName = "template.cshtml";
         private const string TemplateBody = "body";
         private const string ProjectDir = "projDir";

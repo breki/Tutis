@@ -6,6 +6,7 @@ using Brejc.Common.Console;
 using Brejc.Common.FileSystem;
 using Freude.DocModel;
 using Freude.Parsing;
+using Freude.ProjectServices;
 using Freude.Templating;
 using log4net;
 using Syborg.Razor;
@@ -18,14 +19,17 @@ namespace Freude.Commands
 
         public BuildCommand (
             IFileSystem fileSystem, 
+            IProjectBuilder projectBuilder,
             IFreudeTextParser freudeTextParser,
             IFreudeTemplatingEngine freudeTemplatingEngine)
         {
             Contract.Requires(fileSystem != null);
+            Contract.Requires(projectBuilder != null);
             Contract.Requires(freudeTextParser != null);
             Contract.Requires(freudeTemplatingEngine != null);
 
             this.fileSystem = fileSystem;
+            this.projectBuilder = projectBuilder;
             this.freudeTextParser = freudeTextParser;
             this.freudeTemplatingEngine = freudeTemplatingEngine;
 
@@ -51,10 +55,13 @@ namespace Freude.Commands
             Contract.Assume(projectSourceDirectory != null);
 
             FreudeProject project = new FreudeProject();
+            project.SourceDir = projectSourceDirectory;
+            project.BuildDir = buildDirectory;
+
             CompileTemplate(project);
 
             PrepareBuildDir();
-            ProcessDirectory(project, projectSourceDirectory);
+            ProcessProjectFiles(project);
             WriteBuildMarkerFile();
 
             return 0;
@@ -80,21 +87,15 @@ namespace Freude.Commands
             return fileSystem.ReadFileAsString(templateFileName);
         }
 
-        private void ProcessDirectory(FreudeProject project, string sourceDirectory)
+        private void ProcessProjectFiles(FreudeProject project)
         {
-            foreach (IFileInformation fileInfo in fileSystem.GetDirectoryFiles (sourceDirectory))
+            foreach (string fileName in projectBuilder.ListProjectFiles(project))
             {
-                string fileName = fileInfo.FullName;
                 if (Path.GetExtension(fileName) == ".freude")
                     ProcessFreudeFile(project, fileName);
                 else
                     CopyFileToBuildDir(fileName);
             }
-
-            Contract.Assume (projectSourceDirectory != null);
-
-            foreach (IDirectoryInformation dirInfo in fileSystem.GetDirectorySubdirectories (sourceDirectory))
-                ProcessDirectory (project, dirInfo.FullName);
         }
 
         private void WriteBuildMarkerFile()
@@ -138,6 +139,7 @@ namespace Freude.Commands
         private string buildDirectory;
         private string expandedFileExtension;
         private readonly IFileSystem fileSystem;
+        private readonly IProjectBuilder projectBuilder;
         private readonly IFreudeTextParser freudeTextParser;
         private readonly IFreudeTemplatingEngine freudeTemplatingEngine;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
