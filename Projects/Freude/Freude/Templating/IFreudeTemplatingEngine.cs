@@ -7,14 +7,14 @@ namespace Freude.Templating
     [ContractClass(typeof(IFreudeTemplatingEngineContract))]
     public interface IFreudeTemplatingEngine
     {
-        ICompiledRazorTemplate CompileTemplate(string templateText);
+        ICompiledRazorTemplate CompileTemplate(string templateName, string templateFileName, string templateText);
         string ExpandTemplate (ICompiledRazorTemplate template, DocumentDef doc, string docHtml, FreudeProject project);
     }
 
     [ContractClassFor(typeof(IFreudeTemplatingEngine))]
     internal abstract class IFreudeTemplatingEngineContract : IFreudeTemplatingEngine
     {
-        public ICompiledRazorTemplate CompileTemplate(string templateText)
+        public ICompiledRazorTemplate CompileTemplate (string templateName, string templateFileName, string templateText)
         {
             Contract.Requires(templateText != null);
             Contract.Ensures(Contract.Result<ICompiledRazorTemplate>() != null);

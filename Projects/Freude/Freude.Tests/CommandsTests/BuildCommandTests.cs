@@ -26,7 +26,7 @@ namespace Freude.Tests.CommandsTests
 
             fileSystem.Stub(x => x.ReadFileAsString(TemplateFileName)).Return(TemplateBody);
             fileSystem.Stub(x => x.ReadFileAsString(Path.Combine(ProjectDir, "weather.freude"))).Return(FreudeFileBody);
-            templatingEngine.Stub(x => x.CompileTemplate(TemplateBody)).Return(compiledTemplate);
+            templatingEngine.Stub(x => x.CompileTemplate(null, null, null)).IgnoreArguments().Return(compiledTemplate);
             templatingEngine.Stub(x => x.ExpandTemplate(null, null, null, null)).IgnoreArguments().Return(ExpandedBody);
 
             if (withBuildDirDeletion)

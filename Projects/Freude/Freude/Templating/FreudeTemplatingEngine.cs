@@ -1,7 +1,11 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Diagnostics.Contracts;
+using System.Reflection;
 using System.Web;
+using System.Web.Razor.Parser.SyntaxTree;
 using Freude.DocModel;
+using log4net;
 using Syborg.Razor;
 
 namespace Freude.Templating
@@ -14,7 +18,7 @@ namespace Freude.Templating
             this.razorCompiler = razorCompiler;
         }
 
-        public ICompiledRazorTemplate CompileTemplate(string templateText)
+        public ICompiledRazorTemplate CompileTemplate (string templateName, string templateFileName, string templateText)
         {
             RazorEngineCompileSettings razorEngineCompileSettings = new RazorEngineCompileSettings ();
             razorEngineCompileSettings.DefaultNamespace = "Freude";
@@ -24,8 +28,33 @@ namespace Freude.Templating
             razorEngineCompileSettings.NamespaceImports.Add ("System.Collections.Generic");
             razorEngineCompileSettings.DefaultBaseClass = typeof(RazorTemplateBase).FullName;
             razorEngineCompileSettings.ReferenceAssemblies.Add (typeof(HtmlString).Assembly);
+            razorEngineCompileSettings.ReferenceAssemblies.Add (typeof(FreudeRazorTemplateBase).Assembly);
 
-            return razorCompiler.Compile (templateText, razorEngineCompileSettings);
+            try
+            {
+                return razorCompiler.Compile (templateText, razorEngineCompileSettings);
+            }
+            catch (RazorException ex)
+            {
+                LogTemplateErrors(ex, templateName, templateFileName);
+                throw;
+            }
+        }
+
+        private static void LogTemplateErrors (RazorException ex, string templateName, string templateFileName)
+        {
+            if (!ex.GeneratorResults.Success)
+            {
+                log.ErrorFormat("Template parse errors in '{0}' Razor template:", templateFileName);
+                foreach (RazorError error in ex.GeneratorResults.ParserErrors)
+                    log.Error(error);
+            }
+            else if (ex.CompilerResults.Errors.HasErrors)
+            {
+                log.ErrorFormat ("Compile errors in '{0}' Razor template:", templateFileName);
+                foreach (CompilerError error in ex.CompilerResults.Errors)
+                    log.Error(error);
+            }
         }
 
         public string ExpandTemplate (ICompiledRazorTemplate template, DocumentDef doc, string docHtml, FreudeProject project)
@@ -38,5 +67,6 @@ namespace Freude.Templating
         }
 
         private readonly IRazorCompiler razorCompiler;
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }
