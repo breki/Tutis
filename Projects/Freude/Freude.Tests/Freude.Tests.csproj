@@ -107,6 +107,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\samples\weather\_templates\default.cshtml">
+      <Link>default.cshtml</Link>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

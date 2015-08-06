@@ -82,7 +82,7 @@ namespace Freude.Commands
         private void CompileTemplate(FreudeProject project)
         {
             string templateBody = ReadTemplateFile();
-            ICompiledRazorTemplate compiledTemplate = freudeTemplatingEngine.CompileTemplate(templateBody);
+            ICompiledRazorTemplate compiledTemplate = freudeTemplatingEngine.CompileTemplate("default", templateFileName, templateBody);
             project.RegisterTemplate("default", compiledTemplate);
         }
 
@@ -122,6 +122,7 @@ namespace Freude.Commands
 
             fileSystem.EnsureDirectoryExists(Path.GetDirectoryName(destinationFileName));
             fileSystem.WriteFile(destinationFileName, expandedBody, Encoding.UTF8);
+            log.InfoFormat ("Built file '{0}'", destinationFileName);
         }
 
         private void CopyFileToBuildDir(string fileName)
