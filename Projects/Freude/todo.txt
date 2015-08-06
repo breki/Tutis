@@ -1,5 +1,6 @@
-- build command: ignore directories that start with _
+- how to render Doc html in template?
 - sample weather project
+	- prepare doc template
 - serve command
 - project properties from a file?
 	- how to store FTP credentials?

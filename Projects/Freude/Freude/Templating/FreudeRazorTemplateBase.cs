@@ -6,12 +6,17 @@ using System.Reflection;
 using System.Text;
 using System.Web;
 using Brejc.Common;
+using Freude.DocModel;
 using log4net;
 
 namespace Freude.Templating
 {
     public abstract class FreudeRazorTemplateBase
     {
+        public DocumentDef Doc { get; set; }
+        public string DocHtml { get; set; }
+        public FreudeProject Project { get; set; }
+
         public dynamic ViewBag
         {
             get

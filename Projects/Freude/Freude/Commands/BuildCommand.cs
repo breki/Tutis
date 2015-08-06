@@ -5,6 +5,7 @@ using System.Text;
 using Brejc.Common.Console;
 using Brejc.Common.FileSystem;
 using Freude.DocModel;
+using Freude.HtmlGenerating;
 using Freude.Parsing;
 using Freude.ProjectServices;
 using Freude.Templating;
@@ -21,16 +22,19 @@ namespace Freude.Commands
             IFileSystem fileSystem, 
             IProjectBuilder projectBuilder,
             IFreudeTextParser freudeTextParser,
+            IHtmlGenerator htmlGenerator,
             IFreudeTemplatingEngine freudeTemplatingEngine)
         {
             Contract.Requires(fileSystem != null);
             Contract.Requires(projectBuilder != null);
             Contract.Requires(freudeTextParser != null);
+            Contract.Requires(htmlGenerator != null);
             Contract.Requires(freudeTemplatingEngine != null);
 
             this.fileSystem = fileSystem;
             this.projectBuilder = projectBuilder;
             this.freudeTextParser = freudeTextParser;
+            this.htmlGenerator = htmlGenerator;
             this.freudeTemplatingEngine = freudeTemplatingEngine;
 
             AddArg ("project source dir", "path to the project source directory").Value ((x, env) => projectSourceDirectory = x);
@@ -108,8 +112,10 @@ namespace Freude.Commands
             string freudeText = fileSystem.ReadFileAsString(fileName);
             DocumentDef doc = freudeTextParser.ParseText(freudeText);
 
+            string docHtml = htmlGenerator.GenerateHtml(doc);
+
             ICompiledRazorTemplate template = project.GetTemplate("default");
-            string expandedBody = freudeTemplatingEngine.ExpandTemplate(template, doc, project);
+            string expandedBody = freudeTemplatingEngine.ExpandTemplate(template, doc, docHtml, project);
 
             string destinationFileName = ConstructDestinationFileName (fileName);
             destinationFileName = Path.ChangeExtension(destinationFileName, expandedFileExtension);
@@ -141,6 +147,7 @@ namespace Freude.Commands
         private readonly IFileSystem fileSystem;
         private readonly IProjectBuilder projectBuilder;
         private readonly IFreudeTextParser freudeTextParser;
+        private readonly IHtmlGenerator htmlGenerator;
         private readonly IFreudeTemplatingEngine freudeTemplatingEngine;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }

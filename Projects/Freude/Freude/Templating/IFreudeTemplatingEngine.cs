@@ -8,7 +8,7 @@ namespace Freude.Templating
     public interface IFreudeTemplatingEngine
     {
         ICompiledRazorTemplate CompileTemplate(string templateText);
-        string ExpandTemplate(ICompiledRazorTemplate template, DocumentDef doc, FreudeProject project);
+        string ExpandTemplate (ICompiledRazorTemplate template, DocumentDef doc, string docHtml, FreudeProject project);
     }
 
     [ContractClassFor(typeof(IFreudeTemplatingEngine))]
@@ -22,10 +22,11 @@ namespace Freude.Templating
             throw new System.NotImplementedException();
         }
 
-        string IFreudeTemplatingEngine.ExpandTemplate (ICompiledRazorTemplate template, DocumentDef doc, FreudeProject project)
+        string IFreudeTemplatingEngine.ExpandTemplate (ICompiledRazorTemplate template, DocumentDef doc, string docHtml, FreudeProject project)
         {
             Contract.Requires(template != null);
             Contract.Requires(doc != null);
+            Contract.Requires(docHtml != null);
             Contract.Requires(project != null);
             Contract.Ensures (Contract.Result<string> () != null);
 

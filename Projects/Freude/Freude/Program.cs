@@ -5,6 +5,7 @@ using Brejc.Common.Console;
 using Brejc.Common.FileSystem;
 using Brejc.Common.Ftp;
 using Freude.Commands;
+using Freude.HtmlGenerating;
 using Freude.Parsing;
 using Freude.ProjectServices;
 using Freude.Templating;
@@ -24,17 +25,19 @@ namespace Freude
 
             XmlConfigurator.Configure ();
 
-            IFileSystem fileSystem = new WindowsFileSystem ();
-            IFreudeTextParser freudeTextParser = new FreudeTextParser ();
             IRazorCompiler razorCompiler = new InMemoryRazorCompiler ();
-            IFreudeTemplatingEngine freudeTemplatingEngine = new FreudeTemplatingEngine (razorCompiler);
-            IProjectBuilder projectBuilder = new ProjectBuilder (fileSystem);
+
+            IFileSystem fileSystem = new WindowsFileSystem ();
             IFtpChannelFactory ftpChannelFactory = new FtpChannelFactoryUsingSockets ();
             IFtpCommunicator ftpCommunicator = new FtpCommunicator ();
             IFtpSessionFactory ftpSessionFactory = new FtpSessionFactory(ftpChannelFactory, ftpCommunicator, fileSystem);
+            IHtmlGenerator htmlGenerator = new HtmlGenerator();
+            IFreudeTemplatingEngine freudeTemplatingEngine = new FreudeTemplatingEngine (razorCompiler);
+            IFreudeTextParser freudeTextParser = new FreudeTextParser ();
+            IProjectBuilder projectBuilder = new ProjectBuilder (fileSystem);
 
             ConsoleShell consoleShell = new ConsoleShell ("ScalableMaps.Mapmaker.exe");
-            consoleShell.RegisterCommand (new BuildCommand (fileSystem, projectBuilder, freudeTextParser, freudeTemplatingEngine));
+            consoleShell.RegisterCommand (new BuildCommand (fileSystem, projectBuilder, freudeTextParser, htmlGenerator, freudeTemplatingEngine));
             consoleShell.RegisterCommand (new DeployCommand(projectBuilder, ftpSessionFactory));
 
             try
