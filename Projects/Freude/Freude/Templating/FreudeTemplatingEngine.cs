@@ -28,10 +28,11 @@ namespace Freude.Templating
             return razorCompiler.Compile (templateText, razorEngineCompileSettings);
         }
 
-        public string ExpandTemplate (ICompiledRazorTemplate template, DocumentDef doc, FreudeProject project)
+        public string ExpandTemplate (ICompiledRazorTemplate template, DocumentDef doc, string docHtml, FreudeProject project)
         {
             RazorEngineExecutionSettings executionSettings = new RazorEngineExecutionSettings ();
             executionSettings.Properties.Add("Doc", doc);
+            executionSettings.Properties.Add("DocHtml", docHtml);
             executionSettings.Properties.Add("Project", project);
             return template.Execute (executionSettings);
         }

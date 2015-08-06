@@ -3,6 +3,7 @@ using System.Text;
 using Brejc.Common.Console;
 using Brejc.Common.FileSystem;
 using Freude.Commands;
+using Freude.HtmlGenerating;
 using Freude.Parsing;
 using Freude.ProjectServices;
 using Freude.Templating;
@@ -26,7 +27,7 @@ namespace Freude.Tests.CommandsTests
             fileSystem.Stub(x => x.ReadFileAsString(TemplateFileName)).Return(TemplateBody);
             fileSystem.Stub(x => x.ReadFileAsString(Path.Combine(ProjectDir, "weather.freude"))).Return(FreudeFileBody);
             templatingEngine.Stub(x => x.CompileTemplate(TemplateBody)).Return(compiledTemplate);
-            templatingEngine.Stub(x => x.ExpandTemplate(null, null, null)).IgnoreArguments().Return(ExpandedBody);
+            templatingEngine.Stub(x => x.ExpandTemplate(null, null, null, null)).IgnoreArguments().Return(ExpandedBody);
 
             if (withBuildDirDeletion)
             {
@@ -58,10 +59,11 @@ namespace Freude.Tests.CommandsTests
             fileSystem = MockRepository.GenerateMock<IFileSystem>();
             projectBuilder = MockRepository.GenerateMock<IProjectBuilder>();
             textParser = MockRepository.GenerateMock<IFreudeTextParser>();
+            htmlGenerator = MockRepository.GenerateStub<IHtmlGenerator>();
             templatingEngine = MockRepository.GenerateMock<IFreudeTemplatingEngine>();
             consoleEnv = new ConsoleShell("x");
 
-            cmd = new BuildCommand(fileSystem, projectBuilder, textParser, templatingEngine); 
+            cmd = new BuildCommand(fileSystem, projectBuilder, textParser, htmlGenerator, templatingEngine); 
         }
 
         private BuildCommand cmd;
@@ -70,6 +72,7 @@ namespace Freude.Tests.CommandsTests
         private IFreudeTemplatingEngine templatingEngine;
         private IConsoleEnvironment consoleEnv;
         private IProjectBuilder projectBuilder;
+        private IHtmlGenerator htmlGenerator;
         private const string TemplateFileName = "template.cshtml";
         private const string TemplateBody = "body";
         private const string ProjectDir = "projDir";

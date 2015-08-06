@@ -10,13 +10,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution 
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{DA1C2976-9FC0-413C-8E9E-27689A0B9112}"
-	ProjectSection(SolutionItems) = preProject
-		samples\weather.txt = samples\weather.txt
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Freude.Tests", "Freude.Tests\Freude.Tests.csproj", "{469E7640-54E3-4896-AA5A-9B317CCCCC70}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Freude", "Freude\Freude.csproj", "{25193F76-4FA7-48D8-BE66-42A575EA9A4D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "weather", "weather", "{F827BAAB-D6B1-4627-9DE6-4988D9C403C7}"
+	ProjectSection(SolutionItems) = preProject
+		samples\weather\default.freude = samples\weather\default.freude
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,5 +37,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F827BAAB-D6B1-4627-9DE6-4988D9C403C7} = {DA1C2976-9FC0-413C-8E9E-27689A0B9112}
 	EndGlobalSection
 EndGlobal
