@@ -111,7 +111,10 @@ par 2 line 2 ");
         {
             doc = parser.ParseText (new string('#', headerLevel) + " header");
             Assert.AreEqual (1, doc.Children.Count);
-            AssertElement<HeaderElement> (doc, 0, x =>
+            AssertElement<HeaderElement> (
+                doc, 
+                0, 
+                x =>
             {
                 Assert.AreEqual("header", x.HeaderText);
                 Assert.AreEqual (headerLevel, x.HeaderLevel);

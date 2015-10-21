@@ -41,6 +41,15 @@ namespace Freude.Templating
             }
         }
 
+        public string ExpandTemplate (ICompiledRazorTemplate template, DocumentDef doc, string docHtml, FreudeProject project)
+        {
+            RazorEngineExecutionSettings executionSettings = new RazorEngineExecutionSettings ();
+            executionSettings.Properties.Add("Doc", doc);
+            executionSettings.Properties.Add("DocHtml", docHtml);
+            executionSettings.Properties.Add("Project", project);
+            return template.Execute (executionSettings);
+        }
+
         private static void LogTemplateErrors (RazorException ex, string templateName, string templateFileName)
         {
             if (!ex.GeneratorResults.Success)
@@ -55,15 +64,6 @@ namespace Freude.Templating
                 foreach (CompilerError error in ex.CompilerResults.Errors)
                     log.Error(error);
             }
-        }
-
-        public string ExpandTemplate (ICompiledRazorTemplate template, DocumentDef doc, string docHtml, FreudeProject project)
-        {
-            RazorEngineExecutionSettings executionSettings = new RazorEngineExecutionSettings ();
-            executionSettings.Properties.Add("Doc", doc);
-            executionSettings.Properties.Add("DocHtml", docHtml);
-            executionSettings.Properties.Add("Project", project);
-            return template.Execute (executionSettings);
         }
 
         private readonly IRazorCompiler razorCompiler;
