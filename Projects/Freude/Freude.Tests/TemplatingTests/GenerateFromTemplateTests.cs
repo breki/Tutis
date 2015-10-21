@@ -7,8 +7,7 @@ namespace Freude.Tests.TemplatingTests
     {
         [Test]
         public void Test()
-        {
-            
+        {          
         }
 
         [SetUp]

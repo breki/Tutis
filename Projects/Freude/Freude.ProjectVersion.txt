@@ -1,0 +1,155 @@
+4.8.0.0
+
+4.7.1.0
+- bugfix: map search should be case insensitive
+- bugfix: the search results pointed to city (and continent) parts instead of whole places
+
+4.7.0.0
+- updated to Leaflet 0.7.5
+- fixed the problem with payment spreadsheet export file name
+- updated Syborg, it now uses code contracts and runtime contract checking
+- updated AWS SDK, NCrunch, Json.NET, Selenium.Support, Selenium.WebDriver and ChromeDriver libraries
+- fixed code analysis issues, started introducing code contracts into SM assemblies
+
+4.6.0.0
+- added SVG support
+- pricing tiers are now fixed to SVG/AI product prices, no more support for product type-specific pricing tier additions
+- map info XML schema is now versioned, it uses version number 2
+- map SRS info in the new schema now uses 'type' and 'name' attributes
+- MapCoverageInfo now uses more robust GetGeoName(s) methods to access properties, preventing unhandled exceptions
+- users now get extra warning if the VAT number is missing the country code
+- hidden (custom) maps are no longer counted in the total numbers count on the home page
+- sm-url setting has now been split to local-sm-url (used by admin web services) and public-sm-url (used in notification emails)
+- if map uses no fonts, it is now indicated on the map page
+
+4.5.1.0
+- fixing some problems with ServiceState implementation
+- bugfix: S3ToDiskMapTransferer failed to transfer a new map
+
+4.5.0.0
+- new JSON-based back service state file
+- introduced BackServiceSyncMode
+- back service tasks now record their execution times
+
+4.4.3.0
+- removed logging in in DbBackupTask
+
+4.4.2.0
+- additional fixes of issues detected in staging
+
+4.4.1.0
+- some fixes of issues detected in staging
+
+4.4.0.0
+- implemented map deletion functionality
+- new Back Service tasks for deleting old events, consistency check
+- admin web service was redesigned to be more REST-like
+- updated libs: AWS. json.NET, NUnit, WebDriver
+- map publishing events are now handled better - catalog and places get updated
+
+4.3.0.0
+- new version of Syborg providing support for configurable MIME types
+- fixing "Size content to viewport" on the home page
+- fixing "Size tap targets appropriately" for cookies bar
+- fixing preview minimap sizing issues
+- the catalog can now prioritize countries for city maps
+- added glyph icon to the navbar menu link
+
+4.2.0.0
+- fixing problems with font rendering on various browsers
+- added a minimap to the preview map
+- made admin GUI (almost) responsive
+
+4.1.1.0
+- fixes before going to production
+
+4.1.0.0
+- fixes before going to Staging for the second time
+
+4.0.0.0
+- migrated to Bootstrap 3
+- implemented mobile-friendly pages
+- first version to be put to Staging
+
+3.6.0.0
+- upgraded DB with indices and version table
+- downloading of paid product is now recorded in the DB. deliveries DB table has a new column: download_time
+- handled the case when user mistakenly chooses "EU individual" even though he is outside EU
+- implemented office hours functionality
+- reduced the size of the preview map a little, so the Similar maps section can be visible
+- PaymentsNoticeService now dumps request stream contents, so we can check out whether it will be possible to print out
+	payment details (and email address of the delivery) to the buyer
+- bugfix: payment export file was incorrectly named
+- admin pages now display SM version
+
+3.5.0.0
+- reorganized AWS credentials code, now using a more secure user for S3 access
+
+3.4.3.0
+- CSS files are now loaded before any JS files (PageSpeed optimization)
+- the 48 hour delay in delivering maps is now 24 hour delay
+- switched back to 3 days for download-deactivation-period setting
+
+3.4.2.0
+- fixed the web tests to properly check the free map download process
+- fixed typo error on the DownloadThankYou page ("You" -> "Your")
+
+3.4.1.0
+- bugfix: download of free maps wasn't working because of the "download" attribute added to the DownloadRequest button (<a> element)
+	in the previous version
+
+3.4.0.0
+- solving problems with multiple tabs in textarea: spreadsheet export now downloads tsv file instead of placing the data
+	in the modal dialog 
+- marked Download button a tag with "download" to prevent problems with downloading in the browser
+- various small fixes
+- removed some excessive logging
+
+3.3.0.0
+- implemented Payments spreadsheet export
+- implemented Payments backup export
+- refactored back service tasking code
+- implemented back service backup task
+- removed obsolete back service refresh maps task
+- bugfix: buy page error indicator isn't showing up in FireFox
+
+3.2.0.0
+- switched to IP2C geolocation service
+- working on admin web app (not fully functional yet)
+
+3.1.1.0
+- bugfixing problems with IP geolocation
+
+3.1.0.0
+- new EU VAT laws changes - second phase of the production for post-2015 purchases
+
+3.0.0.0
+- new EU VAT laws changes - first phase of the production for pre-2015 purchases
+
+2.2.3.0
+- updated the customer list
+
+2.2.2.0
+- second release of HTTPS migration after successful Staging 2 testing
+
+2.2.1.0
+- first release of HTTPS migration
+
+2.1.0.0
+- moved some map API classes from MBTilesServer project to ScalableMaps.Sync so they can be used outside of SM project
+
+2.0.0.0
+- removed ServiceStack from the code
+
+1.1.2.0
+- added better favicons
+- added the text hint to the top of the samples page on the home page
+
+1.1.1.0
+- bugfix: page not found could not be rendered properly
+
+1.1.0.0
+- added payment receipt information to the delivery information email
+
+1.0.0.0
+- SyncService notification mail now includes the link to the map
