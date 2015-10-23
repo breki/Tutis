@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using Brejc.Common.FileSystem;
-using Freude.DocModel;
 
 namespace Freude.ProjectServices
 {

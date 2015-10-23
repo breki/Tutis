@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using Freude.DocModel;
 
 namespace Freude.ProjectServices
 {

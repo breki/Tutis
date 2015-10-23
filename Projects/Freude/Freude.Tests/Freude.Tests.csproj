@@ -114,6 +114,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Freude.Engine\Freude.Engine.csproj">
+      <Project>{5e15ac0c-39d1-49c8-83f4-f99ff5824dd5}</Project>
+      <Name>Freude.Engine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Freude\Freude.csproj">
       <Project>{25193f76-4fa7-48d8-be66-42a575ea9a4d}</Project>
       <Name>Freude</Name>
