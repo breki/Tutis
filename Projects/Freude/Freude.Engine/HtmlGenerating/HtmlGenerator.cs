@@ -3,7 +3,6 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
-using Brejc.Common;
 using Freude.DocModel;
 
 namespace Freude.HtmlGenerating

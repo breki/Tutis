@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 using Syborg.Razor;
 
-namespace Freude.DocModel
+namespace Freude
 {
     public class FreudeProject
     {

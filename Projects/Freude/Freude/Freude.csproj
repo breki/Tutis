@@ -5,15 +5,15 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{25193F76-4FA7-48D8-BE66-42A575EA9A4D}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Freude</RootNamespace>
     <AssemblyName>Freude</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
-    <TargetFrameworkProfile />
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -83,53 +83,29 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Brejc.Common.Library, Version=1.0.0.0, Culture=neutral, PublicKeyToken=268ea5e39f968da4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Syborg\Brejc.Common.Library.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Syborg">
-      <HintPath>..\lib\Syborg\Syborg.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Razor.Unofficial, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Syborg\System.Web.Razor.Unofficial.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\BuildCommand.cs" />
-    <Compile Include="Commands\DeployCommand.cs" />
     <Compile Include="DocModel\DocumentDef.cs" />
     <Compile Include="DocModel\HeaderElement.cs" />
     <Compile Include="DocModel\IDocumentElement.cs" />
     <Compile Include="DocModel\IDocumentElementContainer.cs" />
     <Compile Include="DocModel\ImageElement.cs" />
     <Compile Include="DocModel\ParagraphElement.cs" />
-    <Compile Include="DocModel\FreudeProject.cs" />
     <Compile Include="DocModel\TextElement.cs" />
-    <Compile Include="HtmlGenerating\HtmlGenerator.cs" />
-    <Compile Include="HtmlGenerating\IHtmlGenerator.cs" />
     <Compile Include="Parsing\FreudeTextParser.cs" />
     <Compile Include="Parsing\IFreudeTextParser.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="ProjectServices\IProjectBuilder.cs" />
-    <Compile Include="ProjectServices\ProjectBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Templating\FreudeRazorTemplateBase.cs" />
-    <Compile Include="Templating\FreudeTemplatingEngine.cs" />
-    <Compile Include="Templating\IFreudeTemplatingEngine.cs" />
+    <Compile Include="StringEx.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">

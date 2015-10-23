@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!--This file represents the results of running a test suite-->
-<test-results name="D:\hg\tutis\Projects\Freude\Freude.Tests\bin\Release\Freude.Tests.dll" total="24" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2015-10-21" time="21:26:49">
+<test-results name="D:\hg\tutis\Projects\Freude\Freude.Tests\bin\Release\Freude.Tests.dll" total="24" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2015-10-23" time="08:05:57">
   <environment nunit-version="2.6.4.14350" clr-version="2.0.50727.5485" os-version="Microsoft Windows NT 6.1.7601 Service Pack 1" platform="Win32NT" cwd="D:\hg\tutis\Projects\Freude" machine-name="JAZZ" user="igor" user-domain="JAZZ" />
   <culture-info current-culture="sl-SI" current-uiculture="en-US" />
-  <test-suite type="Assembly" name="D:\hg\tutis\Projects\Freude\Freude.Tests\bin\Release\Freude.Tests.dll" executed="True" result="Success" success="True" time="0.614" asserts="0">
+  <test-suite type="Assembly" name="D:\hg\tutis\Projects\Freude\Freude.Tests\bin\Release\Freude.Tests.dll" executed="True" result="Success" success="True" time="0.649" asserts="0">
     <results>
-      <test-suite type="Namespace" name="Freude" executed="True" result="Success" success="True" time="0.609" asserts="0">
+      <test-suite type="Namespace" name="Freude" executed="True" result="Success" success="True" time="0.644" asserts="0">
         <results>
-          <test-suite type="Namespace" name="Tests" executed="True" result="Success" success="True" time="0.609" asserts="0">
+          <test-suite type="Namespace" name="Tests" executed="True" result="Success" success="True" time="0.644" asserts="0">
             <results>
-              <test-suite type="Namespace" name="CommandsTests" executed="True" result="Success" success="True" time="0.475" asserts="0">
+              <test-suite type="Namespace" name="CommandsTests" executed="True" result="Success" success="True" time="0.509" asserts="0">
                 <results>
-                  <test-suite type="TestFixture" name="BuildCommandTests" executed="True" result="Success" success="True" time="0.426" asserts="0">
+                  <test-suite type="TestFixture" name="BuildCommandTests" executed="True" result="Success" success="True" time="0.458" asserts="0">
                     <results>
-                      <test-suite type="ParameterizedTest" name="TestCompilingOfAProject" executed="True" result="Success" success="True" time="0.423" asserts="0">
+                      <test-suite type="ParameterizedTest" name="TestCompilingOfAProject" executed="True" result="Success" success="True" time="0.455" asserts="0">
                         <results>
-                          <test-case name="Freude.Tests.CommandsTests.BuildCommandTests.TestCompilingOfAProject(True)" executed="True" result="Success" success="True" time="0.416" asserts="0" />
+                          <test-case name="Freude.Tests.CommandsTests.BuildCommandTests.TestCompilingOfAProject(True)" executed="True" result="Success" success="True" time="0.447" asserts="0" />
                           <test-case name="Freude.Tests.CommandsTests.BuildCommandTests.TestCompilingOfAProject(False)" executed="True" result="Success" success="True" time="0.002" asserts="0" />
                         </results>
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="TestFixture" name="DeployCommandTests" executed="True" result="Success" success="True" time="0.048" asserts="0">
+                  <test-suite type="TestFixture" name="DeployCommandTests" executed="True" result="Success" success="True" time="0.049" asserts="0">
                     <results>
-                      <test-case name="Freude.Tests.CommandsTests.DeployCommandTests.TestDeployingAProjectWithoutSpecifyingRemoteDir" executed="True" result="Success" success="True" time="0.042" asserts="0" />
+                      <test-case name="Freude.Tests.CommandsTests.DeployCommandTests.TestDeployingAProjectWithoutSpecifyingRemoteDir" executed="True" result="Success" success="True" time="0.043" asserts="0" />
                       <test-case name="Freude.Tests.CommandsTests.DeployCommandTests.TestDeployingAProjectWithSpecifyingRemoteDir" executed="True" result="Success" success="True" time="0.005" asserts="0" />
                     </results>
                   </test-suite>
@@ -31,7 +31,7 @@
               </test-suite>
               <test-suite type="Namespace" name="FreudeTextParsingTests" executed="True" result="Success" success="True" time="0.038" asserts="0">
                 <results>
-                  <test-suite type="TestFixture" name="BasicParsingTests" executed="True" result="Success" success="True" time="0.038" asserts="0">
+                  <test-suite type="TestFixture" name="BasicParsingTests" executed="True" result="Success" success="True" time="0.037" asserts="0">
                     <results>
                       <test-case name="Freude.Tests.FreudeTextParsingTests.BasicParsingTests.DoubleImagesDoc" executed="True" result="Success" success="True" time="0.027" asserts="6" />
                       <test-case name="Freude.Tests.FreudeTextParsingTests.BasicParsingTests.EmptyLineCanHaveWhitespaceThatIsIgnored" executed="True" result="Success" success="True" time="0.001" asserts="7" />
@@ -54,11 +54,11 @@
                   </test-suite>
                 </results>
               </test-suite>
-              <test-suite type="Namespace" name="HtmlGeneratingTests" executed="True" result="Success" success="True" time="0.023" asserts="0">
+              <test-suite type="Namespace" name="HtmlGeneratingTests" executed="True" result="Success" success="True" time="0.027" asserts="0">
                 <results>
-                  <test-suite type="TestFixture" name="BasicGeneratingTests" executed="True" result="Success" success="True" time="0.023" asserts="0">
+                  <test-suite type="TestFixture" name="BasicGeneratingTests" executed="True" result="Success" success="True" time="0.027" asserts="0">
                     <results>
-                      <test-case name="Freude.Tests.HtmlGeneratingTests.BasicGeneratingTests.EscapeText" executed="True" result="Success" success="True" time="0.016" asserts="1" />
+                      <test-case name="Freude.Tests.HtmlGeneratingTests.BasicGeneratingTests.EscapeText" executed="True" result="Success" success="True" time="0.020" asserts="1" />
                       <test-case name="Freude.Tests.HtmlGeneratingTests.BasicGeneratingTests.HeaderParagraph" executed="True" result="Success" success="True" time="0.000" asserts="1" />
                       <test-case name="Freude.Tests.HtmlGeneratingTests.BasicGeneratingTests.ParagraphWithImage" executed="True" result="Success" success="True" time="0.004" asserts="1" />
                       <test-case name="Freude.Tests.HtmlGeneratingTests.BasicGeneratingTests.SimpleParagraph" executed="True" result="Success" success="True" time="0.000" asserts="1" />
@@ -66,11 +66,11 @@
                   </test-suite>
                 </results>
               </test-suite>
-              <test-suite type="Namespace" name="ProjectServicesTests" executed="True" result="Success" success="True" time="0.065" asserts="0">
+              <test-suite type="Namespace" name="ProjectServicesTests" executed="True" result="Success" success="True" time="0.063" asserts="0">
                 <results>
-                  <test-suite type="TestFixture" name="ProjectBuilderTests" executed="True" result="Success" success="True" time="0.065" asserts="0">
+                  <test-suite type="TestFixture" name="ProjectBuilderTests" executed="True" result="Success" success="True" time="0.063" asserts="0">
                     <results>
-                      <test-case name="Freude.Tests.ProjectServicesTests.ProjectBuilderTests.ListBuiltFiles" executed="True" result="Success" success="True" time="0.060" asserts="1" />
+                      <test-case name="Freude.Tests.ProjectServicesTests.ProjectBuilderTests.ListBuiltFiles" executed="True" result="Success" success="True" time="0.058" asserts="1" />
                       <test-case name="Freude.Tests.ProjectServicesTests.ProjectBuilderTests.ListProjectFiles" executed="True" result="Success" success="True" time="0.004" asserts="1" />
                     </results>
                   </test-suite>
@@ -78,7 +78,7 @@
               </test-suite>
               <test-suite type="Namespace" name="TemplatingTests" executed="True" result="Success" success="True" time="0.001" asserts="0">
                 <results>
-                  <test-suite type="TestFixture" name="GenerateFromTemplateTests" executed="True" result="Success" success="True" time="0.001" asserts="0">
+                  <test-suite type="TestFixture" name="GenerateFromTemplateTests" executed="True" result="Success" success="True" time="0.000" asserts="0">
                     <results>
                       <test-case name="Freude.Tests.TemplatingTests.GenerateFromTemplateTests.Test" executed="True" result="Success" success="True" time="0.000" asserts="0" />
                     </results>
