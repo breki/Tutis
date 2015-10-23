@@ -10,8 +10,9 @@ using System.Text.RegularExpressions;
 namespace Freude
 {
     [SuppressMessage ("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
-    public static class StringEx
+    internal static class StringEx
     {
+        [SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void AppendList (this StringBuilder s, IEnumerable<string> items, string itemDelimiter)
         {
             Contract.Requires (s != null);
@@ -26,6 +27,7 @@ namespace Freude
             }
         }
 
+        [SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static string Concat<TItem> (this IEnumerable<TItem> items, Func<TItem, string> formatterFunc, string itemDelimiter)
         {
             Contract.Requires (items != null);
@@ -45,6 +47,7 @@ namespace Freude
             return s.ToString ();
         }
 
+        [SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static string Concat<TItem> (
             this IEnumerable<TItem> items,
             Func<TItem, string> formatterFunc,
@@ -75,6 +78,7 @@ namespace Freude
             return s.ToString ();
         }
 
+        [SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static string CropEnd (this string value, int length)
         {
             Contract.Requires (value != null);
@@ -86,6 +90,7 @@ namespace Freude
         }
 
         [SuppressMessage ("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "char")]
+        [SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static string ExtractUpTo (this string value, char upToChar)
         {
             Contract.Requires (value != null);
@@ -99,6 +104,7 @@ namespace Freude
         }
 
         [SuppressMessage ("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#")]
+        [SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static string ExtractUpTo (this string value, Predicate<char> charPredicate, out int index)
         {
             Contract.Requires (value != null);
@@ -116,6 +122,7 @@ namespace Freude
         }
 
         [SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Fmt")]
+        [SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static string Fmt (this string format, params object[] args)
         {
             Contract.Requires (format != null);
@@ -125,6 +132,7 @@ namespace Freude
             return string.Format (CultureInfo.InvariantCulture, format, args);
         }
 
+        [SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static bool HasWhiteSpace (this string s)
         {
             Contract.Requires (s != null);
@@ -138,6 +146,7 @@ namespace Freude
             return false;
         }
 
+        [SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static string JoinLines (
             IEnumerable<string> lines,
             int startingLineIndex,
@@ -165,6 +174,7 @@ namespace Freude
             return s.ToString ();
         }
 
+        [SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static string Reverse (this string s)
         {
             if (s == null)
@@ -194,6 +204,7 @@ namespace Freude
             return lines;
         }
 
+        [SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static IList<string> SplitIntoWords (this string value)
         {
             Contract.Requires (value != null);
@@ -264,6 +275,7 @@ namespace Freude
             return words;
         }
 
+        [SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static string ToUnderscoreName (this string name, CultureInfo culture)
         {
             Contract.Requires (name != null);
@@ -297,6 +309,7 @@ namespace Freude
         [SuppressMessage ("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#")]
         [SuppressMessage ("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#")]
         [SuppressMessage ("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+        [SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static string TrimEx (this string value, out int start, out int end)
         {
             Contract.Requires (value != null);
@@ -314,6 +327,7 @@ namespace Freude
             return trimmedStart.Substring (0, trimmedStart.Length - end);
         }
 
+        [SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static string WildcardsToRegex (this string pattern)
         {
             Contract.Requires (pattern != null);
