@@ -18,6 +18,11 @@
             get { return headerLevel; }
         }
 
+        public string AnchorId
+        {
+            get; set; 
+        }
+
         private readonly string headerText;
         private readonly int headerLevel;
     }
