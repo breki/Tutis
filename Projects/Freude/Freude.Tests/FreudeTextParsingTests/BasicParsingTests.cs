@@ -10,7 +10,8 @@ namespace Freude.Tests.FreudeTextParsingTests
         [Test]
         public void SingleLineTextParagraph()
         {
-            doc = parser.ParseText (@" this is some text ");
+            doc = parser.ParseText (@" this is some text ", context);
+            Assert.IsFalse(context.HasAnyErrors);
             Assert.AreEqual (1, doc.Children.Count);
             var par = AssertElement<ParagraphElement>(doc, 0);
             AssertElement<TextElement> (par, 0, x => Assert.AreEqual ("this is some text", x.Text));
@@ -19,9 +20,12 @@ namespace Freude.Tests.FreudeTextParsingTests
         [Test]
         public void MultilineTextParagraphIsMergedIntoSingleLineText()
         {
-            doc = parser.ParseText (@"this is some text
+            doc = parser.ParseText (
+@"this is some text
    and this too
-and this too ");
+and this too ", 
+              context);
+            Assert.IsFalse (context.HasAnyErrors);
             Assert.AreEqual (1, doc.Children.Count);
             var par = AssertElement<ParagraphElement>(doc, 0);
             AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"this is some text and this too and this too", x.Text));
@@ -30,11 +34,14 @@ and this too ");
         [Test]
         public void ParagraphsAreSplitByEmptyLines()
         {
-            doc = parser.ParseText (@" par 1 line 1
+            doc = parser.ParseText (
+@" par 1 line 1
    par 1 line 2
 
 par 2 line 1
-par 2 line 2 ");
+par 2 line 2 ", 
+              context);
+            Assert.IsFalse (context.HasAnyErrors);
             Assert.AreEqual (2, doc.Children.Count);
             var par = AssertElement<ParagraphElement> (doc, 0);
             AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 1 line 1 par 1 line 2", x.Text));
@@ -45,13 +52,16 @@ par 2 line 2 ");
         [Test]
         public void MultipleEmptyLinesBetweenParagraphsAreTreatedAsSingleOne()
         {
-            doc = parser.ParseText (@" par 1 line 1
+            doc = parser.ParseText (
+@" par 1 line 1
    par 1 line 2
 
    
 
 par 2 line 1
-par 2 line 2 ");
+par 2 line 2 ", 
+              context);
+            Assert.IsFalse (context.HasAnyErrors);
             Assert.AreEqual (2, doc.Children.Count);
             var par = AssertElement<ParagraphElement> (doc, 0);
             AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 1 line 1 par 1 line 2", x.Text));
@@ -62,11 +72,14 @@ par 2 line 2 ");
         [Test]
         public void EmptyLineCanHaveWhitespaceThatIsIgnored()
         {
-            doc = parser.ParseText (@" par 1 line 1
+            doc = parser.ParseText (
+@" par 1 line 1
    par 1 line 2
      
 par 2 line 1
-par 2 line 2 ");
+par 2 line 2 ", 
+              context);
+            Assert.IsFalse (context.HasAnyErrors);
             Assert.AreEqual (2, doc.Children.Count);
             var par = AssertElement<ParagraphElement> (doc, 0);
             AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 1 line 1 par 1 line 2", x.Text));
@@ -77,7 +90,8 @@ par 2 line 2 ");
         [Test]
         public void SingleImageDoc()
         {
-            doc = parser.ParseText (@"[[http://www.arso.gov.si/vreme/napovedi%20in%20podatki/radar_anim.gif]]");
+            doc = parser.ParseText (@"[[http://www.arso.gov.si/vreme/napovedi%20in%20podatki/radar_anim.gif]]", context);
+            Assert.IsFalse (context.HasAnyErrors);
             var par = AssertElement<ParagraphElement> (doc, 0);
             Assert.AreEqual (1, par.Children.Count);
             AssertElement<ImageElement>(par, 0, x => Assert.AreEqual("http://www.arso.gov.si/vreme/napovedi in podatki/radar_anim.gif", x.ImageUrl.ToString()));
@@ -86,7 +100,8 @@ par 2 line 2 ");
         [Test] 
         public void DoubleImagesDoc()
         {
-            doc = parser.ParseText (@"[[http://www.arso.gov.si/vreme/napovedi%20in%20podatki/radar_anim.gif]] [[http://google.com/test.png]]");
+            doc = parser.ParseText (@"[[http://www.arso.gov.si/vreme/napovedi%20in%20podatki/radar_anim.gif]] [[http://google.com/test.png]]", context);
+            Assert.IsFalse (context.HasAnyErrors);
             var par = AssertElement<ParagraphElement> (doc, 0);
             Assert.AreEqual (2, par.Children.Count);
             AssertElement<ImageElement>(par, 0, x => Assert.AreEqual ("http://www.arso.gov.si/vreme/napovedi in podatki/radar_anim.gif", x.ImageUrl.ToString()));
@@ -96,7 +111,8 @@ par 2 line 2 ");
         [Test] 
         public void ImageWithTextAround()
         {
-            doc = parser.ParseText (@"text before [[http://www.arso.gov.si/vreme/napovedi%20in%20podatki/radar_anim.gif]] text after");
+            doc = parser.ParseText (@"text before [[http://www.arso.gov.si/vreme/napovedi%20in%20podatki/radar_anim.gif]] text after", context);
+            Assert.IsFalse (context.HasAnyErrors);
             var par = AssertElement<ParagraphElement> (doc, 0);
             Assert.AreEqual (3, par.Children.Count);
             AssertElement<TextElement>(par, 0, x => Assert.AreEqual ("text before", x.Text));
@@ -109,7 +125,8 @@ par 2 line 2 ");
         [TestCase(3)]
         public void StartingHashIsHeaderPrefix(int headerLevel)
         {
-            doc = parser.ParseText (new string('#', headerLevel) + " header");
+            doc = parser.ParseText (new string ('#', headerLevel) + " header", context);
+            Assert.IsFalse (context.HasAnyErrors);
             Assert.AreEqual (1, doc.Children.Count);
             AssertElement<HeaderElement> (
                 doc, 
@@ -121,10 +138,47 @@ par 2 line 2 ");
             });            
         }
 
+        [TestCase (1)]
+        [TestCase (2)]
+        [TestCase (3)]
+        public void StartingEqualsIsHeaderPrefix (int headerLevel)
+        {
+            string equalsToken = new string ('=', headerLevel);
+            doc = parser.ParseText (equalsToken + " header " + equalsToken, context);
+            Assert.IsFalse (context.HasAnyErrors);
+            Assert.AreEqual (1, doc.Children.Count);
+            AssertElement<HeaderElement> (
+                doc,
+                0,
+                x =>
+                {
+                    Assert.AreEqual ("header", x.HeaderText);
+                    Assert.AreEqual (headerLevel, x.HeaderLevel);
+                });
+        }
+
+        [Test]
+        public void HeaderWithAnchor()
+        {
+            doc = parser.ParseText (@"== header== #anchor+test", context);
+            Assert.IsFalse (context.HasAnyErrors);
+            Assert.AreEqual (1, doc.Children.Count);
+            AssertElement<HeaderElement> (
+                doc,
+                0,
+                x =>
+                {
+                    Assert.AreEqual ("header", x.HeaderText);
+                    Assert.AreEqual (2, x.HeaderLevel);
+                    Assert.AreEqual ("anchor+test", x.AnchorId);
+                });
+        }
+
         [Test]
         public void WhitespaceBeforeHashIsNotHeaderPrefix()
         {
-            doc = parser.ParseText (@"  # header");
+            doc = parser.ParseText (@"  # header", context);
+            Assert.IsFalse (context.HasAnyErrors);
             var par = AssertElement<ParagraphElement> (doc, 0);
             Assert.AreEqual (1, par.Children.Count);
             AssertElement<TextElement> (par, 0, x => Assert.AreEqual ("# header", x.Text));            
@@ -133,11 +187,14 @@ par 2 line 2 ");
         [Test]
         public void HeaderBetweenParagraphs()
         {
-            doc = parser.ParseText (@" par 1 line 1
+            doc = parser.ParseText (
+@" par 1 line 1
    par 1 line 2
 #header
 par 2 line 1
-par 2 line 2 ");
+par 2 line 2 ", 
+              context);
+            Assert.IsFalse (context.HasAnyErrors);
             Assert.AreEqual (3, doc.Children.Count);
             var par = AssertElement<ParagraphElement> (doc, 0);
             AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 1 line 1 par 1 line 2", x.Text));
@@ -149,6 +206,7 @@ par 2 line 2 ");
         [SetUp]
         public void Setup()
         {
+            context = new ParsingContext();
             parser = new FreudeTextParser ();
         }
 
@@ -164,6 +222,7 @@ par 2 line 2 ");
         }
 
         private FreudeTextParser parser;
+        private ParsingContext context;
         private DocumentDef doc;
     }
 }

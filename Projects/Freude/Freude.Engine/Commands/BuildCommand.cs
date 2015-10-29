@@ -110,7 +110,11 @@ namespace Freude.Commands
         private void ProcessFreudeFile(FreudeProject project, string fileName)
         {
             string freudeText = fileSystem.ReadFileAsString(fileName);
-            DocumentDef doc = freudeTextParser.ParseText(freudeText);
+
+            ParsingContext parsingContext = new ParsingContext();
+            DocumentDef doc = freudeTextParser.ParseText(freudeText, parsingContext);
+
+            // todo: report parsing errors and warnings
 
             string docHtml = htmlGenerator.GenerateHtml(doc);
 

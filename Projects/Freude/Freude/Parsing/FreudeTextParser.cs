@@ -1,29 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Text.RegularExpressions;
 using Freude.DocModel;
 
 namespace Freude.Parsing
 {
     public class FreudeTextParser : IFreudeTextParser
     {
-        public DocumentDef ParseText(string text)
+        private const char CharHash = '#';
+        private const char CharEquals = '=';
+
+        public DocumentDef ParseText(string text, ParsingContext context)
         {
             doc = new DocumentDef();
 
             IList<string> lines = text.SplitIntoLines();
 
             for (int line = 0; line < lines.Count; line++)
-                ParseLine(lines, line);
+            {
+                ParseLine(context, lines);
+                context.IncrementLineCounter();
+            }
 
             return doc;
         }
 
-        private void ParseLine(IList<string> lines, int line)
+        private void ParseLine(ParsingContext context, IList<string> lines)
         {
-            Contract.Assume (lines[line] != null);
+            Contract.Assume (lines[context.Line - 1] != null);
 
-            string lineText = lines[line];
+            string lineText = lines[context.Line - 1];
             
             // we can ignore lines with nothing but whitespace
             if (lineText.Trim().Length == 0)
@@ -35,22 +42,38 @@ namespace Freude.Parsing
             int cursor = 0;
 
             char startingChar = lineText[cursor];
-            if (startingChar == '#')
-            {
-                currentParagraph = null;
 
-                while (lineText[cursor] == '#')
+            switch (startingChar)
+            {
+                case CharHash:
                 {
-                    cursor++;
-                    if (cursor == lineText.Length)
-                        throw new NotImplementedException("todo next: the whole line consists of #");
+                    currentParagraph = null;
+
+                    while (lineText[cursor] == CharHash)
+                    {
+                        cursor++;
+                        if (cursor == lineText.Length)
+                            throw new NotImplementedException("todo next: the whole line consists of {0}".Fmt(CharHash));
+                    }
+
+                    HandleHeaderWithHashChar(lineText, cursor);
+                    return;
                 }
 
-                string headerText = lineText.Substring(cursor).Trim();
+                case CharEquals:
+                {
+                    currentParagraph = null;
 
-                HeaderElement headerElement = new HeaderElement(headerText, cursor);
-                doc.Children.Add(headerElement);
-                return;
+                    while (lineText[cursor] == CharEquals)
+                    {
+                        cursor++;
+                        if (cursor == lineText.Length)
+                            throw new NotImplementedException ("todo next: the whole line consists of {0}".Fmt (CharHash));
+                    }
+
+                    HandleHeaderWithEqualsChar(context, lineText, cursor);
+                    return;
+                }
             }
 
             while (true)
@@ -93,6 +116,57 @@ namespace Freude.Parsing
             }
         }
 
+        private void HandleHeaderWithHashChar(string lineText, int headerLevel)
+        {
+            string headerText = lineText.Substring(headerLevel).Trim();
+
+            HeaderElement headerElement = new HeaderElement(headerText, headerLevel);
+            doc.Children.Add(headerElement);
+        }
+
+        private void HandleHeaderWithEqualsChar(ParsingContext context, string lineText, int headerLevel)
+        {
+            int cursor = headerLevel + 1;
+            string suffix = new string(CharEquals, headerLevel);
+            int suffixIndex = lineText.IndexOf(suffix, cursor, StringComparison.OrdinalIgnoreCase);
+
+            if (suffixIndex < 0)
+            {
+                context.ReportError("Missing header suffix");
+                return;
+            }
+
+            string headerText = lineText.Substring(headerLevel, suffixIndex - headerLevel).Trim();
+
+            HeaderElement headerElement = new HeaderElement(headerText, headerLevel);
+            doc.Children.Add(headerElement);
+
+            ParseHeaderAnchor(context, headerElement, lineText, suffixIndex);
+        }
+
+        private static void ParseHeaderAnchor(
+            ParsingContext context, HeaderElement headerElement, string lineText, int startingIndex)
+        {
+            int anchorHashIndex = lineText.IndexOf(CharHash, startingIndex);
+            if (anchorHashIndex < 0)
+                return;
+
+            string anchorId = lineText.Substring(anchorHashIndex + 1).TrimEnd();
+
+            if (!ValidateAnchor(anchorId))
+                context.ReportError("Invalid anchor ID '{0}'".Fmt(anchorId), anchorHashIndex + 1);
+
+            headerElement.AnchorId = anchorId;
+        }
+
+        private static bool ValidateAnchor(string anchorId)
+        {
+            if (anchorId.Length == 0)
+                return false;
+
+            return anchorRegex.IsMatch(anchorId);
+        }
+
         private void AddTextToParagraph(string text)
         {
             CreateParagraphIfNoneIsAlreadyOpen();
@@ -130,6 +204,7 @@ namespace Freude.Parsing
 
         private DocumentDef doc;
         private ParagraphElement currentParagraph;
+        private static Regex anchorRegex = new Regex(@"^[\d\w\-\._~!\$\&`\(\)\*\+\,\;\=\:\@]+$", RegexOptions.Compiled);
         //private LineMode currentLineMode;
 
         //private enum LineMode
