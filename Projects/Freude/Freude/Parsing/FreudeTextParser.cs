@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 using Freude.DocModel;
@@ -13,30 +14,38 @@ namespace Freude.Parsing
 
         public DocumentDef ParseText(string text, ParsingContext context)
         {
-            doc = new DocumentDef();
+            DocumentDef doc = new DocumentDef();
 
-            IList<string> lines = text.SplitIntoLines();
+            context.SetTextLines(text.SplitIntoLines());
+            ParagraphElement currentParagraph = null;
 
-            for (int line = 0; line < lines.Count; line++)
+            while (!context.EndOfText)
             {
-                ParseLine(context, lines);
-                context.IncrementLineCounter();
+                if (!ParseLine(doc, ref currentParagraph, context))
+                    break;
             }
 
             return doc;
         }
 
-        private void ParseLine(ParsingContext context, IList<string> lines)
+        private static bool ParseLine(
+            IDocumentElementContainer doc, 
+            ref ParagraphElement currentParagraph,
+            ParsingContext context)
         {
-            Contract.Assume (lines[context.Line - 1] != null);
+            Contract.Requires(doc != null);
 
-            string lineText = lines[context.Line - 1];
-            
+            if (context.EndOfText)
+                return false;
+
+            string lineText = context.CurrentLine;
+
             // we can ignore lines with nothing but whitespace
             if (lineText.Trim().Length == 0)
             {
+                context.IncrementLineCounter();
                 currentParagraph = null;
-                return;
+                return true;
             }
 
             int cursor = 0;
@@ -56,8 +65,9 @@ namespace Freude.Parsing
                             throw new NotImplementedException("todo next: the whole line consists of {0}".Fmt(CharHash));
                     }
 
-                    HandleHeaderWithHashChar(lineText, cursor);
-                    return;
+                    HandleHeaderWithHashChar(doc, lineText, cursor);
+                    context.IncrementLineCounter ();
+                    return true;
                 }
 
                 case CharEquals:
@@ -71,12 +81,13 @@ namespace Freude.Parsing
                             throw new NotImplementedException ("todo next: the whole line consists of {0}".Fmt (CharHash));
                     }
 
-                    HandleHeaderWithEqualsChar(context, lineText, cursor);
-                    return;
+                    HandleHeaderWithEqualsChar(doc, context, lineText, cursor);
+                    context.IncrementLineCounter ();
+                    return true;
                 }
             }
 
-            while (true)
+            while (cursor < lineText.Length)
             {
                 int i = lineText.IndexOf("[[", cursor, StringComparison.Ordinal);
 
@@ -84,7 +95,7 @@ namespace Freude.Parsing
                 {
                     string part = lineText.Substring(cursor, i - cursor).Trim();
                     if (part.Length > 0)
-                        AddTextToParagraph(part);
+                        AddTextToParagraph(doc, ref currentParagraph, part);
 
                     int j = lineText.IndexOf("]]", i, StringComparison.Ordinal);
 
@@ -101,7 +112,7 @@ namespace Freude.Parsing
 
                     Uri url = new Uri(lineText.Substring(uriStartIndex, uriLength));
                     ImageElement imageElement = new ImageElement(url);
-                    AddElement(imageElement);
+                    AddElement(doc, ref currentParagraph, imageElement);
 
                     cursor = j + 2;
                 }
@@ -109,14 +120,17 @@ namespace Freude.Parsing
                 {
                     string part = lineText.Substring(cursor).Trim();
                     if (part.Length > 0)
-                        AddTextToParagraph(part);
+                        AddTextToParagraph(doc, ref currentParagraph, part);
 
                     break;
                 }
             }
+
+            context.IncrementLineCounter ();
+            return true;
         }
 
-        private void HandleHeaderWithHashChar(string lineText, int headerLevel)
+        private static void HandleHeaderWithHashChar(IDocumentElementContainer doc, string lineText, int headerLevel)
         {
             string headerText = lineText.Substring(headerLevel).Trim();
 
@@ -124,8 +138,14 @@ namespace Freude.Parsing
             doc.Children.Add(headerElement);
         }
 
-        private void HandleHeaderWithEqualsChar(ParsingContext context, string lineText, int headerLevel)
+        private static void HandleHeaderWithEqualsChar(
+            IDocumentElementContainer doc, 
+            ParsingContext context, 
+            string lineText, 
+            int headerLevel)
         {
+            Contract.Requires(doc != null);
+
             int cursor = headerLevel + 1;
             string suffix = new string(CharEquals, headerLevel);
             int suffixIndex = lineText.IndexOf(suffix, cursor, StringComparison.OrdinalIgnoreCase);
@@ -171,9 +191,11 @@ namespace Freude.Parsing
             return anchorRegex.IsMatch(anchorId);
         }
 
-        private void AddTextToParagraph(string text)
+        private static void AddTextToParagraph (IDocumentElementContainer doc, ref ParagraphElement currentParagraph, string text)
         {
-            CreateParagraphIfNoneIsAlreadyOpen();
+            Contract.Ensures (currentParagraph != null);
+
+            CreateParagraphIfNoneIsAlreadyOpen(doc, ref currentParagraph);
 
             int childrenCount = currentParagraph.Children.Count;
             if (childrenCount > 0)
@@ -187,18 +209,22 @@ namespace Freude.Parsing
                 }
             }
 
-            AddElement(new TextElement(text));
+            AddElement(doc, ref currentParagraph, new TextElement(text));
         }
 
-        private void AddElement(IDocumentElement textElement)
+        private static void AddElement (IDocumentElementContainer doc, ref ParagraphElement currentParagraph, IDocumentElement textElement)
         {
-            CreateParagraphIfNoneIsAlreadyOpen();
+            Contract.Ensures (currentParagraph != null);
+
+            CreateParagraphIfNoneIsAlreadyOpen(doc, ref currentParagraph);
 
             currentParagraph.Children.Add(textElement);
         }
 
-        private void CreateParagraphIfNoneIsAlreadyOpen()
+        private static void CreateParagraphIfNoneIsAlreadyOpen (IDocumentElementContainer doc, ref ParagraphElement currentParagraph)
         {
+            Contract.Ensures(currentParagraph != null);
+
             if (currentParagraph == null)
             {
                 currentParagraph = new ParagraphElement();
@@ -206,9 +232,7 @@ namespace Freude.Parsing
             }
         }
 
-        private DocumentDef doc;
-        private ParagraphElement currentParagraph;
-        private static Regex anchorRegex = new Regex(@"^[\d\w\-\._~!\$\&`\(\)\*\+\,\;\=\:\@]+$", RegexOptions.Compiled);
+        private static readonly Regex anchorRegex = new Regex(@"^[\d\w\-\._~!\$\&`\(\)\*\+\,\;\=\:\@]+$", RegexOptions.Compiled);
         //private LineMode currentLineMode;
 
         //private enum LineMode
