@@ -147,6 +147,10 @@ namespace Freude.Parsing
         private static void ParseHeaderAnchor(
             ParsingContext context, HeaderElement headerElement, string lineText, int startingIndex)
         {
+            Contract.Requires(context != null);
+            Contract.Requires(headerElement != null);
+            Contract.Requires(lineText != null);
+
             int anchorHashIndex = lineText.IndexOf(CharHash, startingIndex);
             if (anchorHashIndex < 0)
                 return;
