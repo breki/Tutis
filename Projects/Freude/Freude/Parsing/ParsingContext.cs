@@ -36,6 +36,7 @@ namespace Freude.Parsing
                 if (EndOfText)
                     throw new InvalidOperationException();
 
+                Contract.Assume(lines[line - 1] != null);
                 return lines[line - 1];
             }
         }
@@ -74,6 +75,7 @@ namespace Freude.Parsing
         {
             Contract.Invariant(line >= 1);
             Contract.Invariant(line <= lines.Length + 1);
+            Contract.Invariant(EndOfText || CurrentLine.Length >= 0);
             Contract.Invariant(lines == null || Contract.ForAll(lines, x => x != null));
             Contract.Invariant(errors != null);
         }

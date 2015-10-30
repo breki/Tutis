@@ -41,7 +41,7 @@ namespace Freude.Parsing
             string lineText = context.CurrentLine;
 
             // we can ignore lines with nothing but whitespace
-            if (lineText.Trim().Length == 0)
+            if (lineText.Length == 0 || lineText.Trim().Length == 0)
             {
                 context.IncrementLineCounter();
                 currentParagraph = null;
