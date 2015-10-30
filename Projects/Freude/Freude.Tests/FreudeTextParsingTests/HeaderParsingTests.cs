@@ -60,7 +60,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         }
 
         [Test]
-        public void WhitespaceBeforeHashIsNotHeaderPrefix ()
+        public void WhiteSpaceBeforeHashIsNotHeaderPrefix ()
         {
             fixture.Parse (@"  # header")
                 .AssertNoErrrors ();

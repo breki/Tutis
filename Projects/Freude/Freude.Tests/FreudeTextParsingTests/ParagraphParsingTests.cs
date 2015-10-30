@@ -66,7 +66,7 @@ par 2 line 2 ")
         }
 
         [Test]
-        public void EmptyLineCanHaveWhitespaceThatIsIgnored ()
+        public void EmptyLineCanHaveWhiteSpaceThatIsIgnored ()
         {
             fixture.Parse (@" par 1 line 1
    par 1 line 2
