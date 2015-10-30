@@ -1,6 +1,5 @@
+- helpe method to make anchors
 - add Full configuration for projects
-- handle parsing errors
-	- provide a way to report them
 
 - serve command
 - project properties from a file?
