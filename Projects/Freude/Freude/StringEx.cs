@@ -192,6 +192,7 @@ namespace Freude
         {
             Contract.Requires (value != null);
             Contract.Ensures (Contract.Result<IList<string>> () != null);
+            Contract.Ensures (Contract.ForAll(Contract.Result<IList<string>>(), x => x != null));
 
             List<string> lines = new List<string> ();
             using (StringReader reader = new StringReader (value))
@@ -201,6 +202,7 @@ namespace Freude
                     lines.Add (line);
             }
 
+            Contract.Assume(Contract.ForAll (lines, x => x != null));
             return lines;
         }
 
@@ -224,6 +226,7 @@ namespace Freude
 
                     if (wordStart != null)
                     {
+                        Contract.Assume(wordStart.Value >= 0 && wordStart.Value < i);
                         string word = value.Substring (wordStart.Value, i - wordStart.Value);
                         words.Add (word);
                     }
@@ -235,6 +238,7 @@ namespace Freude
                 {
                     if (wordStart != null)
                     {
+                        Contract.Assume (wordStart.Value >= 0 && wordStart.Value < i);
                         string word = value.Substring (wordStart.Value, i - wordStart.Value);
                         words.Add (word);
                         wordStart = null;
@@ -246,6 +250,7 @@ namespace Freude
                     {
                         if (wordStart != null)
                         {
+                            Contract.Assume (wordStart.Value >= 0 && wordStart.Value < i);
                             string word = value.Substring (wordStart.Value, i - wordStart.Value);
                             words.Add (word);
                             wordStart = null;
@@ -256,9 +261,17 @@ namespace Freude
                     }
                     else
                     {
-                        string word = value.Substring (wordStart.Value + 1, i - (wordStart.Value + 1));
-                        if (word.Length > 0)
-                            words.Add (word);
+                        Contract.Assume(wordStart.HasValue);
+
+                        int wordLength = i - (wordStart.Value + 1);
+
+                        if (wordLength > 0)
+                        {
+                            Contract.Assume (wordStart.Value >= -1);
+                            string word = value.Substring (wordStart.Value + 1, wordLength);
+                            words.Add(word);
+                        }
+
                         isInQuotes = false;
                         wordStart = null;
                     }
