@@ -42,6 +42,7 @@ namespace Freude.Tests.FreudeTextParsingTests
             return (TElement)element;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         public TElement AssertElement<TElement> (IDocumentElementContainer container, int index, Action<TElement> assertAction = null)
             where TElement : IDocumentElement
         {

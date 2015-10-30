@@ -15,7 +15,7 @@ namespace Freude.Tests.CommandsTests
 {
     public class BuildCommandTests
     {
-        [TestCase(true)]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity"), TestCase (true)]
         [TestCase(false)]
         public void TestCompilingOfAProject(bool withBuildDirDeletion)
         {

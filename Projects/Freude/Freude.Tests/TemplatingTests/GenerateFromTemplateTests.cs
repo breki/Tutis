@@ -5,9 +5,9 @@ namespace Freude.Tests.TemplatingTests
 {
     public class GenerateFromTemplateTests
     {
-        [Test]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Performance", "CA1822:MarkMembersAsStatic"), Test]
         public void Test()
-        {          
+        {   
         }
 
         [SetUp]
