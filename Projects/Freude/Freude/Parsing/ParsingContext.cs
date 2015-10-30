@@ -33,7 +33,7 @@ namespace Freude.Parsing
             {
                 Contract.Ensures(Contract.Result<string>() != null);
 
-                if (lines == null || EndOfText)
+                if (EndOfText)
                     throw new InvalidOperationException();
 
                 return lines[line - 1];
