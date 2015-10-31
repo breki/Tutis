@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 using Freude.DocModel;
@@ -9,8 +7,11 @@ namespace Freude.Parsing
 {
     public class FreudeTextParser : IFreudeTextParser
     {
-        private const char CharHash = '#';
-        private const char CharEquals = '=';
+        public FreudeTextParser(IWikiTextTokenizer tokenizer)
+        {
+            Contract.Requires(tokenizer != null);
+            this.tokenizer = tokenizer;
+        }
 
         public DocumentDef ParseText(string text, ParsingContext context)
         {
@@ -28,7 +29,7 @@ namespace Freude.Parsing
             return doc;
         }
 
-        private static bool ParseLine(
+        private bool ParseLine(
             IDocumentElementContainer doc, 
             ref ParagraphElement currentParagraph,
             ParsingContext context)
@@ -48,86 +49,118 @@ namespace Freude.Parsing
                 return true;
             }
 
+            if (CheckStartingChar(doc, context, lineText, ref currentParagraph)) 
+                return true;
+
+            ProcessRestOfLine(doc, ref currentParagraph, lineText);
+
+            context.IncrementLineCounter ();
+            return true;
+        }
+
+        private static bool CheckStartingChar(
+            IDocumentElementContainer doc, 
+            ParsingContext context, 
+            string lineText, 
+            ref ParagraphElement currentParagraph)
+        {
+            Contract.Requires(doc != null);
+            Contract.Requires(context != null);
+            Contract.Requires(lineText != null);
+
             int cursor = 0;
 
             char startingChar = lineText[cursor];
 
             switch (startingChar)
             {
-                case CharHash:
+                case TokenHash:
                 {
                     currentParagraph = null;
 
-                    while (lineText[cursor] == CharHash)
+                    while (lineText[cursor] == TokenHash)
                     {
                         cursor++;
                         if (cursor == lineText.Length)
-                            throw new NotImplementedException("todo next: the whole line consists of {0}".Fmt(CharHash));
+                            throw new NotImplementedException("todo next: the whole line consists of {0}".Fmt(TokenHash));
                     }
 
                     HandleHeaderWithHashChar(doc, lineText, cursor);
-                    context.IncrementLineCounter ();
+                    context.IncrementLineCounter();
                     return true;
                 }
 
-                case CharEquals:
+                case TokenEquals:
                 {
                     currentParagraph = null;
 
-                    while (lineText[cursor] == CharEquals)
+                    while (lineText[cursor] == TokenEquals)
                     {
                         cursor++;
                         if (cursor == lineText.Length)
-                            throw new NotImplementedException ("todo next: the whole line consists of {0}".Fmt (CharHash));
+                            throw new NotImplementedException("todo next: the whole line consists of {0}".Fmt(TokenHash));
                     }
 
                     HandleHeaderWithEqualsChar(doc, context, lineText, cursor);
-                    context.IncrementLineCounter ();
+                    context.IncrementLineCounter();
                     return true;
                 }
             }
 
-            while (cursor < lineText.Length)
-            {
-                int i = lineText.IndexOf("[[", cursor, StringComparison.Ordinal);
+            return false;
+        }
 
-                if (i >= 0)
-                {
-                    string part = lineText.Substring(cursor, i - cursor).Trim();
-                    if (part.Length > 0)
-                        AddTextToParagraph(doc, ref currentParagraph, part);
+        private void ProcessRestOfLine(
+            IDocumentElementContainer doc, 
+            ref ParagraphElement currentParagraph, 
+            string lineText)
+        {
+            Contract.Requires(doc != null);
+            Contract.Requires(lineText != null);
 
-                    int j = lineText.IndexOf("]]", i, StringComparison.Ordinal);
+            var tokens = tokenizer.TokenizeWikiText(lineText);
 
-                    if (j < 0)
-                        throw new NotImplementedException("todo next");
+            throw new NotImplementedException("todo next:");
 
-                    int uriStartIndex = i + 2;
-                    if (uriStartIndex >= lineText.Length)
-                        throw new NotImplementedException ("todo next");
+            //while (cursor < lineText.Length)
+            //{
+            //    int i = lineText.IndexOf(TokenDoubleSquareBracketsOpen, cursor, StringComparison.Ordinal);
 
-                    int uriLength = j - uriStartIndex;
-                    if (uriLength <= 0)
-                        throw new NotImplementedException("todo next");
+            //    if (i >= 0)
+            //    {
+            //        string part = lineText.Substring(cursor, i - cursor).Trim();
+            //        if (part.Length > 0)
+            //            AddTextToParagraph(doc, ref currentParagraph, part);
 
-                    Uri url = new Uri(lineText.Substring(uriStartIndex, uriLength));
-                    ImageElement imageElement = new ImageElement(url);
-                    AddElement(doc, ref currentParagraph, imageElement);
+            //        TokenDoubleSquareBracketClose = "]]";
+            //        int j = lineText.IndexOf(TokenDoubleSquareBracketClose, i, StringComparison.Ordinal);
 
-                    cursor = j + 2;
-                }
-                else
-                {
-                    string part = lineText.Substring(cursor).Trim();
-                    if (part.Length > 0)
-                        AddTextToParagraph(doc, ref currentParagraph, part);
+            //        if (j < 0)
+            //            throw new NotImplementedException("todo next");
 
-                    break;
-                }
-            }
+            //        int uriStartIndex = i + 2;
+            //        if (uriStartIndex >= lineText.Length)
+            //            throw new NotImplementedException("todo next");
 
-            context.IncrementLineCounter ();
-            return true;
+            //        int uriLength = j - uriStartIndex;
+            //        if (uriLength <= 0)
+            //            throw new NotImplementedException("todo next");
+
+            //        Uri url = new Uri(lineText.Substring(uriStartIndex, uriLength));
+            //        ImageElement imageElement = new ImageElement(url);
+            //        AddElement(doc, ref currentParagraph, imageElement);
+
+            //        cursor = j + 2;
+            //    }
+            //    else
+            //    {
+            //        string part = lineText.Substring(cursor).Trim();
+            //        if (part.Length > 0)
+            //            AddTextToParagraph(doc, ref currentParagraph, part);
+
+            //        break;
+            //    }
+            //}
         }
 
         private static void HandleHeaderWithHashChar(IDocumentElementContainer doc, string lineText, int headerLevel)
@@ -147,7 +180,7 @@ namespace Freude.Parsing
             Contract.Requires(doc != null);
 
             int cursor = headerLevel + 1;
-            string suffix = new string(CharEquals, headerLevel);
+            string suffix = new string(TokenEquals, headerLevel);
             int suffixIndex = lineText.IndexOf(suffix, cursor, StringComparison.OrdinalIgnoreCase);
 
             if (suffixIndex < 0)
@@ -171,7 +204,7 @@ namespace Freude.Parsing
             Contract.Requires(headerElement != null);
             Contract.Requires(lineText != null);
 
-            int anchorHashIndex = lineText.IndexOf(CharHash, startingIndex);
+            int anchorHashIndex = lineText.IndexOf(TokenHash, startingIndex);
             if (anchorHashIndex < 0)
                 return;
 
@@ -191,54 +224,50 @@ namespace Freude.Parsing
             return anchorRegex.IsMatch(anchorId);
         }
 
-        private static void AddTextToParagraph (IDocumentElementContainer doc, ref ParagraphElement currentParagraph, string text)
-        {
-            Contract.Ensures (currentParagraph != null);
-
-            CreateParagraphIfNoneIsAlreadyOpen(doc, ref currentParagraph);
-
-            int childrenCount = currentParagraph.Children.Count;
-            if (childrenCount > 0)
-            {
-                IDocumentElement lastChild = currentParagraph.Children[childrenCount - 1];
-                TextElement textChild = lastChild as TextElement;
-                if (textChild != null)
-                {
-                    textChild.AppendText(text);
-                    return;
-                }
-            }
-
-            AddElement(doc, ref currentParagraph, new TextElement(text));
-        }
-
-        private static void AddElement (IDocumentElementContainer doc, ref ParagraphElement currentParagraph, IDocumentElement textElement)
-        {
-            Contract.Ensures (currentParagraph != null);
-
-            CreateParagraphIfNoneIsAlreadyOpen(doc, ref currentParagraph);
-
-            currentParagraph.Children.Add(textElement);
-        }
-
-        private static void CreateParagraphIfNoneIsAlreadyOpen (IDocumentElementContainer doc, ref ParagraphElement currentParagraph)
-        {
-            Contract.Ensures(currentParagraph != null);
-
-            if (currentParagraph == null)
-            {
-                currentParagraph = new ParagraphElement();
-                doc.Children.Add(currentParagraph);
-            }
-        }
-
-        private static readonly Regex anchorRegex = new Regex(@"^[\d\w\-\._~!\$\&`\(\)\*\+\,\;\=\:\@]+$", RegexOptions.Compiled);
-        //private LineMode currentLineMode;
-
-        //private enum LineMode
+        //private static void AddTextToParagraph (IDocumentElementContainer doc, ref ParagraphElement currentParagraph, string text)
         //{
-        //    Paragraph,
-        //    Header
+        //    Contract.Ensures (currentParagraph != null);
+
+        //    CreateParagraphIfNoneIsAlreadyOpen(doc, ref currentParagraph);
+
+        //    int childrenCount = currentParagraph.Children.Count;
+        //    if (childrenCount > 0)
+        //    {
+        //        IDocumentElement lastChild = currentParagraph.Children[childrenCount - 1];
+        //        TextElement textChild = lastChild as TextElement;
+        //        if (textChild != null)
+        //        {
+        //            textChild.AppendText(text);
+        //            return;
+        //        }
+        //    }
+
+        //    AddElement(doc, ref currentParagraph, new TextElement(text));
         //}
+
+        //private static void AddElement (IDocumentElementContainer doc, ref ParagraphElement currentParagraph, IDocumentElement textElement)
+        //{
+        //    Contract.Ensures (currentParagraph != null);
+
+        //    CreateParagraphIfNoneIsAlreadyOpen(doc, ref currentParagraph);
+
+        //    currentParagraph.Children.Add(textElement);
+        //}
+
+        //private static void CreateParagraphIfNoneIsAlreadyOpen (IDocumentElementContainer doc, ref ParagraphElement currentParagraph)
+        //{
+        //    Contract.Ensures(currentParagraph != null);
+
+        //    if (currentParagraph == null)
+        //    {
+        //        currentParagraph = new ParagraphElement();
+        //        doc.Children.Add(currentParagraph);
+        //    }
+        //}
+
+        private readonly IWikiTextTokenizer tokenizer;
+        private static readonly Regex anchorRegex = new Regex(@"^[\d\w\-\._~!\$\&`\(\)\*\+\,\;\=\:\@]+$", RegexOptions.Compiled);
+        private const char TokenHash = '#';
+        private const char TokenEquals = '=';
     }
 }

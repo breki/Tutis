@@ -33,7 +33,8 @@ namespace Freude
             IFtpSessionFactory ftpSessionFactory = new FtpSessionFactory(ftpChannelFactory, ftpCommunicator, fileSystem);
             IHtmlGenerator htmlGenerator = new HtmlGenerator();
             IFreudeTemplatingEngine freudeTemplatingEngine = new FreudeTemplatingEngine (razorCompiler);
-            IFreudeTextParser freudeTextParser = new FreudeTextParser ();
+            IWikiTextTokenizer wikiTextTokenizer = new WikiTextTokenizer();
+            IFreudeTextParser freudeTextParser = new FreudeTextParser (wikiTextTokenizer);
             IProjectBuilder projectBuilder = new ProjectBuilder (fileSystem);
 
             ConsoleShell consoleShell = new ConsoleShell ("ScalableMaps.Mapmaker.exe");
