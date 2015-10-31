@@ -72,9 +72,18 @@ namespace Freude.Tests.FreudeTextParsingTests
             return (TElement)element;
         }
 
-        public IList<WikiTextToken> Tokenize(string wikiText)
+        public IList<WikiTextToken> TokenizePart(string wikiText)
         {
-            return tokenizer.TokenizeWikiText(wikiText);
+            WikiTokenizationSettings settings = new WikiTokenizationSettings();
+            settings.IsWholeLine = false;
+            return tokenizer.TokenizeWikiText(wikiText, settings);
+        }
+
+        public IList<WikiTextToken> TokenizeWholeLine(string wikiText)
+        {
+            WikiTokenizationSettings settings = new WikiTokenizationSettings ();
+            settings.IsWholeLine = true;
+            return tokenizer.TokenizeWikiText (wikiText, settings);
         }
 
         private readonly WikiTextTokenizer tokenizer;
