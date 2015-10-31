@@ -23,20 +23,31 @@ namespace Freude.Parsing
             get { return text; }
         }
 
-        //[ContractInvariantMethod]
-        //private void Invariant()
-        //{
-            
-        //}
-
         private readonly TokenType tokenType;
         private readonly string text;
 
         public enum TokenType
         {
             Text,
+            SingleSquareBracketsOpen,
             DoubleSquareBracketsOpen,
+            SingleSquareBracketsClose,
             DoubleSquareBracketsClose,
+            Pipe,
+            DoubleApostrophe,
+            TripleApostrophe,
+            Header2Start,
+            Header2End,
+            Header3Start,
+            Header3End,
+            Header4Start,
+            Header4End,
+            Header5Start,
+            Header5End,
+            Header6Start,
+            Header6End,
+            BulletList,
+            NumberedList,
         }
     }
 }

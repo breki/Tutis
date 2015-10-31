@@ -118,7 +118,8 @@ namespace Freude.Parsing
             Contract.Requires(doc != null);
             Contract.Requires(lineText != null);
 
-            var tokens = tokenizer.TokenizeWikiText(lineText);
+            WikiTokenizationSettings tokenizationSettings = new WikiTokenizationSettings();
+            var tokens = tokenizer.TokenizeWikiText(lineText, tokenizationSettings);
 
             throw new NotImplementedException("todo next:");
 
