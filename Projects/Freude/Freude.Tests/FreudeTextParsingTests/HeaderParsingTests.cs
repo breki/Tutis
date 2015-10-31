@@ -8,24 +8,6 @@ namespace Freude.Tests.FreudeTextParsingTests
         [TestCase (1)]
         [TestCase (2)]
         [TestCase (3)]
-        public void StartingHashIsHeaderPrefix (int headerLevel)
-        {
-            fixture.Parse (new string ('#', headerLevel) + " header")
-                .AssertNoErrrors ()
-                .AssertChildCount (1);
-
-            fixture.AssertElement<HeaderElement> (
-                0,
-                x =>
-                {
-                    Assert.AreEqual ("header", x.HeaderText);
-                    Assert.AreEqual (headerLevel, x.HeaderLevel);
-                });
-        }
-
-        [TestCase (1)]
-        [TestCase (2)]
-        [TestCase (3)]
         public void StartingEqualsIsHeaderPrefix (int headerLevel)
         {
             string equalsToken = new string ('=', headerLevel);
@@ -60,22 +42,11 @@ namespace Freude.Tests.FreudeTextParsingTests
         }
 
         [Test]
-        public void WhiteSpaceBeforeHashIsNotHeaderPrefix ()
-        {
-            fixture.Parse (@"  # header")
-                .AssertNoErrrors ();
-
-            var par = fixture.AssertElement<ParagraphElement> (0);
-            Assert.AreEqual (1, par.Children.Count);
-            fixture.AssertElement<TextElement> (par, 0, x => Assert.AreEqual ("# header", x.Text));
-        }
-
-        [Test]
         public void HeaderBetweenParagraphs ()
         {
             fixture.Parse (@" par 1 line 1
    par 1 line 2
-#header
+==header==
 par 2 line 1
 par 2 line 2 ")
                 .AssertNoErrrors ()
@@ -83,7 +54,7 @@ par 2 line 2 ")
 
             var par = fixture.AssertElement<ParagraphElement> (0);
             fixture.AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 1 line 1 par 1 line 2", x.Text));
-            fixture.AssertElement<HeaderElement> (1, x => Assert.AreEqual (@"header", x.HeaderText));
+            fixture.AssertElement<HeaderElement> (2, x => Assert.AreEqual (@"header", x.HeaderText));
             par = fixture.AssertElement<ParagraphElement> (2);
             fixture.AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 2 line 1 par 2 line 2", x.Text));
         }

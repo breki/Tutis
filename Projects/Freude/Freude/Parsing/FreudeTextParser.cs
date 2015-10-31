@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Text.RegularExpressions;
+using System.Text;
 using Freude.DocModel;
 
 namespace Freude.Parsing
@@ -41,77 +42,23 @@ namespace Freude.Parsing
 
             string lineText = context.CurrentLine;
 
-            // we can ignore lines with nothing but whitespace
-            if (lineText.Length == 0 || lineText.Trim().Length == 0)
-            {
-                context.IncrementLineCounter();
-                currentParagraph = null;
-                return true;
-            }
+            //// we can ignore lines with nothing but whitespace
+            //if (lineText.Length == 0 || lineText.Trim().Length == 0)
+            //{
+            //    context.IncrementLineCounter();
+            //    currentParagraph = null;
+            //    return true;
+            //}
 
-            if (CheckStartingChar(doc, context, lineText, ref currentParagraph)) 
-                return true;
-
-            ProcessRestOfLine(doc, ref currentParagraph, lineText);
+            ProcessLine(doc, context, ref currentParagraph, lineText);
 
             context.IncrementLineCounter ();
             return true;
         }
 
-        private static bool CheckStartingChar(
+        private void ProcessLine(
             IDocumentElementContainer doc, 
-            ParsingContext context, 
-            string lineText, 
-            ref ParagraphElement currentParagraph)
-        {
-            Contract.Requires(doc != null);
-            Contract.Requires(context != null);
-            Contract.Requires(lineText != null);
-
-            int cursor = 0;
-
-            char startingChar = lineText[cursor];
-
-            switch (startingChar)
-            {
-                case TokenHash:
-                {
-                    currentParagraph = null;
-
-                    while (lineText[cursor] == TokenHash)
-                    {
-                        cursor++;
-                        if (cursor == lineText.Length)
-                            throw new NotImplementedException("todo next: the whole line consists of {0}".Fmt(TokenHash));
-                    }
-
-                    HandleHeaderWithHashChar(doc, lineText, cursor);
-                    context.IncrementLineCounter();
-                    return true;
-                }
-
-                case TokenEquals:
-                {
-                    currentParagraph = null;
-
-                    while (lineText[cursor] == TokenEquals)
-                    {
-                        cursor++;
-                        if (cursor == lineText.Length)
-                            throw new NotImplementedException("todo next: the whole line consists of {0}".Fmt(TokenHash));
-                    }
-
-                    HandleHeaderWithEqualsChar(doc, context, lineText, cursor);
-                    context.IncrementLineCounter();
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private void ProcessRestOfLine(
-            IDocumentElementContainer doc, 
+            ParsingContext context,
             ref ParagraphElement currentParagraph, 
             string lineText)
         {
@@ -119,111 +66,131 @@ namespace Freude.Parsing
             Contract.Requires(lineText != null);
 
             WikiTokenizationSettings tokenizationSettings = new WikiTokenizationSettings();
-            var tokens = tokenizer.TokenizeWikiText(lineText, tokenizationSettings);
+            tokenizationSettings.IsWholeLine = true;
+            IList<WikiTextToken> tokens = tokenizer.TokenizeWikiText(lineText, tokenizationSettings);
 
-            throw new NotImplementedException("todo next:");
+            if (tokens.Count == 0)
+                throw new NotImplementedException("todo next:");
 
-            //while (cursor < lineText.Length)
-            //{
-            //    int i = lineText.IndexOf(TokenDoubleSquareBracketsOpen, cursor, StringComparison.Ordinal);
+            WikiTextToken firstToken = tokens[0];
+            if (firstToken.Scope == WikiTextToken.TokenScope.BeginLineOnly)
+                currentParagraph = null;
 
-            //    if (i >= 0)
-            //    {
-            //        string part = lineText.Substring(cursor, i - cursor).Trim();
-            //        if (part.Length > 0)
-            //            AddTextToParagraph(doc, ref currentParagraph, part);
+            switch (firstToken.Type)
+            {
+                case WikiTextToken.TokenType.Header1Start:
+                case WikiTextToken.TokenType.Header2Start:
+                case WikiTextToken.TokenType.Header3Start:
+                case WikiTextToken.TokenType.Header4Start:
+                case WikiTextToken.TokenType.Header5Start:
+                case WikiTextToken.TokenType.Header6Start:
+                    HandleHeaderLine(doc, context, tokens);
+                    break;
 
-            //        TokenDoubleSquareBracketClose = "]]";
-            //        int j = lineText.IndexOf(TokenDoubleSquareBracketClose, i, StringComparison.Ordinal);
-
-            //        if (j < 0)
-            //            throw new NotImplementedException("todo next");
-
-            //        int uriStartIndex = i + 2;
-            //        if (uriStartIndex >= lineText.Length)
-            //            throw new NotImplementedException("todo next");
-
-            //        int uriLength = j - uriStartIndex;
-            //        if (uriLength <= 0)
-            //            throw new NotImplementedException("todo next");
-
-            //        Uri url = new Uri(lineText.Substring(uriStartIndex, uriLength));
-            //        ImageElement imageElement = new ImageElement(url);
-            //        AddElement(doc, ref currentParagraph, imageElement);
-
-            //        cursor = j + 2;
-            //    }
-            //    else
-            //    {
-            //        string part = lineText.Substring(cursor).Trim();
-            //        if (part.Length > 0)
-            //            AddTextToParagraph(doc, ref currentParagraph, part);
-
-            //        break;
-            //    }
-            //}
+                default:
+                    throw new NotImplementedException("todo next:");
+            }
         }
 
-        private static void HandleHeaderWithHashChar(IDocumentElementContainer doc, string lineText, int headerLevel)
-        {
-            string headerText = lineText.Substring(headerLevel).Trim();
-
-            HeaderElement headerElement = new HeaderElement(headerText, headerLevel);
-            doc.Children.Add(headerElement);
-        }
-
-        private static void HandleHeaderWithEqualsChar(
-            IDocumentElementContainer doc, 
-            ParsingContext context, 
-            string lineText, 
-            int headerLevel)
+        private static void HandleHeaderLine(IDocumentElementContainer doc, ParsingContext context, IList<WikiTextToken> tokens)
         {
             Contract.Requires(doc != null);
+            Contract.Requires(context != null);
+            Contract.Requires(tokens != null);
+            Contract.Requires(tokens.Count > 0);
 
-            int cursor = headerLevel + 1;
-            string suffix = new string(TokenEquals, headerLevel);
-            int suffixIndex = lineText.IndexOf(suffix, cursor, StringComparison.OrdinalIgnoreCase);
+            WikiTextToken firstToken = tokens[0];
 
-            if (suffixIndex < 0)
+            WikiTextToken.TokenType endingTokenNeeded;
+            int headerLevel;
+            switch (firstToken.Type)
             {
-                context.ReportError("Missing header suffix");
-                return;
+                case WikiTextToken.TokenType.Header1Start:
+                    headerLevel = 1;
+                    endingTokenNeeded = WikiTextToken.TokenType.Header1End;
+                    break;
+                case WikiTextToken.TokenType.Header2Start:
+                    headerLevel = 2;
+                    endingTokenNeeded = WikiTextToken.TokenType.Header2End;
+                    break;
+                case WikiTextToken.TokenType.Header3Start:
+                    headerLevel = 3;
+                    endingTokenNeeded = WikiTextToken.TokenType.Header3End;
+                    break;
+                case WikiTextToken.TokenType.Header4Start:
+                    headerLevel = 4;
+                    endingTokenNeeded = WikiTextToken.TokenType.Header4End;
+                    break;
+                case WikiTextToken.TokenType.Header5Start:
+                    headerLevel = 5;
+                    endingTokenNeeded = WikiTextToken.TokenType.Header5End;
+                    break;
+                case WikiTextToken.TokenType.Header6Start:
+                    headerLevel = 6;
+                    endingTokenNeeded = WikiTextToken.TokenType.Header6End;
+                    break;
+
+                default:
+                    throw new InvalidOperationException("BUG");
             }
 
-            string headerText = lineText.Substring(headerLevel, suffixIndex - headerLevel).Trim();
+            StringBuilder headerText = new StringBuilder();
+            for (int i = 1; i < tokens.Count; i++)
+            {
+                WikiTextToken token = tokens[i];
+                if (token.Type == endingTokenNeeded)
+                {
+                    if (i < tokens.Count - 1)
+                        context.ReportError("Unexpected tokens after ending header token");
 
-            HeaderElement headerElement = new HeaderElement(headerText, headerLevel);
-            doc.Children.Add(headerElement);
+                    HeaderElement headerEl = new HeaderElement (headerText.ToString().Trim(), headerLevel);
+                    doc.Children.Add(headerEl);
+                    return;
+                }
 
-            ParseHeaderAnchor(context, headerElement, lineText, suffixIndex);
+                switch (token.Type)
+                {
+                    case WikiTextToken.TokenType.Text:
+                        headerText.Append(token.Text);
+                        break;
+                    case WikiTextToken.TokenType.DoubleApostrophe:
+                    case WikiTextToken.TokenType.TripleApostrophe:
+                        throw new NotImplementedException("todo next: add support");
+                    default:
+                        context.ReportError("Unexpected token in header definition: {0}".Fmt(token.Text));
+                        return;
+                }
+            }
+
+            context.ReportError("Missing ending header token");
         }
 
-        private static void ParseHeaderAnchor(
-            ParsingContext context, HeaderElement headerElement, string lineText, int startingIndex)
-        {
-            Contract.Requires(context != null);
-            Contract.Requires(headerElement != null);
-            Contract.Requires(lineText != null);
+        //private static void ParseHeaderAnchor(
+        //    ParsingContext context, HeaderElement headerElement, string lineText, int startingIndex)
+        //{
+        //    Contract.Requires(context != null);
+        //    Contract.Requires(headerElement != null);
+        //    Contract.Requires(lineText != null);
 
-            int anchorHashIndex = lineText.IndexOf(TokenHash, startingIndex);
-            if (anchorHashIndex < 0)
-                return;
+        //    int anchorHashIndex = lineText.IndexOf(TokenHash, startingIndex);
+        //    if (anchorHashIndex < 0)
+        //        return;
 
-            string anchorId = lineText.Substring(anchorHashIndex + 1).TrimEnd();
+        //    string anchorId = lineText.Substring(anchorHashIndex + 1).TrimEnd();
 
-            if (!ValidateAnchor(anchorId))
-                context.ReportError("Invalid anchor ID '{0}'".Fmt(anchorId), anchorHashIndex + 1);
+        //    if (!ValidateAnchor(anchorId))
+        //        context.ReportError("Invalid anchor ID '{0}'".Fmt(anchorId), anchorHashIndex + 1);
 
-            headerElement.AnchorId = anchorId;
-        }
+        //    headerElement.AnchorId = anchorId;
+        //}
 
-        private static bool ValidateAnchor(string anchorId)
-        {
-            if (anchorId.Length == 0)
-                return false;
+        //private static bool ValidateAnchor(string anchorId)
+        //{
+        //    if (anchorId.Length == 0)
+        //        return false;
 
-            return anchorRegex.IsMatch(anchorId);
-        }
+        //    return anchorRegex.IsMatch(anchorId);
+        //}
 
         //private static void AddTextToParagraph (IDocumentElementContainer doc, ref ParagraphElement currentParagraph, string text)
         //{
@@ -267,8 +234,6 @@ namespace Freude.Parsing
         //}
 
         private readonly IWikiTextTokenizer tokenizer;
-        private static readonly Regex anchorRegex = new Regex(@"^[\d\w\-\._~!\$\&`\(\)\*\+\,\;\=\:\@]+$", RegexOptions.Compiled);
-        private const char TokenHash = '#';
-        private const char TokenEquals = '=';
+        //private static readonly Regex anchorRegex = new Regex(@"^[\d\w\-\._~!\$\&`\(\)\*\+\,\;\=\:\@]+$", RegexOptions.Compiled);
     }
 }
