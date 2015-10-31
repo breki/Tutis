@@ -117,7 +117,7 @@
     <CodeContractsLibPaths />
     <CodeContractsExtraRewriteOptions />
     <CodeContractsExtraAnalysisOptions />
-    <CodeContractsSQLServerOption />
+    <CodeContractsSQLServerOption>SQLEXPRESS</CodeContractsSQLServerOption>
     <CodeContractsBaseLineFile />
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsSkipAnalysisIfCannotConnectToCache>False</CodeContractsSkipAnalysisIfCannotConnectToCache>
@@ -125,7 +125,7 @@
     <CodeContractsBeingOptimisticOnExternal>True</CodeContractsBeingOptimisticOnExternal>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
-    <CodeContractsAnalysisWarningLevel>3</CodeContractsAnalysisWarningLevel>
+    <CodeContractsAnalysisWarningLevel>2</CodeContractsAnalysisWarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup>
@@ -152,11 +152,15 @@
     <Compile Include="DocModel\IDocumentElement.cs" />
     <Compile Include="DocModel\IDocumentElementContainer.cs" />
     <Compile Include="DocModel\ImageElement.cs" />
+    <Compile Include="DocModel\InternalLinkElement.cs" />
     <Compile Include="DocModel\ParagraphElement.cs" />
     <Compile Include="DocModel\TextElement.cs" />
     <Compile Include="Parsing\FreudeTextParser.cs" />
+    <Compile Include="Parsing\WikiTextTokenizer.cs" />
     <Compile Include="Parsing\IFreudeTextParser.cs" />
+    <Compile Include="Parsing\IWikiTextTokenizer.cs" />
     <Compile Include="Parsing\ParsingContext.cs" />
+    <Compile Include="Parsing\WikiTextToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringEx.cs" />
   </ItemGroup>

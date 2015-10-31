@@ -158,8 +158,10 @@
     <Compile Include="FileStructureMocker.cs" />
     <Compile Include="FreudeTextParsingTests\ImageParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\HeaderParsingTests.cs" />
+    <Compile Include="FreudeTextParsingTests\InternalLinkParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\ParagraphParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\ParsingFixture.cs" />
+    <Compile Include="FreudeTextParsingTests\TokenizerTests.cs" />
     <Compile Include="HtmlGeneratingTests\BasicGeneratingTests.cs" />
     <Compile Include="ProjectServicesTests\ProjectBuilderTests.cs" />
     <Compile Include="TemplatingTests\GenerateFromTemplateTests.cs" />
