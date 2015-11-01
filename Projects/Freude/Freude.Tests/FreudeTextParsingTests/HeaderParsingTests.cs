@@ -27,7 +27,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         [Test]
         public void HeaderWithAnchor ()
         {
-            fixture.Parse (@"== header== #anchor+test")
+            fixture.Parse (@"== header==#anchor+test")
                 .AssertNoErrrors ()
                 .AssertChildCount (1);
 
