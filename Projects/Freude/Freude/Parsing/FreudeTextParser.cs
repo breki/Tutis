@@ -73,8 +73,6 @@ namespace Freude.Parsing
                 throw new NotImplementedException("todo next:");
 
             WikiTextToken firstToken = tokens[0];
-            if (firstToken.Scope == WikiTextToken.TokenScope.BeginLineOnly)
-                currentParagraph = null;
 
             switch (firstToken.Type)
             {
@@ -84,6 +82,7 @@ namespace Freude.Parsing
                 case WikiTextToken.TokenType.Header4Start:
                 case WikiTextToken.TokenType.Header5Start:
                 case WikiTextToken.TokenType.Header6Start:
+                    currentParagraph = null;
                     HandleHeaderLine(doc, context, tokens);
                     break;
 
@@ -135,16 +134,12 @@ namespace Freude.Parsing
             }
 
             StringBuilder headerText = new StringBuilder();
-            for (int i = 1; i < tokens.Count; i++)
+            for (int tokenIndex = 1; tokenIndex < tokens.Count; tokenIndex++)
             {
-                WikiTextToken token = tokens[i];
+                WikiTextToken token = tokens[tokenIndex];
                 if (token.Type == endingTokenNeeded)
                 {
-                    if (i < tokens.Count - 1)
-                        context.ReportError("Unexpected tokens after ending header token");
-
-                    HeaderElement headerEl = new HeaderElement (headerText.ToString().Trim(), headerLevel);
-                    doc.Children.Add(headerEl);
+                    FinalizeHeaderElement(doc, context, tokens, tokenIndex, headerText, headerLevel);
                     return;
                 }
 
@@ -163,6 +158,50 @@ namespace Freude.Parsing
             }
 
             context.ReportError("Missing ending header token");
+        }
+
+        private static void FinalizeHeaderElement(
+            IDocumentElementContainer doc, 
+            ParsingContext context, 
+            IList<WikiTextToken> tokens, 
+            int tokenIndex, 
+            StringBuilder headerText, 
+            int headerLevel)
+        {
+            tokenIndex++;
+
+            string headerAnchor = null;
+            if (tokenIndex < tokens.Count)
+            {
+                WikiTextToken token = tokens[tokenIndex];
+                if (token.Type == WikiTextToken.TokenType.HeaderAnchor)
+                    headerAnchor = FetchHeaderAnchor(context, tokens, tokenIndex);
+                else
+                    context.ReportError("Unexpected tokens after ending header token");
+            }
+
+            HeaderElement headerEl = new HeaderElement(headerText.ToString().Trim(), headerLevel);
+            headerEl.AnchorId = headerAnchor;
+            doc.Children.Add(headerEl);
+        }
+
+        private static string FetchHeaderAnchor(ParsingContext context, IList<WikiTextToken> tokens, int tokenIndex)
+        {
+            tokenIndex++;
+            if (tokenIndex == tokens.Count)
+            {
+                context.ReportError ("Missing header anchor ID");
+                return null;
+            }
+
+            WikiTextToken token = tokens[tokenIndex];
+            if (token.Type != WikiTextToken.TokenType.Text)
+            {
+                context.ReportError("Unexpected token");
+                return null;
+            }
+
+            return token.Text;
         }
 
         //private static void ParseHeaderAnchor(

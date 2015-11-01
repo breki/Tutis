@@ -1,15 +1,15 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Freude.Parsing
 {
     public class WikiTextToken
     {
-        public WikiTextToken(TokenType tokenType, TokenScope scope, string text)
+        public WikiTextToken(TokenType tokenType, string text)
         {
             Contract.Requires(!string.IsNullOrEmpty(text));
 
             this.tokenType = tokenType;
-            this.scope = scope;
             this.text = text;
         }
 
@@ -19,18 +19,12 @@ namespace Freude.Parsing
             get { return tokenType; }
         }
 
-        public TokenScope Scope
-        {
-            get { return scope; }
-        }
-
         public string Text
         {
             get { return text; }
         }
 
         private readonly TokenType tokenType;
-        private readonly TokenScope scope;
         private readonly string text;
 
         public enum TokenType
@@ -55,15 +49,9 @@ namespace Freude.Parsing
             Header5End,
             Header6Start,
             Header6End,
+            HeaderAnchor,
             BulletList,
             NumberedList,
-        }
-
-        public enum TokenScope
-        {
-            Anywhere,
-            BeginLineOnly,
-            NotAtBeginLine
         }
     }
 }
