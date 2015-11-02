@@ -46,12 +46,14 @@ namespace Freude.Tests.FreudeTextParsingTests
         public void HeaderAnchor()
         {
             IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("==text==#anchor");
-            Assert.AreEqual (4, tokens.Count);
+            Assert.AreEqual (5, tokens.Count);
             Assert.AreEqual (WikiTextToken.TokenType.Header2Start, tokens[0].Type);
             Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
             Assert.AreEqual ("text", tokens[1].Text);
             Assert.AreEqual (WikiTextToken.TokenType.Header2End, tokens[2].Type);
             Assert.AreEqual (WikiTextToken.TokenType.HeaderAnchor, tokens[3].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[4].Type);
+            Assert.AreEqual ("anchor", tokens[4].Text);
         }
 
         [SetUp]

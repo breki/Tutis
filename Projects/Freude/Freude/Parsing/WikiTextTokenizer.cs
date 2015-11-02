@@ -155,17 +155,17 @@ namespace Freude.Parsing
             tokenDefinitions.Add (new TokenDef ("''", WikiTextToken.TokenType.DoubleApostrophe, TokenScopes.LineStart | TokenScopes.InnerText | TokenScopes.HeaderText, TokenScopes.None, TokenScopes.None));
             tokenDefinitions.Add (new TokenDef ("'''", WikiTextToken.TokenType.TripleApostrophe, TokenScopes.LineStart | TokenScopes.InnerText | TokenScopes.HeaderText, TokenScopes.None, TokenScopes.None));
             tokenDefinitions.Add (new TokenDef ("=", WikiTextToken.TokenType.Header1Start, TokenScopes.LineStart, TokenScopes.HeaderText, TokenScopes.None));
-            tokenDefinitions.Add (new TokenDef ("=", WikiTextToken.TokenType.Header1End, TokenScopes.HeaderText, TokenScopes.HeaderText, TokenScopes.HeaderSuffix));
+            tokenDefinitions.Add (new TokenDef ("=", WikiTextToken.TokenType.Header1End, TokenScopes.HeaderText, TokenScopes.HeaderSuffix, TokenScopes.HeaderText));
             tokenDefinitions.Add (new TokenDef ("==", WikiTextToken.TokenType.Header2Start, TokenScopes.LineStart, TokenScopes.HeaderText, TokenScopes.None));
-            tokenDefinitions.Add (new TokenDef ("==", WikiTextToken.TokenType.Header2End, TokenScopes.HeaderText, TokenScopes.HeaderText, TokenScopes.HeaderSuffix));
+            tokenDefinitions.Add (new TokenDef ("==", WikiTextToken.TokenType.Header2End, TokenScopes.HeaderText, TokenScopes.HeaderSuffix, TokenScopes.HeaderText));
             tokenDefinitions.Add (new TokenDef ("===", WikiTextToken.TokenType.Header3Start, TokenScopes.LineStart, TokenScopes.HeaderText, TokenScopes.None));
-            tokenDefinitions.Add (new TokenDef ("===", WikiTextToken.TokenType.Header3End, TokenScopes.HeaderText, TokenScopes.HeaderText, TokenScopes.HeaderSuffix));
+            tokenDefinitions.Add (new TokenDef ("===", WikiTextToken.TokenType.Header3End, TokenScopes.HeaderText, TokenScopes.HeaderSuffix, TokenScopes.HeaderText));
             tokenDefinitions.Add (new TokenDef ("====", WikiTextToken.TokenType.Header4Start, TokenScopes.LineStart, TokenScopes.HeaderText, TokenScopes.None));
-            tokenDefinitions.Add (new TokenDef ("====", WikiTextToken.TokenType.Header4End, TokenScopes.HeaderText, TokenScopes.HeaderText, TokenScopes.HeaderSuffix));
+            tokenDefinitions.Add (new TokenDef ("====", WikiTextToken.TokenType.Header4End, TokenScopes.HeaderText, TokenScopes.HeaderSuffix, TokenScopes.HeaderText));
             tokenDefinitions.Add (new TokenDef ("=====", WikiTextToken.TokenType.Header5Start, TokenScopes.LineStart, TokenScopes.HeaderText, TokenScopes.None));
-            tokenDefinitions.Add (new TokenDef ("=====", WikiTextToken.TokenType.Header5End, TokenScopes.HeaderText, TokenScopes.HeaderText, TokenScopes.HeaderSuffix));
+            tokenDefinitions.Add (new TokenDef ("=====", WikiTextToken.TokenType.Header5End, TokenScopes.HeaderText, TokenScopes.HeaderSuffix, TokenScopes.HeaderText));
             tokenDefinitions.Add (new TokenDef ("======", WikiTextToken.TokenType.Header6Start, TokenScopes.LineStart, TokenScopes.HeaderText, TokenScopes.None));
-            tokenDefinitions.Add (new TokenDef ("======", WikiTextToken.TokenType.Header6End, TokenScopes.HeaderText, TokenScopes.HeaderText, TokenScopes.HeaderSuffix));
+            tokenDefinitions.Add (new TokenDef ("======", WikiTextToken.TokenType.Header6End, TokenScopes.HeaderText, TokenScopes.HeaderSuffix, TokenScopes.HeaderText));
             tokenDefinitions.Add (new TokenDef ("#", WikiTextToken.TokenType.HeaderAnchor, TokenScopes.HeaderSuffix, TokenScopes.None, TokenScopes.None));
             tokenDefinitions.Add (new TokenDef ("*", WikiTextToken.TokenType.BulletList, TokenScopes.LineStart, TokenScopes.None, TokenScopes.None));
             tokenDefinitions.Add (new TokenDef ("#", WikiTextToken.TokenType.NumberedList, TokenScopes.LineStart, TokenScopes.None, TokenScopes.None));
@@ -225,7 +225,7 @@ namespace Freude.Parsing
 
             public int ModifyScope(int currentScope)
             {
-                return currentScope | (int)(beginsScopes & ~endsScopes);
+                return (currentScope | ((int)beginsScopes)) & ((int)~endsScopes);
             }
 
             private readonly string tokenString;
