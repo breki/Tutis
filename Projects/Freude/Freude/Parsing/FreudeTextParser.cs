@@ -73,7 +73,9 @@ namespace Freude.Parsing
             if (tokens.Count == 0)
                 throw new NotImplementedException("todo next:");
 
-            WikiTextToken firstToken = tokens[0];
+            TokenBuffer tokenBuffer = new TokenBuffer(tokens);
+
+            WikiTextToken firstToken = tokenBuffer.Token;
 
             switch (firstToken.Type)
             {
@@ -84,7 +86,7 @@ namespace Freude.Parsing
                 case WikiTextToken.TokenType.Header5Start:
                 case WikiTextToken.TokenType.Header6Start:
                     currentParagraph = null;
-                    HandleHeaderLine(doc, context, tokens);
+                    HandleHeaderLine(doc, context, tokenBuffer);
                     break;
 
                 default:
@@ -92,14 +94,13 @@ namespace Freude.Parsing
             }
         }
 
-        private static void HandleHeaderLine(IDocumentElementContainer doc, ParsingContext context, IList<WikiTextToken> tokens)
+        private static void HandleHeaderLine(IDocumentElementContainer doc, ParsingContext context, TokenBuffer tokenBuffer)
         {
             Contract.Requires(doc != null);
             Contract.Requires(context != null);
-            Contract.Requires(tokens != null);
-            Contract.Requires(tokens.Count > 0);
+            Contract.Requires(tokenBuffer != null);
 
-            WikiTextToken firstToken = tokens[0];
+            WikiTextToken firstToken = tokenBuffer.Token;
 
             WikiTextToken.TokenType endingTokenNeeded;
             int headerLevel;
@@ -134,22 +135,20 @@ namespace Freude.Parsing
                     throw new InvalidOperationException("BUG");
             }
 
-            int tokenIndex = 1;
             StringBuilder headerText = new StringBuilder();
-            if (!ProcessHeaderText(context, tokens, endingTokenNeeded, ref tokenIndex, headerText))
+            if (!ProcessHeaderText(context, tokenBuffer, endingTokenNeeded, headerText))
                 return;
 
             HeaderElement headerEl = new HeaderElement (headerText.ToString ().Trim (), headerLevel);
             doc.Children.Add (headerEl);
 
-            tokenIndex++;
+            tokenBuffer.MoveToNextToken();
             string anchorId;
-            if (!ProcessHeaderAnchor (context, tokens, ref tokenIndex, out anchorId))
+            if (!ProcessHeaderAnchor (context, tokenBuffer, out anchorId))
                 return;
 
             ProcessUntilEnd(
-                tokens, 
-                ref tokenIndex, 
+                tokenBuffer, 
                 t =>
                 {
                     context.ReportError("Unexpected token at the end of header");
@@ -161,16 +160,14 @@ namespace Freude.Parsing
 
         private static bool ProcessHeaderText(
             ParsingContext context, 
-            IList<WikiTextToken> tokens, 
+            TokenBuffer tokenBuffer, 
             WikiTextToken.TokenType endingTokenNeeded, 
-            ref int tokenIndex, 
             StringBuilder headerText)
         {
             return ProcessUntilToken(
                 context, 
-                tokens, 
+                tokenBuffer, 
                 endingTokenNeeded, 
-                ref tokenIndex, 
                 t =>
                 {
                     switch (t.Type)
@@ -189,18 +186,17 @@ namespace Freude.Parsing
         }
 
         private static bool ProcessHeaderAnchor(
-            ParsingContext context, 
-            IList<WikiTextToken> tokens, 
-            ref int tokenIndex,
+            ParsingContext context,
+            TokenBuffer tokenBuffer, 
             out string anchorId)
         {
             anchorId = null;
-            if (tokenIndex < tokens.Count)
+            if (!tokenBuffer.EndOfTokens)
             {
-                WikiTextToken token = tokens[tokenIndex];
+                WikiTextToken token = tokenBuffer.Token;
                 if (token.Type == WikiTextToken.TokenType.HeaderAnchor)
                 {
-                    if (!FetchHeaderAnchor(context, tokens, tokenIndex, out anchorId))
+                    if (!FetchHeaderAnchor(context, tokenBuffer, out anchorId))
                         return false;
                 }
                 else
@@ -213,11 +209,12 @@ namespace Freude.Parsing
             return true;
         }
 
-        private static bool FetchHeaderAnchor(ParsingContext context, IList<WikiTextToken> tokens, int tokenIndex, out string anchorId)
+        private static bool FetchHeaderAnchor(
+            ParsingContext context, TokenBuffer tokenBuffer, out string anchorId)
         {
             anchorId = null;
 
-            WikiTextToken token = ExpectToken (context, tokens, tokenIndex, WikiTextToken.TokenType.Text);
+            WikiTextToken token = ExpectToken (context, tokenBuffer, WikiTextToken.TokenType.Text);
             if (token == null)
                 return false;
 
@@ -233,20 +230,25 @@ namespace Freude.Parsing
         }
 
         private static bool ProcessUntilToken (
-            ParsingContext context, 
-            IList<WikiTextToken> tokens, 
+            ParsingContext context,
+            TokenBuffer tokenBuffer, 
             WikiTextToken.TokenType untilType,
-            ref int tokenIndex,
             Func<WikiTextToken, bool> tokenFunc)
         {
-            for (; tokenIndex < tokens.Count; tokenIndex++)
+            Contract.Requires(context != null);
+            Contract.Requires(tokenBuffer != null);
+            Contract.Requires(tokenFunc != null);
+
+            while (!tokenBuffer.EndOfTokens)
             {
-                WikiTextToken token = tokens[tokenIndex];
+                WikiTextToken token = tokenBuffer.Token;
                 if (token.Type == untilType)
                     return true;
 
                 if (!tokenFunc(token))
                     return false;
+
+                tokenBuffer.MoveToNextToken();
             }
 
             context.ReportError("Expected token type {0}, but it is missing".Fmt(untilType));
@@ -255,17 +257,16 @@ namespace Freude.Parsing
 
         private static WikiTextToken ExpectToken(
             ParsingContext context,
-            IList<WikiTextToken> tokens,
-            int tokenIndex,
+            TokenBuffer tokenBuffer,
             WikiTextToken.TokenType expectedTokenType)
         {
-            if (tokenIndex >= tokens.Count)
+            if (tokenBuffer.EndOfTokens)
             {
                 context.ReportError ("Unexpected end, expected token '{0}'".Fmt (expectedTokenType));
                 return null;
             }
 
-            WikiTextToken token = tokens[tokenIndex];
+            WikiTextToken token = tokenBuffer.Token;
             if (token.Type != WikiTextToken.TokenType.Text)
             {
                 context.ReportError ("Expected token '{0}' but got '{1}".Fmt(expectedTokenType, token.Type));
@@ -276,15 +277,19 @@ namespace Freude.Parsing
         }
 
         private static bool ProcessUntilEnd (
-            IList<WikiTextToken> tokens, 
-            ref int tokenIndex,
+            TokenBuffer tokenBuffer, 
             Func<WikiTextToken, bool> tokenFunc)
         {
-            for (; tokenIndex < tokens.Count; tokenIndex++)
+            Contract.Requires(tokenBuffer != null);
+            Contract.Requires(tokenFunc != null);
+
+            while (!tokenBuffer.EndOfTokens)
             {
-                WikiTextToken token = tokens[tokenIndex];
+                WikiTextToken token = tokenBuffer.Token;
                 if (!tokenFunc(token))
                     return false;
+
+                tokenBuffer.MoveToNextToken();
             }
 
             return true;
@@ -341,5 +346,51 @@ namespace Freude.Parsing
 
         private readonly IWikiTextTokenizer tokenizer;
         private static readonly Regex anchorRegex = new Regex(@"^[\d\w\-\._~!\$\&`\(\)\*\+\,\;\=\:\@]+$", RegexOptions.Compiled);
+
+        private class TokenBuffer
+        {
+            public TokenBuffer(IList<WikiTextToken> tokens)
+            {
+                Contract.Requires(tokens != null);
+                this.tokens = tokens;
+            }
+
+            public bool EndOfTokens
+            {
+                get { return tokenIndex >= tokens.Count; }
+            }
+
+            public WikiTextToken Token
+            {
+                get
+                {
+                    Contract.Ensures(Contract.Result<WikiTextToken>() != null);
+
+                    if (EndOfTokens)
+                        throw new InvalidOperationException ("No more tokens");
+
+                    return tokens[tokenIndex];
+                }
+            }
+
+            public void MoveToNextToken()
+            {
+                if (EndOfTokens)
+                    throw new InvalidOperationException("No more tokens");
+
+                tokenIndex++;
+            }
+
+            [ContractInvariantMethod]
+            private void Invariant()
+            {
+                Contract.Invariant(tokens != null);
+                Contract.Invariant(Contract.ForAll(tokens, x => x != null));
+                Contract.Invariant(tokenIndex >= 0 && tokenIndex <= tokens.Count);
+            }
+
+            private readonly IList<WikiTextToken> tokens;
+            private int tokenIndex;
+        }
     }
 }
