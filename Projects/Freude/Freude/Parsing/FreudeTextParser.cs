@@ -133,31 +133,55 @@ namespace Freude.Parsing
                     throw new InvalidOperationException("BUG");
             }
 
+            int tokenIndex = 1;
             StringBuilder headerText = new StringBuilder();
-            for (int tokenIndex = 1; tokenIndex < tokens.Count; tokenIndex++)
+            if (!ProcessTokens(
+                context, tokens, endingTokenNeeded, ref tokenIndex, t =>
+                {
+                    switch (t.Type)
+                    {
+                        case WikiTextToken.TokenType.Text:
+                            headerText.Append(t.Text);
+                            return true;
+                        case WikiTextToken.TokenType.DoubleApostrophe:
+                        case WikiTextToken.TokenType.TripleApostrophe:
+                            throw new NotImplementedException("todo next: add support");
+                        default:
+                            context.ReportError("Unexpected token in header definition: {0}".Fmt(t.Text));
+                            return false;
+                    }
+                }))
+                return;
+
+            HeaderElement headerEl = new HeaderElement (headerText.ToString ().Trim (), headerLevel);
+            doc.Children.Add (headerEl);
+
+
+
+            throw new NotImplementedException("todo next:");
+            //headerEl.AnchorId = headerAnchor;
+        }
+
+        private static bool ProcessTokens (
+            ParsingContext context, 
+            IList<WikiTextToken> tokens, 
+            WikiTextToken.TokenType untilType,
+            ref int tokenIndex,
+            Func<WikiTextToken, bool> tokenAction)
+        {
+            StringBuilder headerText = new StringBuilder ();
+            for (; tokenIndex < tokens.Count; tokenIndex++)
             {
                 WikiTextToken token = tokens[tokenIndex];
-                if (token.Type == endingTokenNeeded)
-                {
-                    FinalizeHeaderElement(doc, context, tokens, tokenIndex, headerText, headerLevel);
-                    return;
-                }
+                if (token.Type == untilType)
+                    return true;
 
-                switch (token.Type)
-                {
-                    case WikiTextToken.TokenType.Text:
-                        headerText.Append(token.Text);
-                        break;
-                    case WikiTextToken.TokenType.DoubleApostrophe:
-                    case WikiTextToken.TokenType.TripleApostrophe:
-                        throw new NotImplementedException("todo next: add support");
-                    default:
-                        context.ReportError("Unexpected token in header definition: {0}".Fmt(token.Text));
-                        return;
-                }
+                if (!tokenAction(token))
+                    return false;
             }
 
-            context.ReportError("Missing ending header token");
+            context.ReportError("Expected token type {0}, but it is missing".Fmt(untilType));
+            return false;
         }
 
         private static void FinalizeHeaderElement(
