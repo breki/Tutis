@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text;
+using System.Text.RegularExpressions;
 using Freude.DocModel;
 
 namespace Freude.Parsing
@@ -135,8 +136,42 @@ namespace Freude.Parsing
 
             int tokenIndex = 1;
             StringBuilder headerText = new StringBuilder();
-            if (!ProcessTokens(
-                context, tokens, endingTokenNeeded, ref tokenIndex, t =>
+            if (!ProcessHeaderText(context, tokens, endingTokenNeeded, ref tokenIndex, headerText))
+                return;
+
+            HeaderElement headerEl = new HeaderElement (headerText.ToString ().Trim (), headerLevel);
+            doc.Children.Add (headerEl);
+
+            tokenIndex++;
+            string anchorId;
+            if (!ProcessHeaderAnchor (context, tokens, ref tokenIndex, out anchorId))
+                return;
+
+            ProcessUntilEnd(
+                tokens, 
+                ref tokenIndex, 
+                t =>
+                {
+                    context.ReportError("Unexpected token at the end of header");
+                    return false;
+                });
+
+            headerEl.AnchorId = anchorId;
+        }
+
+        private static bool ProcessHeaderText(
+            ParsingContext context, 
+            IList<WikiTextToken> tokens, 
+            WikiTextToken.TokenType endingTokenNeeded, 
+            ref int tokenIndex, 
+            StringBuilder headerText)
+        {
+            return ProcessUntilToken(
+                context, 
+                tokens, 
+                endingTokenNeeded, 
+                ref tokenIndex, 
+                t =>
                 {
                     switch (t.Type)
                     {
@@ -150,33 +185,67 @@ namespace Freude.Parsing
                             context.ReportError("Unexpected token in header definition: {0}".Fmt(t.Text));
                             return false;
                     }
-                }))
-                return;
-
-            HeaderElement headerEl = new HeaderElement (headerText.ToString ().Trim (), headerLevel);
-            doc.Children.Add (headerEl);
-
-
-
-            throw new NotImplementedException("todo next:");
-            //headerEl.AnchorId = headerAnchor;
+                });
         }
 
-        private static bool ProcessTokens (
+        private static bool ProcessHeaderAnchor(
+            ParsingContext context, 
+            IList<WikiTextToken> tokens, 
+            ref int tokenIndex,
+            out string anchorId)
+        {
+            anchorId = null;
+            if (tokenIndex < tokens.Count)
+            {
+                WikiTextToken token = tokens[tokenIndex];
+                if (token.Type == WikiTextToken.TokenType.HeaderAnchor)
+                {
+                    if (!FetchHeaderAnchor(context, tokens, tokenIndex, out anchorId))
+                        return false;
+                }
+                else
+                {
+                    context.ReportError ("Unexpected tokens after ending header token");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool FetchHeaderAnchor(ParsingContext context, IList<WikiTextToken> tokens, int tokenIndex, out string anchorId)
+        {
+            anchorId = null;
+
+            WikiTextToken token = ExpectToken (context, tokens, tokenIndex, WikiTextToken.TokenType.Text);
+            if (token == null)
+                return false;
+
+            string potentialAnchorId = token.Text;
+            if (!ValidateAnchor(potentialAnchorId))
+            {
+                context.ReportError("Invalid header anchor ID: '{0}'".Fmt(potentialAnchorId));
+                return false;
+            }
+
+            anchorId = token.Text;
+            return true;
+        }
+
+        private static bool ProcessUntilToken (
             ParsingContext context, 
             IList<WikiTextToken> tokens, 
             WikiTextToken.TokenType untilType,
             ref int tokenIndex,
-            Func<WikiTextToken, bool> tokenAction)
+            Func<WikiTextToken, bool> tokenFunc)
         {
-            StringBuilder headerText = new StringBuilder ();
             for (; tokenIndex < tokens.Count; tokenIndex++)
             {
                 WikiTextToken token = tokens[tokenIndex];
                 if (token.Type == untilType)
                     return true;
 
-                if (!tokenAction(token))
+                if (!tokenFunc(token))
                     return false;
             }
 
@@ -184,76 +253,50 @@ namespace Freude.Parsing
             return false;
         }
 
-        private static void FinalizeHeaderElement(
-            IDocumentElementContainer doc, 
-            ParsingContext context, 
-            IList<WikiTextToken> tokens, 
-            int tokenIndex, 
-            StringBuilder headerText, 
-            int headerLevel)
+        private static WikiTextToken ExpectToken(
+            ParsingContext context,
+            IList<WikiTextToken> tokens,
+            int tokenIndex,
+            WikiTextToken.TokenType expectedTokenType)
         {
-            tokenIndex++;
-
-            string headerAnchor = null;
-            if (tokenIndex < tokens.Count)
+            if (tokenIndex >= tokens.Count)
             {
-                WikiTextToken token = tokens[tokenIndex];
-                if (token.Type == WikiTextToken.TokenType.HeaderAnchor)
-                    headerAnchor = FetchHeaderAnchor(context, tokens, tokenIndex);
-                else
-                    context.ReportError("Unexpected tokens after ending header token");
-            }
-
-            HeaderElement headerEl = new HeaderElement(headerText.ToString().Trim(), headerLevel);
-            headerEl.AnchorId = headerAnchor;
-            doc.Children.Add(headerEl);
-        }
-
-        private static string FetchHeaderAnchor(ParsingContext context, IList<WikiTextToken> tokens, int tokenIndex)
-        {
-            tokenIndex++;
-            if (tokenIndex == tokens.Count)
-            {
-                context.ReportError ("Missing header anchor ID");
+                context.ReportError ("Unexpected end, expected token '{0}'".Fmt (expectedTokenType));
                 return null;
             }
 
             WikiTextToken token = tokens[tokenIndex];
             if (token.Type != WikiTextToken.TokenType.Text)
             {
-                context.ReportError("Unexpected token");
+                context.ReportError ("Expected token '{0}' but got '{1}".Fmt(expectedTokenType, token.Type));
                 return null;
             }
 
-            return token.Text;
+            return token;
         }
 
-        //private static void ParseHeaderAnchor(
-        //    ParsingContext context, HeaderElement headerElement, string lineText, int startingIndex)
-        //{
-        //    Contract.Requires(context != null);
-        //    Contract.Requires(headerElement != null);
-        //    Contract.Requires(lineText != null);
+        private static bool ProcessUntilEnd (
+            IList<WikiTextToken> tokens, 
+            ref int tokenIndex,
+            Func<WikiTextToken, bool> tokenFunc)
+        {
+            for (; tokenIndex < tokens.Count; tokenIndex++)
+            {
+                WikiTextToken token = tokens[tokenIndex];
+                if (!tokenFunc(token))
+                    return false;
+            }
 
-        //    int anchorHashIndex = lineText.IndexOf(TokenHash, startingIndex);
-        //    if (anchorHashIndex < 0)
-        //        return;
+            return true;
+        }
 
-        //    string anchorId = lineText.Substring(anchorHashIndex + 1).TrimEnd();
+        private static bool ValidateAnchor (string anchorId)
+        {
+            if (anchorId.Length == 0)
+                return false;
 
-        //    if (!ValidateAnchor(anchorId))
-        //        context.ReportError("Invalid anchor ID '{0}'".Fmt(anchorId), anchorHashIndex + 1);
-
-        //    headerElement.AnchorId = anchorId;
-        //}
-
-        //private static bool ValidateAnchor(string anchorId)
-        //{
-        //    if (anchorId.Length == 0)
-        //        return false;
-
-        //    return anchorRegex.IsMatch(anchorId);
-        //}
+            return anchorRegex.IsMatch (anchorId);
+        }
 
         //private static void AddTextToParagraph (IDocumentElementContainer doc, ref ParagraphElement currentParagraph, string text)
         //{
@@ -297,6 +340,6 @@ namespace Freude.Parsing
         //}
 
         private readonly IWikiTextTokenizer tokenizer;
-        //private static readonly Regex anchorRegex = new Regex(@"^[\d\w\-\._~!\$\&`\(\)\*\+\,\;\=\:\@]+$", RegexOptions.Compiled);
+        private static readonly Regex anchorRegex = new Regex(@"^[\d\w\-\._~!\$\&`\(\)\*\+\,\;\=\:\@]+$", RegexOptions.Compiled);
     }
 }
