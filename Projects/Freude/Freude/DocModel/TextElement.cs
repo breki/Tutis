@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Freude.DocModel
 {
@@ -6,6 +7,7 @@ namespace Freude.DocModel
     {
         public TextElement(string text)
         {
+            Contract.Requires(text != null);
             this.text = text;
         }
 
@@ -20,6 +22,22 @@ namespace Freude.DocModel
                 throw new ArgumentNullException("textToAppend");
 
             text += ' ' + textToAppend.Trim();
+        }
+
+        public void TrimStart()
+        {
+            text = text.TrimStart();
+        }
+
+        public void TrimEnd()
+        {
+            text = text.TrimEnd();
+        }
+
+        [ContractInvariantMethod]
+        private void Invariant()
+        {
+            Contract.Invariant(text != null);
         }
 
         private string text;
