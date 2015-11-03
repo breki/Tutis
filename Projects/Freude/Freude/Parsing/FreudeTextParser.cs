@@ -28,6 +28,8 @@ namespace Freude.Parsing
                     break;
             }
 
+            FinalizeCurrentParagraph(ref currentParagraph);
+
             return doc;
         }
 
@@ -43,15 +45,11 @@ namespace Freude.Parsing
 
             string lineText = context.CurrentLine;
 
-            //// we can ignore lines with nothing but whitespace
-            //if (lineText.Length == 0 || lineText.Trim().Length == 0)
-            //{
-            //    context.IncrementLineCounter();
-            //    currentParagraph = null;
-            //    return true;
-            //}
-
-            ProcessLine(doc, context, ref currentParagraph, lineText);
+            // we can ignore lines with nothing but whitespace
+            if (lineText.Length == 0 || lineText.Trim ().Length == 0)
+                FinalizeCurrentParagraph(ref currentParagraph);
+            else
+                ProcessLine(doc, context, ref currentParagraph, lineText);
 
             context.IncrementLineCounter ();
             return true;
@@ -85,12 +83,16 @@ namespace Freude.Parsing
                 case WikiTextToken.TokenType.Header4Start:
                 case WikiTextToken.TokenType.Header5Start:
                 case WikiTextToken.TokenType.Header6Start:
-                    currentParagraph = null;
+                    FinalizeCurrentParagraph(ref currentParagraph);
                     HandleHeaderLine(doc, context, tokenBuffer);
                     break;
 
+                case WikiTextToken.TokenType.Text:
+                    HandleText(doc, context, tokenBuffer, ref currentParagraph);
+                    break;
+
                 default:
-                    throw new NotImplementedException("todo next:");
+                    throw new NotImplementedException("todo next: {0}".Fmt(firstToken.Type));
             }
         }
 
@@ -158,6 +160,32 @@ namespace Freude.Parsing
                 });
 
             headerEl.AnchorId = anchorId;
+        }
+
+        private static void HandleText(
+            IDocumentElementContainer doc, ParsingContext context, TokenBuffer tokenBuffer, ref ParagraphElement currentParagraph)
+        {
+            Contract.Requires(doc != null);
+            Contract.Requires(context != null);
+            Contract.Requires(tokenBuffer != null);
+            Contract.Requires(currentParagraph != null);
+
+            ParagraphElement paragraph = currentParagraph;
+            ProcessUntilEnd(
+                tokenBuffer,
+                t =>
+                {
+                    switch (t.Type)
+                    {
+                        case WikiTextToken.TokenType.Text:
+                            AddTextToParagraph (doc, ref paragraph, t.Text);
+                            return true;
+                        default:
+                            throw new NotImplementedException ("todo next: {0}".Fmt (t.Type));
+                    }
+                });
+
+            currentParagraph = paragraph;
         }
 
         private static bool ProcessHeaderText(
@@ -307,46 +335,58 @@ namespace Freude.Parsing
             return anchorRegex.IsMatch (anchorId);
         }
 
-        //private static void AddTextToParagraph (IDocumentElementContainer doc, ref ParagraphElement currentParagraph, string text)
-        //{
-        //    Contract.Ensures (currentParagraph != null);
+        private static void AddTextToParagraph (IDocumentElementContainer doc, ref ParagraphElement currentParagraph, string text)
+        {
+            Contract.Requires(doc != null);
+            Contract.Ensures (currentParagraph != null);
 
-        //    CreateParagraphIfNoneIsAlreadyOpen(doc, ref currentParagraph);
+            CreateParagraphIfNoneIsAlreadyOpen (doc, ref currentParagraph);
 
-        //    int childrenCount = currentParagraph.Children.Count;
-        //    if (childrenCount > 0)
-        //    {
-        //        IDocumentElement lastChild = currentParagraph.Children[childrenCount - 1];
-        //        TextElement textChild = lastChild as TextElement;
-        //        if (textChild != null)
-        //        {
-        //            textChild.AppendText(text);
-        //            return;
-        //        }
-        //    }
+            int childrenCount = currentParagraph.Children.Count;
+            if (childrenCount > 0)
+            {
+                IDocumentElement lastChild = currentParagraph.Children[childrenCount - 1];
+                TextElement textChild = lastChild as TextElement;
+                if (textChild != null)
+                {
+                    textChild.AppendText (text);
+                    return;
+                }
+            }
 
-        //    AddElement(doc, ref currentParagraph, new TextElement(text));
-        //}
+            AddElement (doc, ref currentParagraph, new TextElement (text));
+        }
 
-        //private static void AddElement (IDocumentElementContainer doc, ref ParagraphElement currentParagraph, IDocumentElement textElement)
-        //{
-        //    Contract.Ensures (currentParagraph != null);
+        private static void AddElement (IDocumentElementContainer doc, ref ParagraphElement currentParagraph, IDocumentElement textElement)
+        {
+            Contract.Requires(doc != null);
+            Contract.Requires(textElement != null);
+            Contract.Ensures (currentParagraph != null);
 
-        //    CreateParagraphIfNoneIsAlreadyOpen(doc, ref currentParagraph);
+            CreateParagraphIfNoneIsAlreadyOpen (doc, ref currentParagraph);
 
-        //    currentParagraph.Children.Add(textElement);
-        //}
+            currentParagraph.Children.Add (textElement);
+        }
 
-        //private static void CreateParagraphIfNoneIsAlreadyOpen (IDocumentElementContainer doc, ref ParagraphElement currentParagraph)
-        //{
-        //    Contract.Ensures(currentParagraph != null);
+        private static void CreateParagraphIfNoneIsAlreadyOpen (IDocumentElementContainer doc, ref ParagraphElement currentParagraph)
+        {
+            Contract.Requires(doc != null);
+            Contract.Ensures (currentParagraph != null);
 
-        //    if (currentParagraph == null)
-        //    {
-        //        currentParagraph = new ParagraphElement();
-        //        doc.Children.Add(currentParagraph);
-        //    }
-        //}
+            if (currentParagraph == null)
+            {
+                currentParagraph = new ParagraphElement ();
+                doc.Children.Add (currentParagraph);
+            }
+        }
+
+        private static void FinalizeCurrentParagraph(ref ParagraphElement currentParagraph)
+        {
+            if (currentParagraph != null)
+                currentParagraph.Trim();
+
+            currentParagraph = null;
+        }
 
         private readonly IWikiTextTokenizer tokenizer;
         private static readonly Regex anchorRegex = new Regex(@"^[\d\w\-\._~!\$\&`\(\)\*\+\,\;\=\:\@]+$", RegexOptions.Compiled);

@@ -44,17 +44,17 @@ namespace Freude.Tests.FreudeTextParsingTests
         [Test]
         public void HeaderBetweenParagraphs ()
         {
-            fixture.Parse (@" par 1 line 1
-   par 1 line 2
+            fixture.Parse (@"par 1 line 1
+par 1 line 2
 ==header==
 par 2 line 1
-par 2 line 2 ")
+par 2 line 2")
                 .AssertNoErrrors ()
                 .AssertChildCount (3);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
             fixture.AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 1 line 1 par 1 line 2", x.Text));
-            fixture.AssertElement<HeaderElement> (2, x => Assert.AreEqual (@"header", x.HeaderText));
+            fixture.AssertElement<HeaderElement> (1, x => Assert.AreEqual (@"header", x.HeaderText));
             par = fixture.AssertElement<ParagraphElement> (2);
             fixture.AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 2 line 1 par 2 line 2", x.Text));
         }
