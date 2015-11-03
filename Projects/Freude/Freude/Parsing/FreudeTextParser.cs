@@ -135,6 +135,8 @@ namespace Freude.Parsing
                     throw new InvalidOperationException("BUG");
             }
 
+            tokenBuffer.MoveToNextToken();
+
             StringBuilder headerText = new StringBuilder();
             if (!ProcessHeaderText(context, tokenBuffer, endingTokenNeeded, headerText))
                 return;
@@ -196,6 +198,7 @@ namespace Freude.Parsing
                 WikiTextToken token = tokenBuffer.Token;
                 if (token.Type == WikiTextToken.TokenType.HeaderAnchor)
                 {
+                    tokenBuffer.MoveToNextToken();
                     if (!FetchHeaderAnchor(context, tokenBuffer, out anchorId))
                         return false;
                 }
@@ -226,6 +229,7 @@ namespace Freude.Parsing
             }
 
             anchorId = token.Text;
+            tokenBuffer.MoveToNextToken();
             return true;
         }
 
