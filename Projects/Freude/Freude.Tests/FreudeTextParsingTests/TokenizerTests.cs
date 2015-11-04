@@ -56,6 +56,18 @@ namespace Freude.Tests.FreudeTextParsingTests
             Assert.AreEqual ("anchor", tokens[4].Text);
         }
 
+        [Test]
+        public void BoldTest()
+        {
+            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("There is something '''bold''' in here");
+            Assert.AreEqual (5, tokens.Count);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[0].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[1].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[2].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[3].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[4].Type);
+        }
+
         [SetUp]
         public void Setup ()
         {

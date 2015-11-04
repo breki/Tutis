@@ -5,15 +5,21 @@ namespace Freude.DocModel
 {
     public class TextElement : IDocumentElement
     {
-        public TextElement(string text)
+        public TextElement(string text, TextStyle style = TextStyle.Regular)
         {
             Contract.Requires(text != null);
             this.text = text;
+            this.style = style;
         }
 
         public string Text
         {
             get { return text; }
+        }
+
+        public TextStyle Style
+        {
+            get { return style; }
         }
 
         public void AppendText(string textToAppend)
@@ -41,5 +47,14 @@ namespace Freude.DocModel
         }
 
         private string text;
+        private readonly TextStyle style;
+
+        public enum TextStyle
+        {
+            Regular,
+            Bold,
+            Italic,
+            BoldItalic,
+        }
     }
 }

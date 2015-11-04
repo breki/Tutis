@@ -144,7 +144,7 @@ namespace Freude.Parsing
                 return;
 
             HeaderElement headerEl = new HeaderElement (headerText.ToString ().Trim (), headerLevel);
-            doc.Children.Add (headerEl);
+            doc.AddChild(headerEl);
 
             tokenBuffer.MoveToNextToken();
             string anchorId;
@@ -171,6 +171,8 @@ namespace Freude.Parsing
             Contract.Requires(currentParagraph != null);
 
             ParagraphElement paragraph = currentParagraph;
+            TextElement.TextStyle currentStyle = TextElement.TextStyle.Regular;
+
             ProcessUntilEnd(
                 tokenBuffer,
                 t =>
@@ -178,7 +180,25 @@ namespace Freude.Parsing
                     switch (t.Type)
                     {
                         case WikiTextToken.TokenType.Text:
-                            AddTextToParagraph (doc, ref paragraph, t.Text);
+                            AddTextToParagraph (doc, ref paragraph, t.Text, currentStyle);
+                            return true;
+                        case WikiTextToken.TokenType.TripleApostrophe:
+                            switch (currentStyle)
+                            {
+                                case TextElement.TextStyle.Regular:
+                                    currentStyle = TextElement.TextStyle.Bold;
+                                    break;
+                                case TextElement.TextStyle.Bold:
+                                    currentStyle = TextElement.TextStyle.Regular;
+                                    break;
+                                case TextElement.TextStyle.Italic:
+                                    currentStyle = TextElement.TextStyle.BoldItalic;
+                                    break;
+                                case TextElement.TextStyle.BoldItalic:
+                                    currentStyle = TextElement.TextStyle.Italic;
+                                    break;
+                            }
+
                             return true;
                         default:
                             throw new NotImplementedException ("todo next: {0}".Fmt (t.Type));
@@ -335,7 +355,11 @@ namespace Freude.Parsing
             return anchorRegex.IsMatch (anchorId);
         }
 
-        private static void AddTextToParagraph (IDocumentElementContainer doc, ref ParagraphElement currentParagraph, string text)
+        private static void AddTextToParagraph (
+            IDocumentElementContainer doc, 
+            ref ParagraphElement currentParagraph, 
+            string text, 
+            TextElement.TextStyle textStyle)
         {
             Contract.Requires(doc != null);
             Contract.Ensures (currentParagraph != null);
@@ -349,8 +373,19 @@ namespace Freude.Parsing
                 TextElement textChild = lastChild as TextElement;
                 if (textChild != null)
                 {
-                    textChild.AppendText (text);
+                    if (textChild.Style == textStyle)
+                        textChild.AppendText (text);
+                    else
+                    {
+                        TextElement newStyleChild = new TextElement(text, textStyle);
+                        currentParagraph.AddChild(newStyleChild);
+                    }
+
                     return;
+                }
+                else
+                {
+                    throw new NotImplementedException("todo next:");
                 }
             }
 
@@ -365,7 +400,7 @@ namespace Freude.Parsing
 
             CreateParagraphIfNoneIsAlreadyOpen (doc, ref currentParagraph);
 
-            currentParagraph.Children.Add (textElement);
+            currentParagraph.AddChild(textElement);
         }
 
         private static void CreateParagraphIfNoneIsAlreadyOpen (IDocumentElementContainer doc, ref ParagraphElement currentParagraph)
@@ -376,7 +411,7 @@ namespace Freude.Parsing
             if (currentParagraph == null)
             {
                 currentParagraph = new ParagraphElement ();
-                doc.Children.Add (currentParagraph);
+                doc.AddChild(currentParagraph);
             }
         }
 

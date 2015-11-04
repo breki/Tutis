@@ -7,6 +7,7 @@ namespace Freude.DocModel
     public interface IDocumentElementContainer : IDocumentElement
     {
         IList<IDocumentElement> Children { get; }
+        void AddChild(IDocumentElement child);
     }
 
     [ContractClassFor(typeof(IDocumentElementContainer))]
@@ -19,6 +20,12 @@ namespace Freude.DocModel
                 Contract.Ensures (Contract.Result<System.Collections.Generic.IList<Freude.DocModel.IDocumentElement>> () != null);
                 throw new System.NotImplementedException ();
             }
+        }
+
+        void IDocumentElementContainer.AddChild(IDocumentElement child)
+        {
+            Contract.Requires(child != null);
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -72,6 +72,24 @@ namespace Freude.Tests.FreudeTextParsingTests
             return (TElement)element;
         }
 
+        [SuppressMessage ("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+        public ParsingFixture AssertText (
+            IDocumentElementContainer container, int index, string expectedText, TextElement.TextStyle? expectedStyle = null)
+        {
+            Contract.Requires (container != null);
+            Contract.Requires(expectedText != null);
+            Contract.Requires (index >= 0);
+
+            IDocumentElement element = container.Children[index];
+            Assert.IsInstanceOf<TextElement> (element);
+            TextElement tel = (TextElement)element;
+            Assert.AreEqual(expectedText, tel.Text);
+            if (expectedStyle.HasValue)
+                Assert.AreEqual(expectedStyle.Value, tel.Style);
+
+            return this;
+        }
+
         public IList<WikiTextToken> TokenizePart(string wikiText)
         {
             WikiTokenizationSettings settings = new WikiTokenizationSettings();

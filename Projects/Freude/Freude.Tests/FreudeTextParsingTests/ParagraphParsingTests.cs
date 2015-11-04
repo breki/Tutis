@@ -13,7 +13,7 @@ namespace Freude.Tests.FreudeTextParsingTests
                 .AssertChildCount (1);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
-            fixture.AssertElement<TextElement> (par, 0, x => Assert.AreEqual ("this is some text", x.Text));
+            fixture.AssertText(par, 0, "this is some text");
         }
 
         [Test]
@@ -26,7 +26,7 @@ and this too ")
                 .AssertChildCount (1);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
-            fixture.AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"this is some text and this too and this too", x.Text));
+            fixture.AssertText(par, 0, @"this is some text and this too and this too");
         }
 
         [Test]
@@ -41,9 +41,9 @@ par 2 line 2 ")
                 .AssertChildCount (2);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
-            fixture.AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 1 line 1 par 1 line 2", x.Text));
+            fixture.AssertText(par, 0, @"par 1 line 1 par 1 line 2");
             par = fixture.AssertElement<ParagraphElement> (1);
-            fixture.AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 2 line 1 par 2 line 2", x.Text));
+            fixture.AssertText(par, 0, @"par 2 line 1 par 2 line 2");
         }
 
         [Test]
@@ -60,9 +60,9 @@ par 2 line 2 ")
                 .AssertChildCount (2);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
-            fixture.AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 1 line 1 par 1 line 2", x.Text));
+            fixture.AssertText(par, 0, @"par 1 line 1 par 1 line 2");
             par = fixture.AssertElement<ParagraphElement> (1);
-            fixture.AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 2 line 1 par 2 line 2", x.Text));
+            fixture.AssertText(par, 0, @"par 2 line 1 par 2 line 2");
         }
 
         [Test]
@@ -77,9 +77,22 @@ par 2 line 2 ")
                 .AssertChildCount (2);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
-            fixture.AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 1 line 1 par 1 line 2", x.Text));
+            fixture.AssertText(par, 0, @"par 1 line 1 par 1 line 2");
             par = fixture.AssertElement<ParagraphElement> (1);
-            fixture.AssertElement<TextElement> (par, 0, x => Assert.AreEqual (@"par 2 line 1 par 2 line 2", x.Text));
+            fixture.AssertText(par, 0, @"par 2 line 1 par 2 line 2");
+        }
+
+        [Test]
+        public void BoldText()
+        {
+            fixture.Parse("There is something '''bold''' in here")
+                .AssertNoErrrors()
+                .AssertChildCount(1);
+            var par = fixture.AssertElement<ParagraphElement> (0);
+            Assert.AreEqual(3, par.Children.Count);
+            fixture.AssertText(par, 0, @"There is something ");
+            fixture.AssertText(par, 1, @"bold", TextElement.TextStyle.Bold);
+            fixture.AssertText(par, 2, @"in here");
         }
 
         [SetUp]
