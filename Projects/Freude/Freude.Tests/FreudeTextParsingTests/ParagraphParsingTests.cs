@@ -1,3 +1,5 @@
+using System;
+using Brejc.Common;
 using Freude.DocModel;
 using NUnit.Framework;
 
@@ -130,6 +132,33 @@ par 2 line 2 ")
             Assert.AreEqual(2, par.Children.Count);
             fixture.AssertText(par, 0, @"italic ", TextElement.TextStyle.Italic);
             fixture.AssertText(par, 1, @" in here");
+        }
+
+        [Test]
+        public void BoldItalicCombo ()
+        {
+            fixture.Parse ("There is something '''''boldly italic'' in here.''' Yes!")
+                .AssertNoErrrors ()
+                .AssertChildCount (1);
+            var par = fixture.AssertElement<ParagraphElement> (0);
+            Assert.AreEqual (4, par.Children.Count);
+            fixture.AssertText (par, 0, @"There is something ", TextElement.TextStyle.Regular);
+            fixture.AssertText (par, 1, @"boldly italic", TextElement.TextStyle.BoldItalic);
+            fixture.AssertText (par, 2, @" in here.", TextElement.TextStyle.Bold);
+            fixture.AssertText (par, 3, @" Yes!", TextElement.TextStyle.Regular);
+        }
+
+        [Test]
+        public void MultilineStyling()
+        {
+            fixture.Parse("There is something '''bold{0}and newline''' in here".Fmt(Environment.NewLine))
+                .AssertNoErrrors()
+                .AssertChildCount(1);
+            var par = fixture.AssertElement<ParagraphElement> (0);
+            Assert.AreEqual(3, par.Children.Count);
+            fixture.AssertText(par, 0, @"There is something ");
+            fixture.AssertText(par, 1, @"bold and newline", TextElement.TextStyle.Bold);
+            fixture.AssertText(par, 2, @" in here");
         }
 
         [SetUp]
