@@ -10,6 +10,11 @@ namespace Freude.DocModel
             get { return children; }
         }
 
+        public void AddChild(IDocumentElement child)
+        {
+            children.Add(child);
+        }
+
         [ContractInvariantMethod]
         private void Invariant()
         {
