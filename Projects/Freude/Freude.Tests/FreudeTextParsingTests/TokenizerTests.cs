@@ -57,7 +57,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         }
 
         [Test]
-        public void BoldTest()
+        public void BoldInMiddleTest()
         {
             IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("There is something '''bold''' in here");
             Assert.AreEqual (5, tokens.Count);
@@ -65,6 +65,29 @@ namespace Freude.Tests.FreudeTextParsingTests
             Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[1].Type);
             Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[2].Type);
             Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[3].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[4].Type);
+        }
+
+        [Test]
+        public void BoldAtStartTest()
+        {
+            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("'''bold''' in here");
+            Assert.AreEqual (4, tokens.Count);
+            Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[0].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[2].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[3].Type);
+        }
+
+        [Test]
+        public void ItalicTest()
+        {
+            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("There is something ''italic'' in here");
+            Assert.AreEqual (5, tokens.Count);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[0].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.DoubleApostrophe, tokens[1].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[2].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.DoubleApostrophe, tokens[3].Type);
             Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[4].Type);
         }
 

@@ -88,6 +88,8 @@ namespace Freude.Parsing
                     break;
 
                 case WikiTextToken.TokenType.Text:
+                case WikiTextToken.TokenType.DoubleApostrophe:
+                case WikiTextToken.TokenType.TripleApostrophe:
                     HandleText(doc, context, tokenBuffer, ref currentParagraph);
                     break;
 
@@ -168,10 +170,9 @@ namespace Freude.Parsing
             Contract.Requires(doc != null);
             Contract.Requires(context != null);
             Contract.Requires(tokenBuffer != null);
-            Contract.Requires(currentParagraph != null);
 
             ParagraphElement paragraph = currentParagraph;
-            TextElement.TextStyle currentStyle = TextElement.TextStyle.Regular;
+            TextElement.TextStyle? currentStyle = null;
 
             ProcessUntilEnd(
                 tokenBuffer,
@@ -180,11 +181,13 @@ namespace Freude.Parsing
                     switch (t.Type)
                     {
                         case WikiTextToken.TokenType.Text:
-                            AddTextToParagraph (doc, ref paragraph, t.Text, currentStyle);
+                            AddTextToParagraph (doc, ref paragraph, t.Text, currentStyle ?? TextElement.TextStyle.Regular);
                             return true;
+
                         case WikiTextToken.TokenType.TripleApostrophe:
                             switch (currentStyle)
                             {
+                                case null:
                                 case TextElement.TextStyle.Regular:
                                     currentStyle = TextElement.TextStyle.Bold;
                                     break;
@@ -196,6 +199,26 @@ namespace Freude.Parsing
                                     break;
                                 case TextElement.TextStyle.BoldItalic:
                                     currentStyle = TextElement.TextStyle.Italic;
+                                    break;
+                            }
+
+                            return true;
+
+                        case WikiTextToken.TokenType.DoubleApostrophe:
+                            switch (currentStyle)
+                            {
+                                case null:
+                                case TextElement.TextStyle.Regular:
+                                    currentStyle = TextElement.TextStyle.Italic;
+                                    break;
+                                case TextElement.TextStyle.Italic:
+                                    currentStyle = TextElement.TextStyle.Regular;
+                                    break;
+                                case TextElement.TextStyle.Bold:
+                                    currentStyle = TextElement.TextStyle.BoldItalic;
+                                    break;
+                                case TextElement.TextStyle.BoldItalic:
+                                    currentStyle = TextElement.TextStyle.Bold;
                                     break;
                             }
 
@@ -380,16 +403,12 @@ namespace Freude.Parsing
                         TextElement newStyleChild = new TextElement(text, textStyle);
                         currentParagraph.AddChild(newStyleChild);
                     }
-
-                    return;
                 }
                 else
-                {
-                    throw new NotImplementedException("todo next:");
-                }
+                    throw new InvalidOperationException("BUG: is this possible?");
             }
-
-            AddElement (doc, ref currentParagraph, new TextElement (text));
+            else
+                AddElement (doc, ref currentParagraph, new TextElement (text, textStyle));
         }
 
         private static void AddElement (IDocumentElementContainer doc, ref ParagraphElement currentParagraph, IDocumentElement textElement)

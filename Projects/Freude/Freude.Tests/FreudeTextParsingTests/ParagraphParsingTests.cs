@@ -83,7 +83,7 @@ par 2 line 2 ")
         }
 
         [Test]
-        public void BoldText()
+        public void BoldInTheMiddle()
         {
             fixture.Parse("There is something '''bold''' in here")
                 .AssertNoErrrors()
@@ -92,7 +92,44 @@ par 2 line 2 ")
             Assert.AreEqual(3, par.Children.Count);
             fixture.AssertText(par, 0, @"There is something ");
             fixture.AssertText(par, 1, @"bold", TextElement.TextStyle.Bold);
-            fixture.AssertText(par, 2, @"in here");
+            fixture.AssertText(par, 2, @" in here");
+        }
+
+        [Test]
+        public void BoldAtStart()
+        {
+            fixture.Parse("''' bold ''' in here")
+                .AssertNoErrrors()
+                .AssertChildCount(1);
+            var par = fixture.AssertElement<ParagraphElement> (0);
+            Assert.AreEqual(2, par.Children.Count);
+            fixture.AssertText(par, 0, @"bold ", TextElement.TextStyle.Bold);
+            fixture.AssertText(par, 1, @" in here");
+        }
+
+        [Test]
+        public void ItalicInTheMiddle()
+        {
+            fixture.Parse("There is something ''italic'' in here")
+                .AssertNoErrrors()
+                .AssertChildCount(1);
+            var par = fixture.AssertElement<ParagraphElement> (0);
+            Assert.AreEqual(3, par.Children.Count);
+            fixture.AssertText(par, 0, @"There is something ");
+            fixture.AssertText(par, 1, @"italic", TextElement.TextStyle.Italic);
+            fixture.AssertText(par, 2, @" in here");
+        }
+
+        [Test]
+        public void ItalicAtStart()
+        {
+            fixture.Parse("'' italic '' in here")
+                .AssertNoErrrors()
+                .AssertChildCount(1);
+            var par = fixture.AssertElement<ParagraphElement> (0);
+            Assert.AreEqual(2, par.Children.Count);
+            fixture.AssertText(par, 0, @"italic ", TextElement.TextStyle.Italic);
+            fixture.AssertText(par, 1, @" in here");
         }
 
         [SetUp]
