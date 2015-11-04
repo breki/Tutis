@@ -21,10 +21,11 @@ namespace Freude.Parsing
 
             context.SetTextLines(text.SplitIntoLines());
             ParagraphElement currentParagraph = null;
+            TextElement.TextStyle? currentParagraphTextStyle = null;
 
             while (!context.EndOfText)
             {
-                if (!ParseLine(doc, ref currentParagraph, context))
+                if (!ParseLine(doc, ref currentParagraph, ref currentParagraphTextStyle, context))
                     break;
             }
 
@@ -36,6 +37,7 @@ namespace Freude.Parsing
         private bool ParseLine(
             IDocumentElementContainer doc, 
             ref ParagraphElement currentParagraph,
+            ref TextElement.TextStyle? currentParagraphTextStyle,
             ParsingContext context)
         {
             Contract.Requires(doc != null);
@@ -49,7 +51,7 @@ namespace Freude.Parsing
             if (lineText.Length == 0 || lineText.Trim ().Length == 0)
                 FinalizeCurrentParagraph(ref currentParagraph);
             else
-                ProcessLine(doc, context, ref currentParagraph, lineText);
+                ProcessLine(doc, context, ref currentParagraph, ref currentParagraphTextStyle, lineText);
 
             context.IncrementLineCounter ();
             return true;
@@ -59,6 +61,7 @@ namespace Freude.Parsing
             IDocumentElementContainer doc, 
             ParsingContext context,
             ref ParagraphElement currentParagraph, 
+            ref TextElement.TextStyle? currentParagraphTextStyle,
             string lineText)
         {
             Contract.Requires(doc != null);
@@ -90,7 +93,7 @@ namespace Freude.Parsing
                 case WikiTextToken.TokenType.Text:
                 case WikiTextToken.TokenType.DoubleApostrophe:
                 case WikiTextToken.TokenType.TripleApostrophe:
-                    HandleText(doc, context, tokenBuffer, ref currentParagraph);
+                    HandleText(doc, context, tokenBuffer, ref currentParagraph, ref currentParagraphTextStyle);
                     break;
 
                 default:
@@ -165,14 +168,18 @@ namespace Freude.Parsing
         }
 
         private static void HandleText(
-            IDocumentElementContainer doc, ParsingContext context, TokenBuffer tokenBuffer, ref ParagraphElement currentParagraph)
+            IDocumentElementContainer doc, 
+            ParsingContext context, 
+            TokenBuffer tokenBuffer, 
+            ref ParagraphElement currentParagraph,
+            ref TextElement.TextStyle? currentStyle)
         {
             Contract.Requires(doc != null);
             Contract.Requires(context != null);
             Contract.Requires(tokenBuffer != null);
 
             ParagraphElement paragraph = currentParagraph;
-            TextElement.TextStyle? currentStyle = null;
+            TextElement.TextStyle? style = currentStyle;
 
             ProcessUntilEnd(
                 tokenBuffer,
@@ -181,44 +188,44 @@ namespace Freude.Parsing
                     switch (t.Type)
                     {
                         case WikiTextToken.TokenType.Text:
-                            AddTextToParagraph (doc, ref paragraph, t.Text, currentStyle ?? TextElement.TextStyle.Regular);
+                            AddTextToParagraph (doc, ref paragraph, ref style, t.Text);
                             return true;
 
                         case WikiTextToken.TokenType.TripleApostrophe:
-                            switch (currentStyle)
+                            switch (style)
                             {
                                 case null:
                                 case TextElement.TextStyle.Regular:
-                                    currentStyle = TextElement.TextStyle.Bold;
+                                    style = TextElement.TextStyle.Bold;
                                     break;
                                 case TextElement.TextStyle.Bold:
-                                    currentStyle = TextElement.TextStyle.Regular;
+                                    style = TextElement.TextStyle.Regular;
                                     break;
                                 case TextElement.TextStyle.Italic:
-                                    currentStyle = TextElement.TextStyle.BoldItalic;
+                                    style = TextElement.TextStyle.BoldItalic;
                                     break;
                                 case TextElement.TextStyle.BoldItalic:
-                                    currentStyle = TextElement.TextStyle.Italic;
+                                    style = TextElement.TextStyle.Italic;
                                     break;
                             }
 
                             return true;
 
                         case WikiTextToken.TokenType.DoubleApostrophe:
-                            switch (currentStyle)
+                            switch (style)
                             {
                                 case null:
                                 case TextElement.TextStyle.Regular:
-                                    currentStyle = TextElement.TextStyle.Italic;
+                                    style = TextElement.TextStyle.Italic;
                                     break;
                                 case TextElement.TextStyle.Italic:
-                                    currentStyle = TextElement.TextStyle.Regular;
+                                    style = TextElement.TextStyle.Regular;
                                     break;
                                 case TextElement.TextStyle.Bold:
-                                    currentStyle = TextElement.TextStyle.BoldItalic;
+                                    style = TextElement.TextStyle.BoldItalic;
                                     break;
                                 case TextElement.TextStyle.BoldItalic:
-                                    currentStyle = TextElement.TextStyle.Bold;
+                                    style = TextElement.TextStyle.Bold;
                                     break;
                             }
 
@@ -229,6 +236,7 @@ namespace Freude.Parsing
                 });
 
             currentParagraph = paragraph;
+            currentStyle = style;
         }
 
         private static bool ProcessHeaderText(
@@ -381,13 +389,14 @@ namespace Freude.Parsing
         private static void AddTextToParagraph (
             IDocumentElementContainer doc, 
             ref ParagraphElement currentParagraph, 
-            string text, 
-            TextElement.TextStyle textStyle)
+            ref TextElement.TextStyle? currentStyle,
+            string text)
         {
             Contract.Requires(doc != null);
             Contract.Ensures (currentParagraph != null);
+            Contract.Ensures (currentStyle != null);
 
-            CreateParagraphIfNoneIsAlreadyOpen (doc, ref currentParagraph);
+            CreateParagraphIfNoneIsAlreadyOpen (doc, ref currentParagraph, ref currentStyle);
 
             int childrenCount = currentParagraph.Children.Count;
             if (childrenCount > 0)
@@ -396,11 +405,12 @@ namespace Freude.Parsing
                 TextElement textChild = lastChild as TextElement;
                 if (textChild != null)
                 {
-                    if (textChild.Style == textStyle)
-                        textChild.AppendText (text);
+                    // ReSharper disable once PossibleInvalidOperationException
+                    if (textChild.Style == currentStyle.Value)
+                        textChild.AppendText(text);
                     else
                     {
-                        TextElement newStyleChild = new TextElement(text, textStyle);
+                        TextElement newStyleChild = new TextElement(text, currentStyle.Value);
                         currentParagraph.AddChild(newStyleChild);
                     }
                 }
@@ -408,28 +418,40 @@ namespace Freude.Parsing
                     throw new InvalidOperationException("BUG: is this possible?");
             }
             else
-                AddElement (doc, ref currentParagraph, new TextElement (text, textStyle));
+            {
+                // ReSharper disable once PossibleInvalidOperationException
+                AddElement(doc, ref currentParagraph, ref currentStyle, new TextElement(text, currentStyle.Value));
+            }
         }
 
-        private static void AddElement (IDocumentElementContainer doc, ref ParagraphElement currentParagraph, IDocumentElement textElement)
+        private static void AddElement (
+            IDocumentElementContainer doc, 
+            ref ParagraphElement currentParagraph, 
+            ref TextElement.TextStyle? currentStyle,
+            IDocumentElement textElement)
         {
             Contract.Requires(doc != null);
             Contract.Requires(textElement != null);
             Contract.Ensures (currentParagraph != null);
 
-            CreateParagraphIfNoneIsAlreadyOpen (doc, ref currentParagraph);
+            CreateParagraphIfNoneIsAlreadyOpen (doc, ref currentParagraph, ref currentStyle);
 
             currentParagraph.AddChild(textElement);
         }
 
-        private static void CreateParagraphIfNoneIsAlreadyOpen (IDocumentElementContainer doc, ref ParagraphElement currentParagraph)
+        private static void CreateParagraphIfNoneIsAlreadyOpen (
+            IDocumentElementContainer doc, 
+            ref ParagraphElement currentParagraph, 
+            ref TextElement.TextStyle? textStyle)
         {
             Contract.Requires(doc != null);
             Contract.Ensures (currentParagraph != null);
+            Contract.Ensures (textStyle != null);
 
             if (currentParagraph == null)
             {
                 currentParagraph = new ParagraphElement ();
+                textStyle = textStyle ?? TextElement.TextStyle.Regular;
                 doc.AddChild(currentParagraph);
             }
         }
