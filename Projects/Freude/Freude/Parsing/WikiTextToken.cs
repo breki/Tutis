@@ -4,12 +4,13 @@ namespace Freude.Parsing
 {
     public class WikiTextToken
     {
-        public WikiTextToken(TokenType tokenType, string text)
+        public WikiTextToken(TokenType tokenType, string text, WikiTextTokenScopes scopes)
         {
             Contract.Requires(!string.IsNullOrEmpty(text));
 
             this.tokenType = tokenType;
             this.text = text;
+            this.scopes = scopes;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
@@ -23,8 +24,14 @@ namespace Freude.Parsing
             get { return text; }
         }
 
+        public WikiTextTokenScopes Scopes
+        {
+            get { return scopes; }
+        }
+
         private readonly TokenType tokenType;
         private readonly string text;
+        private readonly WikiTextTokenScopes scopes;
 
         public enum TokenType
         {

@@ -19,7 +19,7 @@ namespace Freude.Parsing
             int index = 0;
             int? textTokenStart = null;
 
-            int scope = settings.IsWholeLine ? (int)TokenScopes.LineStart : (int)TokenScopes.InnerText;
+            int scope = settings.IsWholeLine ? (int)WikiTextTokenScopes.LineStart : (int)WikiTextTokenScopes.InnerText;
             while (true)
             {
                 if (index >= wikiText.Length)
@@ -27,14 +27,14 @@ namespace Freude.Parsing
 
                 int tokenEndingIndex;
 
-                TokenDef tokenFound = LookForMatchingToken (
+                WikiTextTokenDef tokenFound = LookForMatchingToken (
                     wikiText, ref scope, index, out tokenEndingIndex);
                 if (tokenFound != null)
                 {
-                    AddTextTokenIfAny (wikiText, tokens, ref textTokenStart, index);
+                    AddTextTokenIfAny (wikiText, tokens, ref textTokenStart, index, (WikiTextTokenScopes)scope);
 
                     string tokenText = wikiText.Substring(index, tokenEndingIndex - index);
-                    tokens.Add (new WikiTextToken (tokenFound.TokenType, tokenText));
+                    tokens.Add (new WikiTextToken (tokenFound.TokenType, tokenText, (WikiTextTokenScopes)scope));
                     index = tokenEndingIndex;
                 }
                 else
@@ -44,12 +44,13 @@ namespace Freude.Parsing
                 }
             }
 
-            AddTextTokenIfAny (wikiText, tokens, ref textTokenStart, index);
+            AddTextTokenIfAny (wikiText, tokens, ref textTokenStart, index, (WikiTextTokenScopes)scope);
 
             return tokens;
         }
 
-        private static void AddTextTokenIfAny (string wikiText, ICollection<WikiTextToken> tokens, ref int? textTokenStart, int index)
+        private static void AddTextTokenIfAny (
+            string wikiText, ICollection<WikiTextToken> tokens, ref int? textTokenStart, int index, WikiTextTokenScopes scope)
         {
             Contract.Requires (wikiText != null);
             Contract.Requires (tokens != null);
@@ -64,14 +65,15 @@ namespace Freude.Parsing
             {
                 WikiTextToken prevToken = new WikiTextToken (
                     WikiTextToken.TokenType.Text,
-                    wikiText.Substring (textTokenStart.Value, index - textTokenStart.Value));
+                    wikiText.Substring (textTokenStart.Value, index - textTokenStart.Value),
+                    scope);
 
                 tokens.Add (prevToken);
                 textTokenStart = null;
             }
         }
 
-        private TokenDef LookForMatchingToken (
+        private WikiTextTokenDef LookForMatchingToken (
             string wikiText, ref int scope, int startingIndex, out int endingIndex)
         {
             Contract.Requires (wikiText != null);
@@ -81,9 +83,9 @@ namespace Freude.Parsing
 
             int charOffset = 0;
             int scopeCopied = scope;
-            List<TokenDef> partiallyMatchingTokens = new List<TokenDef> (
+            List<WikiTextTokenDef> partiallyMatchingTokens = new List<WikiTextTokenDef> (
                 tokenDefinitions.Where (t => SelectTokensInScope(t, scopeCopied)));
-            List<TokenDef> matchedTokens = new List<TokenDef> ();
+            List<WikiTextTokenDef> matchedTokens = new List<WikiTextTokenDef> ();
 
             while (partiallyMatchingTokens.Count > 0)
             {
@@ -95,7 +97,7 @@ namespace Freude.Parsing
                 int tokenIndex = 0;
                 while (tokenIndex < partiallyMatchingTokens.Count)
                 {
-                    TokenDef tokenDef = partiallyMatchingTokens[tokenIndex];
+                    WikiTextTokenDef tokenDef = partiallyMatchingTokens[tokenIndex];
 
                     char tokenChar = tokenDef.TokenString[charOffset];
                     if (tokenChar == textChar)
@@ -118,10 +120,10 @@ namespace Freude.Parsing
 
             if (matchedTokens.Count > 0)
             {
-                TokenDef longestMatchedToken = matchedTokens[matchedTokens.Count - 1];
+                WikiTextTokenDef longestMatchedToken = matchedTokens[matchedTokens.Count - 1];
                 Contract.Assume (longestMatchedToken != null);
                 endingIndex = startingIndex + longestMatchedToken.TokenString.Length;
-                scope = longestMatchedToken.ModifyScope(scope) & ((int)~TokenScopes.LineStart);
+                scope = longestMatchedToken.ModifyScope(scope) & ((int)~WikiTextTokenScopes.LineStart);
                 return longestMatchedToken;
             }
 
@@ -129,7 +131,7 @@ namespace Freude.Parsing
             return null;
         }
 
-        private static bool SelectTokensInScope (TokenDef tokenDef, int scope)
+        private static bool SelectTokensInScope (WikiTextTokenDef tokenDef, int scope)
         {
             return ((int)tokenDef.AvailableInScopes & scope) != 0;
         }
@@ -146,43 +148,43 @@ namespace Freude.Parsing
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-        private static List<TokenDef> PrepareTokens ()
+        private static List<WikiTextTokenDef> PrepareTokens ()
         {
-            Contract.Ensures(Contract.Result<List<TokenDef>>() != null);
+            Contract.Ensures(Contract.Result<List<WikiTextTokenDef>>() != null);
 
-            var def = new List<TokenDef>
+            var def = new List<WikiTextTokenDef>
             {
-                new TokenDef("[", WikiTextToken.TokenType.SingleSquareBracketsOpen, TokenScopes.LineStart | TokenScopes.InnerText),
-                new TokenDef("[[", WikiTextToken.TokenType.DoubleSquareBracketsOpen, TokenScopes.LineStart | TokenScopes.InnerText),
-                new TokenDef("]", WikiTextToken.TokenType.SingleSquareBracketsClose, TokenScopes.LineStart | TokenScopes.InnerText),
-                new TokenDef("]]", WikiTextToken.TokenType.DoubleSquareBracketsClose, TokenScopes.LineStart | TokenScopes.InnerText),
-                new TokenDef("|", WikiTextToken.TokenType.Pipe, TokenScopes.LineStart | TokenScopes.InnerText),
-                new TokenDef("''", WikiTextToken.TokenType.DoubleApostrophe, TokenScopes.LineStart | TokenScopes.InnerText | TokenScopes.HeaderText, ModifyScopeForAnywhereTokens),
-                new TokenDef("'''", WikiTextToken.TokenType.TripleApostrophe, TokenScopes.LineStart | TokenScopes.InnerText | TokenScopes.HeaderText, ModifyScopeForAnywhereTokens),
-                new TokenDef("=", WikiTextToken.TokenType.Header1Start, TokenScopes.LineStart, x => x | TokenScopes.HeaderText),
-                new TokenDef("=", WikiTextToken.TokenType.Header1End, TokenScopes.HeaderText, x => (x | TokenScopes.HeaderSuffix) & ~TokenScopes.HeaderText),
-                new TokenDef("==", WikiTextToken.TokenType.Header2Start, TokenScopes.LineStart, x => x | TokenScopes.HeaderText),
-                new TokenDef("==", WikiTextToken.TokenType.Header2End, TokenScopes.HeaderText, x => (x | TokenScopes.HeaderSuffix) & ~TokenScopes.HeaderText),
-                new TokenDef("===", WikiTextToken.TokenType.Header3Start, TokenScopes.LineStart, x => x | TokenScopes.HeaderText),
-                new TokenDef("===", WikiTextToken.TokenType.Header3End, TokenScopes.HeaderText, x => (x | TokenScopes.HeaderSuffix) & ~TokenScopes.HeaderText),
-                new TokenDef("====", WikiTextToken.TokenType.Header4Start, TokenScopes.LineStart, x => x | TokenScopes.HeaderText),
-                new TokenDef("====", WikiTextToken.TokenType.Header4End, TokenScopes.HeaderText, x => (x | TokenScopes.HeaderSuffix) & ~TokenScopes.HeaderText),
-                new TokenDef("=====", WikiTextToken.TokenType.Header5Start, TokenScopes.LineStart, x => x | TokenScopes.HeaderText),
-                new TokenDef("=====", WikiTextToken.TokenType.Header5End, TokenScopes.HeaderText, x => (x | TokenScopes.HeaderSuffix) & ~TokenScopes.HeaderText),
-                new TokenDef("======", WikiTextToken.TokenType.Header6Start, TokenScopes.LineStart, x => x | TokenScopes.HeaderText),
-                new TokenDef("======", WikiTextToken.TokenType.Header6End, TokenScopes.HeaderText, x => (x | TokenScopes.HeaderSuffix) & ~TokenScopes.HeaderText),
-                new TokenDef("#", WikiTextToken.TokenType.HeaderAnchor, TokenScopes.HeaderSuffix),
-                new TokenDef("*", WikiTextToken.TokenType.BulletList, TokenScopes.LineStart),
-                new TokenDef("#", WikiTextToken.TokenType.NumberedList, TokenScopes.LineStart)
+                new WikiTextTokenDef("[", WikiTextToken.TokenType.SingleSquareBracketsOpen, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText, x => WikiTextTokenScopes.LinkInternals),
+                new WikiTextTokenDef("[[", WikiTextToken.TokenType.DoubleSquareBracketsOpen, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText, x => WikiTextTokenScopes.LinkInternals),
+                new WikiTextTokenDef("]", WikiTextToken.TokenType.SingleSquareBracketsClose, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText | WikiTextTokenScopes.LinkInternals, x => WikiTextTokenScopes.InnerText),
+                new WikiTextTokenDef("]]", WikiTextToken.TokenType.DoubleSquareBracketsClose, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText | WikiTextTokenScopes.LinkInternals, x => WikiTextTokenScopes.InnerText),
+                new WikiTextTokenDef("|", WikiTextToken.TokenType.Pipe, WikiTextTokenScopes.LinkInternals),
+                new WikiTextTokenDef("''", WikiTextToken.TokenType.DoubleApostrophe, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText | WikiTextTokenScopes.HeaderText, ModifyScopeForAnywhereTokens),
+                new WikiTextTokenDef("'''", WikiTextToken.TokenType.TripleApostrophe, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText | WikiTextTokenScopes.HeaderText, ModifyScopeForAnywhereTokens),
+                new WikiTextTokenDef("=", WikiTextToken.TokenType.Header1Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("=", WikiTextToken.TokenType.Header1End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("==", WikiTextToken.TokenType.Header2Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("==", WikiTextToken.TokenType.Header2End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("===", WikiTextToken.TokenType.Header3Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("===", WikiTextToken.TokenType.Header3End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("====", WikiTextToken.TokenType.Header4Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("====", WikiTextToken.TokenType.Header4End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("=====", WikiTextToken.TokenType.Header5Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("=====", WikiTextToken.TokenType.Header5End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("======", WikiTextToken.TokenType.Header6Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("======", WikiTextToken.TokenType.Header6End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("#", WikiTextToken.TokenType.HeaderAnchor, WikiTextTokenScopes.HeaderSuffix),
+                new WikiTextTokenDef("*", WikiTextToken.TokenType.BulletList, WikiTextTokenScopes.LineStart),
+                new WikiTextTokenDef("#", WikiTextToken.TokenType.NumberedList, WikiTextTokenScopes.LineStart)
             };
 
             def.Sort ((a, b) => -a.TokenString.Length.CompareTo (b.TokenString.Length));
             return def;
         }
 
-        private static TokenScopes ModifyScopeForAnywhereTokens (TokenScopes scope)
+        private static WikiTextTokenScopes ModifyScopeForAnywhereTokens (WikiTextTokenScopes scope)
         {
-            return scope == TokenScopes.LineStart ? TokenScopes.InnerText : scope;
+            return scope == WikiTextTokenScopes.LineStart ? WikiTextTokenScopes.InnerText : scope;
         }
 
         [ContractInvariantMethod]
@@ -191,61 +193,6 @@ namespace Freude.Parsing
             Contract.Invariant (Contract.ForAll (tokenDefinitions, x => x != null));
         }
 
-        private readonly List<TokenDef> tokenDefinitions;
-
-        [Flags]
-        public enum TokenScopes
-        {
-            None = 0,
-            LineStart = 1 << 0,
-            InnerText = 1 << 1,
-            HeaderText = 1 << 2,
-            HeaderSuffix = 1 << 3,
-        }
-
-        private class TokenDef
-        {
-            public TokenDef (
-                string tokenString, 
-                WikiTextToken.TokenType tokenType, 
-                TokenScopes availableInScopes,
-                Func<TokenScopes, TokenScopes> scopeModifierFunc = null)
-            {
-                Contract.Requires (!string.IsNullOrEmpty (tokenString));
-
-                this.tokenString = tokenString;
-                this.tokenType = tokenType;
-                this.availableInScopes = availableInScopes;
-                this.scopeModifierFunc = scopeModifierFunc;
-            }
-
-            public string TokenString
-            {
-                get { return tokenString; }
-            }
-
-            public WikiTextToken.TokenType TokenType
-            {
-                get { return tokenType; }
-            }
-
-            public TokenScopes AvailableInScopes
-            {
-                get { return availableInScopes; }
-            }
-
-            public int ModifyScope(int currentScope)
-            {
-                if (scopeModifierFunc != null)
-                    return (int)scopeModifierFunc((TokenScopes)currentScope);
-
-                return currentScope;
-            }
-
-            private readonly string tokenString;
-            private readonly WikiTextToken.TokenType tokenType;
-            private readonly TokenScopes availableInScopes;
-            private readonly Func<TokenScopes, TokenScopes> scopeModifierFunc;
-        }
+        private readonly List<WikiTextTokenDef> tokenDefinitions;
     }
 }
