@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
+using System.Linq;
+using Brejc.Common;
 using Freude.DocModel;
 using Freude.Parsing;
 using NUnit.Framework;
@@ -30,7 +32,17 @@ namespace Freude.Tests.FreudeTextParsingTests
         {
             Contract.Ensures (Contract.Result<ParsingFixture> () != null);
 
-            Assert.IsFalse (context.HasAnyErrors);
+            Assert.IsFalse (context.HasAnyErrors, context.Errors.AsQueryable ().Select (x => x.Item1).Concat (x => x, Environment.NewLine));
+            return this;
+        }
+
+        public ParsingFixture AssertErrror (string expectedErrorMessage)
+        {
+            Assert.IsTrue(context.HasAnyErrors, "Parsing errors expected but there were none");
+            Assert.IsTrue(
+                context.Errors.Any(x => string.Equals(x.Item1, expectedErrorMessage)), 
+                "Parsing error '{0]' expected, but it is missing", 
+                expectedErrorMessage);
             return this;
         }
 
@@ -38,7 +50,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         {
             Contract.Ensures (Contract.Result<ParsingFixture> () != null);
 
-            Assert.AreEqual (expectedCount, doc.Children.Count);
+            Assert.AreEqual (expectedCount, doc.ChildrenCount);
             return this;
         }
 

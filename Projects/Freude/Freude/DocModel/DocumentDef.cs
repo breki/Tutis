@@ -5,6 +5,11 @@ namespace Freude.DocModel
 {
     public class DocumentDef : IDocumentElementContainer
     {
+        public int ChildrenCount
+        {
+            get { return children.Count; }
+        }
+
         public IList<IDocumentElement> Children
         {
             get { return children; }

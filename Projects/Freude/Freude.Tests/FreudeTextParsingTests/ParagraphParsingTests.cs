@@ -91,7 +91,7 @@ par 2 line 2 ")
                 .AssertNoErrrors()
                 .AssertChildCount(1);
             var par = fixture.AssertElement<ParagraphElement> (0);
-            Assert.AreEqual(3, par.Children.Count);
+            Assert.AreEqual(3, par.ChildrenCount);
             fixture.AssertText(par, 0, @"There is something ");
             fixture.AssertText(par, 1, @"bold", TextElement.TextStyle.Bold);
             fixture.AssertText(par, 2, @" in here");
@@ -104,7 +104,7 @@ par 2 line 2 ")
                 .AssertNoErrrors()
                 .AssertChildCount(1);
             var par = fixture.AssertElement<ParagraphElement> (0);
-            Assert.AreEqual(2, par.Children.Count);
+            Assert.AreEqual(2, par.ChildrenCount);
             fixture.AssertText(par, 0, @"bold ", TextElement.TextStyle.Bold);
             fixture.AssertText(par, 1, @" in here");
         }
@@ -116,7 +116,7 @@ par 2 line 2 ")
                 .AssertNoErrrors()
                 .AssertChildCount(1);
             var par = fixture.AssertElement<ParagraphElement> (0);
-            Assert.AreEqual(3, par.Children.Count);
+            Assert.AreEqual(3, par.ChildrenCount);
             fixture.AssertText(par, 0, @"There is something ");
             fixture.AssertText(par, 1, @"italic", TextElement.TextStyle.Italic);
             fixture.AssertText(par, 2, @" in here");
@@ -129,7 +129,7 @@ par 2 line 2 ")
                 .AssertNoErrrors()
                 .AssertChildCount(1);
             var par = fixture.AssertElement<ParagraphElement> (0);
-            Assert.AreEqual(2, par.Children.Count);
+            Assert.AreEqual(2, par.ChildrenCount);
             fixture.AssertText(par, 0, @"italic ", TextElement.TextStyle.Italic);
             fixture.AssertText(par, 1, @" in here");
         }
@@ -141,7 +141,7 @@ par 2 line 2 ")
                 .AssertNoErrrors ()
                 .AssertChildCount (1);
             var par = fixture.AssertElement<ParagraphElement> (0);
-            Assert.AreEqual (4, par.Children.Count);
+            Assert.AreEqual (4, par.ChildrenCount);
             fixture.AssertText (par, 0, @"There is something ", TextElement.TextStyle.Regular);
             fixture.AssertText (par, 1, @"boldly italic", TextElement.TextStyle.BoldItalic);
             fixture.AssertText (par, 2, @" in here.", TextElement.TextStyle.Bold);
@@ -149,13 +149,13 @@ par 2 line 2 ")
         }
 
         [Test]
-        public void MultilineStyling()
+        public void MultilineStyling()  
         {
             fixture.Parse("There is something '''bold{0}and newline''' in here".Fmt(Environment.NewLine))
                 .AssertNoErrrors()
                 .AssertChildCount(1);
             var par = fixture.AssertElement<ParagraphElement> (0);
-            Assert.AreEqual(3, par.Children.Count);
+            Assert.AreEqual(3, par.ChildrenCount);
             fixture.AssertText(par, 0, @"There is something ");
             fixture.AssertText(par, 1, @"bold and newline", TextElement.TextStyle.Bold);
             fixture.AssertText(par, 2, @" in here");

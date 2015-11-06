@@ -5,6 +5,11 @@ namespace Freude.DocModel
 {
     public class ParagraphElement : IDocumentElementContainer
     {
+        public int ChildrenCount
+        {
+            get { return Children.Count; }
+        }
+
         public IList<IDocumentElement> Children
         {
             get { return children; }

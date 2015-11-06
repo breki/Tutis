@@ -4,27 +4,24 @@ namespace Freude.DocModel
 {
     public class InternalLinkElement : IDocumentElement
     {
-        public InternalLinkElement(string address)
+        public InternalLinkElement(string linkName, string linkDescription = null)
         {
-            Contract.Requires(address != null);
-            this.address = address;
+            Contract.Requires(linkName != null);
+            this.linkName = linkName;
+            this.linkDescription = linkDescription;
         }
 
-        public string Address
+        public string LinkName
         {
-            get
-            {
-                //Contract.Ensures(Contract.Result<string>() != null);
-                return address;
-            }
+            get { return linkName; }
         }
 
-        [ContractInvariantMethod]
-        private void Invariant()
+        public string LinkDescription
         {
-            Contract.Invariant(address != null);
+            get { return linkDescription; }
         }
 
-        private readonly string address;
+        private readonly string linkName;
+        private readonly string linkDescription;
     }
 }
