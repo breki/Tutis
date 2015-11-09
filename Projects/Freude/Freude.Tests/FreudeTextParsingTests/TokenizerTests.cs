@@ -120,6 +120,23 @@ namespace Freude.Tests.FreudeTextParsingTests
             Assert.AreEqual (WikiTextToken.TokenType.DoubleSquareBracketsClose, tokens[4].Type);
         }
 
+        [Test]
+        public void TokenizeExternalLink()
+        {
+            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine (" text [  http://google.com  Google Website ] text 2");
+            Assert.AreEqual (8, tokens.Count);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[0].Type);
+            Assert.AreEqual (" text ", tokens[0].Text);
+            Assert.AreEqual (WikiTextToken.TokenType.SingleSquareBracketsOpen, tokens[1].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.ExternalLinkUrl, tokens[4].Type);
+            Assert.AreEqual ("http://google.com", tokens[4].Text);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[5].Type);
+            Assert.AreEqual ("  Google Website ", tokens[5].Text);
+            Assert.AreEqual (WikiTextToken.TokenType.SingleSquareBracketsClose, tokens[6].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[7].Type);
+            Assert.AreEqual (" text 2", tokens[7].Text);
+        }
+
         [SetUp]
         public void Setup ()
         {

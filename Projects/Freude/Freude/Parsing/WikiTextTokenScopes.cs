@@ -10,6 +10,8 @@ namespace Freude.Parsing
         InnerText = 1 << 1,
         HeaderText = 1 << 2,
         HeaderSuffix = 1 << 3,
-        LinkInternals = 1 << 4,
+        InternalLinkInternals = 1 << 4,
+        ExternalLinkUrl = 1 << 5,
+        ExternalLinkText = 1 << 6,
     }
 }
