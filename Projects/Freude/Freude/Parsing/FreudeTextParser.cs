@@ -566,11 +566,9 @@ namespace Freude.Parsing
         {
             Contract.Requires(doc != null);
             Contract.Ensures(currentParagraph != null);
-            Contract.Ensures(currentStyle != null);
+            Contract.Ensures(currentStyle.HasValue);
 
             CreateParagraphIfNoneIsAlreadyOpen(doc, ref currentParagraph, ref currentStyle);
-
-            bool createNewTextElement = true;
 
             int childrenCount = currentParagraph.ChildrenCount;
             if (childrenCount > 0)
@@ -583,20 +581,34 @@ namespace Freude.Parsing
                     if (textChild.Style == currentStyle.Value)
                         textChild.AppendText(text);
                     else
-                    {
-                        TextElement newStyleChild = new TextElement(text, currentStyle.Value);
-                        currentParagraph.AddChild(newStyleChild);
-                    }
+                        AddTextElementToParagraph(currentParagraph, text, currentStyle.Value);
                 }
-                else
+                else if (lastChild is InternalLinkElement)
+                    // ReSharper disable once PossibleInvalidOperationException
+                    AddTextElementToParagraph (currentParagraph, text, currentStyle.Value);
+                else 
                     throw new InvalidOperationException("BUG: is this possible?");
             }
             else
             {
-                // ReSharper disable once PossibleInvalidOperationException
                 AddToParagraph(
-                    doc, ref currentParagraph, ref currentStyle, new TextElement(text, currentStyle.Value));
+                    // ReSharper disable once PossibleInvalidOperationException
+                    doc, ref currentParagraph, ref currentStyle, CreateTextElement (text, currentStyle.Value));
             }
+        }
+
+        private static void AddTextElementToParagraph(ParagraphElement paragraph, string text, TextElement.TextStyle currentStyle)
+        {
+            Contract.Requires(paragraph != null);
+            Contract.Requires(text != null);
+            TextElement newStyleChild = CreateTextElement(text, currentStyle);
+            paragraph.AddChild(newStyleChild);
+        }
+
+        private static TextElement CreateTextElement(string text, TextElement.TextStyle currentStyle)
+        {
+            Contract.Requires(text != null);
+            return new TextElement (text, currentStyle);
         }
 
         private static void AddToParagraph(
