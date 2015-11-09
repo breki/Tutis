@@ -90,68 +90,160 @@ namespace Freude.Parsing
 
             while (partiallyMatchingTokens.Count > 0)
             {
-                if (startingIndex + charOffset >= wikiText.Length)
+                bool shouldContinue = HandleNextChar(wikiText, startingIndex, ref charOffset, partiallyMatchingTokens, matchedTokens);
+                if (!shouldContinue)
                     break;
-
-                char textChar = wikiText[startingIndex + charOffset];
-
-                int tokenIndex = 0;
-                while (tokenIndex < partiallyMatchingTokens.Count)
-                {
-                    WikiTextTokenDef tokenDef = partiallyMatchingTokens[tokenIndex];
-
-                    bool tokenStillMatches;
-
-                    if (tokenDef.IsRegexToken)
-                        tokenStillMatches = tokenDef.TokenRegex.IsMatch(textChar.ToString(CultureInfo.InvariantCulture));
-                    else
-                    {
-                        char tokenChar = tokenDef.TokenString[charOffset];
-                        if (tokenChar == textChar)
-                        {
-                            if (charOffset == tokenDef.TokenString.Length - 1)
-                            {
-                                matchedTokens.Add(tokenDef);
-                                partiallyMatchingTokens.RemoveAt(tokenIndex);
-                                continue;
-                            }
-
-                            tokenStillMatches = true;
-                        }
-                        else
-                            tokenStillMatches = false;
-                    }
-
-                    if (tokenStillMatches)
-                        tokenIndex++;
-                    else
-                    {
-                        if (tokenDef.IsRegexToken && charOffset > 0)
-                            matchedTokens.Add (tokenDef);
-
-                        partiallyMatchingTokens.RemoveAt (tokenIndex);
-                    }
-                }
-
-                charOffset++;
             }
 
-            if (matchedTokens.Count > 0)
+            // if there are no matching tokens...
+            if (matchedTokens.Count == 0)
             {
-                WikiTextTokenDef longestMatchedToken = matchedTokens[matchedTokens.Count - 1];
-                Contract.Assume (longestMatchedToken != null);
-
-                if (longestMatchedToken.IsRegexToken)
-                    endingIndex = startingIndex + charOffset - 1;
-                else
-                    endingIndex = startingIndex + longestMatchedToken.TokenStringLength;
-
-                scope = longestMatchedToken.ModifyScope(scope) & ((int)~WikiTextTokenScopes.LineStart);
-                return longestMatchedToken;
+                endingIndex = startingIndex;
+                return null;
             }
 
-            endingIndex = startingIndex;
-            return null;
+            return FetchBestMatchingToken(ref scope, startingIndex, out endingIndex, matchedTokens, charOffset);
+        }
+
+        private static bool HandleNextChar(
+            string wikiText, 
+            int startingIndex, 
+            ref int charOffset, 
+            IList<WikiTextTokenDef> partiallyMatchingTokens, 
+            ICollection<WikiTextTokenDef> matchedTokens)
+        {
+            Contract.Requires(charOffset >= 0);
+            Contract.Ensures(charOffset >= 0);
+
+            if (IsEndOfText(wikiText, startingIndex, charOffset, partiallyMatchingTokens, matchedTokens)) 
+                return false;
+            
+            char textChar = wikiText[startingIndex + charOffset];
+
+            int tokenIndex = 0;
+            while (tokenIndex < partiallyMatchingTokens.Count)
+            {
+                MatchCharToToken(partiallyMatchingTokens, matchedTokens, ref tokenIndex, charOffset, textChar);
+            }
+
+            charOffset++;
+            return true;
+        }
+
+        private static void MatchCharToToken(
+            IList<WikiTextTokenDef> partiallyMatchingTokens, 
+            ICollection<WikiTextTokenDef> matchedTokens, 
+            ref int tokenIndex, 
+            int charOffset, 
+            char textChar)
+        {
+            Contract.Requires(tokenIndex >= 0 && tokenIndex < partiallyMatchingTokens.Count);
+            Contract.Ensures(tokenIndex >= 0 && tokenIndex < partiallyMatchingTokens.Count);
+
+            WikiTextTokenDef tokenDef = partiallyMatchingTokens[tokenIndex];
+
+            bool tokenStillMatches;
+            bool tokenAlreadyRemoved = DetermineIfTokenStillMatches(
+                partiallyMatchingTokens, matchedTokens, tokenIndex, tokenDef, out tokenStillMatches, charOffset, textChar);
+            if (tokenAlreadyRemoved) 
+                return;
+
+            HandleMatchingOrNonMatching(partiallyMatchingTokens, matchedTokens, ref tokenIndex, tokenDef, tokenStillMatches, charOffset);
+        }
+
+        private static bool DetermineIfTokenStillMatches(
+            IList<WikiTextTokenDef> partiallyMatchingTokens, 
+            ICollection<WikiTextTokenDef> matchedTokens, 
+            int tokenIndex, 
+            WikiTextTokenDef tokenDef, 
+            out bool tokenStillMatches, 
+            int charOffset, 
+            char textChar)
+        {
+            Contract.Requires(partiallyMatchingTokens != null);
+            Contract.Requires(matchedTokens != null);
+            Contract.Requires(tokenDef != null);
+
+            if (tokenDef.IsRegexToken)
+                tokenStillMatches = tokenDef.TokenRegex.IsMatch(textChar.ToString(CultureInfo.InvariantCulture));
+            else
+            {
+                char tokenChar = tokenDef.TokenString[charOffset];
+                if (tokenChar == textChar)
+                {
+                    if (charOffset == tokenDef.TokenString.Length - 1)
+                    {
+                        matchedTokens.Add(tokenDef);
+                        partiallyMatchingTokens.RemoveAt(tokenIndex);
+                        tokenStillMatches = false;
+                        return true;
+                    }
+
+                    tokenStillMatches = true;
+                }
+                else
+                    tokenStillMatches = false;
+            }
+
+            return false;
+        }
+
+        private static void HandleMatchingOrNonMatching(
+            IList<WikiTextTokenDef> partiallyMatchingTokens, 
+            ICollection<WikiTextTokenDef> matchedTokens, 
+            ref int tokenIndex, 
+            WikiTextTokenDef tokenDef, 
+            bool tokenStillMatches, 
+            int charOffset)
+        {
+            if (tokenStillMatches)
+                tokenIndex++;
+            else
+            {
+                if (tokenDef.IsRegexToken && charOffset > 0)
+                    matchedTokens.Add(tokenDef);
+
+                partiallyMatchingTokens.RemoveAt(tokenIndex);
+            }
+        }
+
+        private static bool IsEndOfText(
+            string wikiText, 
+            int startingIndex, 
+            int charOffset, 
+            IList<WikiTextTokenDef> partiallyMatchingTokens, 
+            ICollection<WikiTextTokenDef> matchedTokens)
+        {
+            Contract.Requires(wikiText != null);
+            Contract.Requires(partiallyMatchingTokens != null);
+            Contract.Requires(matchedTokens != null);
+
+            if (startingIndex + charOffset < wikiText.Length) 
+                return false;
+
+            if (partiallyMatchingTokens.Count == 0) 
+                return true;
+
+            WikiTextTokenDef tokenDef = partiallyMatchingTokens[0];
+            if (tokenDef.IsRegexToken && charOffset > 0)
+                matchedTokens.Add(tokenDef);
+
+            return true;
+        }
+
+        private static WikiTextTokenDef FetchBestMatchingToken(
+            ref int scope, int startingIndex, out int endingIndex, IList<WikiTextTokenDef> matchedTokens, int charOffset)
+        {
+            WikiTextTokenDef longestMatchedToken = matchedTokens[matchedTokens.Count - 1];
+            Contract.Assume(longestMatchedToken != null);
+
+            if (longestMatchedToken.IsRegexToken)
+                endingIndex = startingIndex + charOffset - 1;
+            else
+                endingIndex = startingIndex + longestMatchedToken.TokenStringLength;
+
+            scope = longestMatchedToken.ModifyScope(scope) & ((int)~WikiTextTokenScopes.LineStart);
+            return longestMatchedToken;
         }
 
         private static bool SelectTokensInScope (WikiTextTokenDef tokenDef, int scope)
@@ -201,7 +293,7 @@ namespace Freude.Parsing
                 new WikiTextTokenDef("*", false, WikiTextToken.TokenType.BulletList, WikiTextTokenScopes.LineStart),
                 new WikiTextTokenDef("#", false, WikiTextToken.TokenType.NumberedList, WikiTextTokenScopes.LineStart),
                 new WikiTextTokenDef(" ", false, WikiTextToken.TokenType.ExternalLinkUrl, WikiTextTokenScopes.ExternalLinkUrl),
-                new WikiTextTokenDef(@"\S", true, WikiTextToken.TokenType.ExternalLinkUrl, WikiTextTokenScopes.ExternalLinkUrl, x => WikiTextTokenScopes.ExternalLinkText)
+                new WikiTextTokenDef(@"[\S^\]]", true, WikiTextToken.TokenType.ExternalLinkUrl, WikiTextTokenScopes.ExternalLinkUrl, x => WikiTextTokenScopes.ExternalLinkText)
             };
 
             def.Sort ((a, b) => -a.TokenStringLength.CompareTo(b.TokenStringLength));
