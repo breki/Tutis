@@ -36,7 +36,7 @@ namespace Freude.Tests.FreudeTextParsingTests
             return this;
         }
 
-        public ParsingFixture AssertErrror (string expectedErrorMessage)
+        public ParsingFixture AssertError (string expectedErrorMessage)
         {
             Assert.IsTrue(context.HasAnyErrors, "Parsing errors expected but there were none");
             Assert.IsTrue(

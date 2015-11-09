@@ -185,7 +185,7 @@ namespace Freude.Parsing
 
             TextParsingMode parsingMode = TextParsingMode.RegularText;
             StringBuilder internalLinkPageName = new StringBuilder();
-            StringBuilder internalLinkDescription = new StringBuilder();
+            StringBuilder internalLinkDescription = null;
 
             ProcessUntilEnd(
                 tokenBuffer,
@@ -195,7 +195,7 @@ namespace Freude.Parsing
                     {
                         case WikiTextToken.TokenType.Text:
                             return HandleTextTokenInText(
-                                doc, parsingMode, t, internalLinkPageName, internalLinkDescription, ref paragraph, ref style);
+                                doc, parsingMode, t, internalLinkPageName, ref internalLinkDescription, ref paragraph, ref style);
 
                         case WikiTextToken.TokenType.TripleApostrophe:
                             return HandleTripleApostropheTokenInText(ref style);
@@ -210,7 +210,15 @@ namespace Freude.Parsing
                             return HandlePipeTokenInText(context, t, ref parsingMode);
 
                         case WikiTextToken.TokenType.DoubleSquareBracketsClose:
-                            return HandleDoubleSquareBracketsCloseTokenInText(doc, context, parsingMode, t, internalLinkPageName, internalLinkDescription, ref paragraph, ref style);
+                            return HandleDoubleSquareBracketsCloseTokenInText(
+                                doc, 
+                                context, 
+                                ref parsingMode, 
+                                t, 
+                                internalLinkPageName, 
+                                internalLinkDescription, 
+                                ref paragraph, 
+                                ref style);
 
                         default:
                             throw new NotImplementedException("todo next: {0}".Fmt(t.Type));
@@ -226,7 +234,7 @@ namespace Freude.Parsing
             TextParsingMode parsingMode, 
             WikiTextToken token,
             StringBuilder internalLinkPageName, 
-            StringBuilder internalLinkDescription, 
+            ref StringBuilder internalLinkDescription, 
             ref ParagraphElement paragraph,
             ref TextElement.TextStyle? style)
         {
@@ -244,6 +252,8 @@ namespace Freude.Parsing
                     internalLinkPageName.Append(token.Text);
                     return true;
                 case TextParsingMode.InternalLinkDescription:
+                    if (internalLinkDescription == null)
+                        internalLinkDescription = new StringBuilder();
                     internalLinkDescription.Append(token.Text);
                     return true;
                 default:
@@ -331,7 +341,7 @@ namespace Freude.Parsing
         private static bool HandleDoubleSquareBracketsCloseTokenInText(
             IDocumentElementContainer doc, 
             ParsingContext context,
-            TextParsingMode parsingMode, 
+            ref TextParsingMode parsingMode, 
             WikiTextToken token, 
             StringBuilder internalLinkPageName,
             StringBuilder internalLinkDescription, 
@@ -351,6 +361,7 @@ namespace Freude.Parsing
                 return false;
             }
 
+            parsingMode = TextParsingMode.RegularText;
             return AddInternalLink(
                 doc, context, internalLinkPageName, internalLinkDescription, ref paragraph, ref style);
         }
@@ -366,17 +377,23 @@ namespace Freude.Parsing
             Contract.Requires(doc != null);
             Contract.Requires(context != null);
             Contract.Requires(internalLinkPageName != null);
-            Contract.Requires(internalLinkDescription != null);
 
             string pageName = internalLinkPageName.ToString().Trim();
-            string description = internalLinkDescription.ToString().Trim();
-            if (description.Length == 0)
-                description = null;
-
             if (pageName.Length == 0)
             {
-                context.ReportError("Internal link has an empty page name");
+                context.ReportError ("Internal link has an empty page name");
                 return false;
+            }
+
+            string description = null;
+            if (internalLinkDescription != null)
+            {
+                description = internalLinkDescription.ToString ().Trim ();
+                if (description.Length == 0)
+                {
+                    context.ReportError("Internal link ('{0}') has an empty description".Fmt(pageName));
+                    return false;
+                }
             }
 
             InternalLinkElement linkEl = new InternalLinkElement(pageName, description);
@@ -553,6 +570,8 @@ namespace Freude.Parsing
 
             CreateParagraphIfNoneIsAlreadyOpen(doc, ref currentParagraph, ref currentStyle);
 
+            bool createNewTextElement = true;
+
             int childrenCount = currentParagraph.ChildrenCount;
             if (childrenCount > 0)
             {
@@ -575,7 +594,8 @@ namespace Freude.Parsing
             else
             {
                 // ReSharper disable once PossibleInvalidOperationException
-                AddToParagraph(doc, ref currentParagraph, ref currentStyle, new TextElement(text, currentStyle.Value));
+                AddToParagraph(
+                    doc, ref currentParagraph, ref currentStyle, new TextElement(text, currentStyle.Value));
             }
         }
 

@@ -32,9 +32,30 @@ namespace Freude.Tests.FreudeTextParsingTests
         }
 
         [Test]
+        public void TextLinkMix()
+        {
+            fixture.Parse ("before [[ Main Page ]] after")
+                .AssertNoErrrors ()
+                .AssertChildCount (1);
+
+            var par = fixture.AssertElement<ParagraphElement> (0);
+            Assert.AreEqual (3, par.ChildrenCount);
+            fixture.AssertText(par, 0, "before");
+            var link = fixture.AssertElement<InternalLinkElement> (par, 1);
+            Assert.AreEqual ("Main Page", link.LinkName);
+            fixture.AssertText(par, 1, "after");
+        }
+
+        [Test]
         public void PageNameShouldNotBeEmpty()
         {
-            fixture.Parse("[[ ]]").AssertErrror("Internal link has an empty page name");
+            fixture.Parse("[[ ]]").AssertError("Internal link has an empty page name");
+        }
+
+        [Test]
+        public void ClosingBracketsAreMissing()
+        {
+            fixture.Parse ("[[ Main Page").AssertError ("Missing token ']]'");
         }
 
         [Test]
@@ -49,6 +70,13 @@ namespace Freude.Tests.FreudeTextParsingTests
             var link = fixture.AssertElement<InternalLinkElement> (par, 0);
             Assert.AreEqual ("Main Page", link.LinkName);
             Assert.AreEqual ("real name", link.LinkDescription);
+        }
+
+        [Test]
+        public void PipedLinkWithEmptyDescription()
+        {
+            fixture.Parse ("[[ Main Page |  ]]")
+                .AssertError ("Internal link ('Main Page') has an empty description");
         }
 
         [SetUp]
