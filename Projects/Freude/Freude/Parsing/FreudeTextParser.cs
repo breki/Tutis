@@ -187,7 +187,7 @@ namespace Freude.Parsing
             StringBuilder internalLinkPageName = new StringBuilder();
             StringBuilder internalLinkDescription = null;
 
-            ProcessUntilEnd(
+            bool processingSuccessful = ProcessUntilEnd(
                 tokenBuffer,
                 t =>
                 {
@@ -224,6 +224,12 @@ namespace Freude.Parsing
                             throw new NotImplementedException("todo next: {0}".Fmt(t.Type));
                     }
                 });
+
+            if (processingSuccessful)
+            {
+                if (parsingMode == TextParsingMode.InternalLinkPageName || parsingMode == TextParsingMode.InternalLinkDescription)
+                    context.ReportError ("Missing token ']]'");
+            }
 
             currentParagraph = paragraph;
             currentStyle = style;

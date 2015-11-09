@@ -40,10 +40,10 @@ namespace Freude.Tests.FreudeTextParsingTests
 
             var par = fixture.AssertElement<ParagraphElement> (0);
             Assert.AreEqual (3, par.ChildrenCount);
-            fixture.AssertText(par, 0, "before");
+            fixture.AssertText(par, 0, "before ");
             var link = fixture.AssertElement<InternalLinkElement> (par, 1);
             Assert.AreEqual ("Main Page", link.LinkName);
-            fixture.AssertText(par, 1, "after");
+            fixture.AssertText(par, 2, " after");
         }
 
         [Test]
