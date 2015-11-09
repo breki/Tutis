@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.Linq;
 
 namespace Freude.Parsing
@@ -98,20 +100,37 @@ namespace Freude.Parsing
                 {
                     WikiTextTokenDef tokenDef = partiallyMatchingTokens[tokenIndex];
 
-                    char tokenChar = tokenDef.TokenString[charOffset];
-                    if (tokenChar == textChar)
-                    {
-                        if (charOffset == tokenDef.TokenString.Length - 1)
-                        {
-                            matchedTokens.Add (tokenDef);
-                            partiallyMatchingTokens.RemoveAt (tokenIndex);
-                            continue;
-                        }
+                    bool tokenStillMatches;
 
-                        tokenIndex++;
-                    }
+                    if (tokenDef.IsRegexToken)
+                        tokenStillMatches = tokenDef.TokenRegex.IsMatch(textChar.ToString(CultureInfo.InvariantCulture));
                     else
+                    {
+                        char tokenChar = tokenDef.TokenString[charOffset];
+                        if (tokenChar == textChar)
+                        {
+                            if (charOffset == tokenDef.TokenString.Length - 1)
+                            {
+                                matchedTokens.Add(tokenDef);
+                                partiallyMatchingTokens.RemoveAt(tokenIndex);
+                                continue;
+                            }
+
+                            tokenStillMatches = true;
+                        }
+                        else
+                            tokenStillMatches = false;
+                    }
+
+                    if (tokenStillMatches)
+                        tokenIndex++;
+                    else
+                    {
+                        if (tokenDef.IsRegexToken && charOffset > 0)
+                            matchedTokens.Add (tokenDef);
+
                         partiallyMatchingTokens.RemoveAt (tokenIndex);
+                    }
                 }
 
                 charOffset++;
@@ -121,7 +140,12 @@ namespace Freude.Parsing
             {
                 WikiTextTokenDef longestMatchedToken = matchedTokens[matchedTokens.Count - 1];
                 Contract.Assume (longestMatchedToken != null);
-                endingIndex = startingIndex + longestMatchedToken.TokenString.Length;
+
+                if (longestMatchedToken.IsRegexToken)
+                    endingIndex = startingIndex + charOffset - 1;
+                else
+                    endingIndex = startingIndex + longestMatchedToken.TokenStringLength;
+
                 scope = longestMatchedToken.ModifyScope(scope) & ((int)~WikiTextTokenScopes.LineStart);
                 return longestMatchedToken;
             }
@@ -146,39 +170,41 @@ namespace Freude.Parsing
                 textTokenStart = index;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
+        [SuppressMessage ("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private static List<WikiTextTokenDef> PrepareTokens ()
         {
             Contract.Ensures(Contract.Result<List<WikiTextTokenDef>>() != null);
 
             var def = new List<WikiTextTokenDef>
             {
-                new WikiTextTokenDef("[", WikiTextToken.TokenType.SingleSquareBracketsOpen, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText, x => WikiTextTokenScopes.LinkInternals),
-                new WikiTextTokenDef("[[", WikiTextToken.TokenType.DoubleSquareBracketsOpen, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText, x => WikiTextTokenScopes.LinkInternals),
-                new WikiTextTokenDef("]", WikiTextToken.TokenType.SingleSquareBracketsClose, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText | WikiTextTokenScopes.LinkInternals, x => WikiTextTokenScopes.InnerText),
-                new WikiTextTokenDef("]]", WikiTextToken.TokenType.DoubleSquareBracketsClose, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText | WikiTextTokenScopes.LinkInternals, x => WikiTextTokenScopes.InnerText),
-                new WikiTextTokenDef(":", WikiTextToken.TokenType.NamespaceSeparator, WikiTextTokenScopes.LinkInternals),
-                new WikiTextTokenDef("|", WikiTextToken.TokenType.Pipe, WikiTextTokenScopes.LinkInternals),
-                new WikiTextTokenDef("''", WikiTextToken.TokenType.DoubleApostrophe, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText | WikiTextTokenScopes.HeaderText, ModifyScopeForAnywhereTokens),
-                new WikiTextTokenDef("'''", WikiTextToken.TokenType.TripleApostrophe, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText | WikiTextTokenScopes.HeaderText, ModifyScopeForAnywhereTokens),
-                new WikiTextTokenDef("=", WikiTextToken.TokenType.Header1Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
-                new WikiTextTokenDef("=", WikiTextToken.TokenType.Header1End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
-                new WikiTextTokenDef("==", WikiTextToken.TokenType.Header2Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
-                new WikiTextTokenDef("==", WikiTextToken.TokenType.Header2End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
-                new WikiTextTokenDef("===", WikiTextToken.TokenType.Header3Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
-                new WikiTextTokenDef("===", WikiTextToken.TokenType.Header3End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
-                new WikiTextTokenDef("====", WikiTextToken.TokenType.Header4Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
-                new WikiTextTokenDef("====", WikiTextToken.TokenType.Header4End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
-                new WikiTextTokenDef("=====", WikiTextToken.TokenType.Header5Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
-                new WikiTextTokenDef("=====", WikiTextToken.TokenType.Header5End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
-                new WikiTextTokenDef("======", WikiTextToken.TokenType.Header6Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
-                new WikiTextTokenDef("======", WikiTextToken.TokenType.Header6End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
-                new WikiTextTokenDef("#", WikiTextToken.TokenType.HeaderAnchor, WikiTextTokenScopes.HeaderSuffix),
-                new WikiTextTokenDef("*", WikiTextToken.TokenType.BulletList, WikiTextTokenScopes.LineStart),
-                new WikiTextTokenDef("#", WikiTextToken.TokenType.NumberedList, WikiTextTokenScopes.LineStart)
+                new WikiTextTokenDef("[", false, WikiTextToken.TokenType.SingleSquareBracketsOpen, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText, x => WikiTextTokenScopes.ExternalLinkUrl),
+                new WikiTextTokenDef("[[", false, WikiTextToken.TokenType.DoubleSquareBracketsOpen, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText, x => WikiTextTokenScopes.InternalLinkInternals),
+                new WikiTextTokenDef("]", false, WikiTextToken.TokenType.SingleSquareBracketsClose, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText | WikiTextTokenScopes.ExternalLinkUrl | WikiTextTokenScopes.ExternalLinkText, x => WikiTextTokenScopes.InnerText),
+                new WikiTextTokenDef("]]", false, WikiTextToken.TokenType.DoubleSquareBracketsClose, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText | WikiTextTokenScopes.InternalLinkInternals, x => WikiTextTokenScopes.InnerText),
+                new WikiTextTokenDef(":", false, WikiTextToken.TokenType.NamespaceSeparator, WikiTextTokenScopes.InternalLinkInternals),
+                new WikiTextTokenDef("|", false, WikiTextToken.TokenType.Pipe, WikiTextTokenScopes.InternalLinkInternals),
+                new WikiTextTokenDef("''", false, WikiTextToken.TokenType.DoubleApostrophe, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText | WikiTextTokenScopes.HeaderText | WikiTextTokenScopes.ExternalLinkText, ModifyScopeForAnywhereTokens),
+                new WikiTextTokenDef("'''", false, WikiTextToken.TokenType.TripleApostrophe, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText | WikiTextTokenScopes.HeaderText | WikiTextTokenScopes.ExternalLinkText, ModifyScopeForAnywhereTokens),
+                new WikiTextTokenDef("=", false, WikiTextToken.TokenType.Header1Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("=", false, WikiTextToken.TokenType.Header1End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("==", false, WikiTextToken.TokenType.Header2Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("==", false, WikiTextToken.TokenType.Header2End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("===", false, WikiTextToken.TokenType.Header3Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("===", false, WikiTextToken.TokenType.Header3End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("====", false, WikiTextToken.TokenType.Header4Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("====", false, WikiTextToken.TokenType.Header4End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("=====", false, WikiTextToken.TokenType.Header5Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("=====", false, WikiTextToken.TokenType.Header5End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("======", false, WikiTextToken.TokenType.Header6Start, WikiTextTokenScopes.LineStart, x => x | WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("======", false, WikiTextToken.TokenType.Header6End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
+                new WikiTextTokenDef("#", false, WikiTextToken.TokenType.HeaderAnchor, WikiTextTokenScopes.HeaderSuffix),
+                new WikiTextTokenDef("*", false, WikiTextToken.TokenType.BulletList, WikiTextTokenScopes.LineStart),
+                new WikiTextTokenDef("#", false, WikiTextToken.TokenType.NumberedList, WikiTextTokenScopes.LineStart),
+                new WikiTextTokenDef(" ", false, WikiTextToken.TokenType.ExternalLinkUrl, WikiTextTokenScopes.ExternalLinkUrl),
+                new WikiTextTokenDef(@"\S", true, WikiTextToken.TokenType.ExternalLinkUrl, WikiTextTokenScopes.ExternalLinkUrl, x => WikiTextTokenScopes.ExternalLinkText)
             };
 
-            def.Sort ((a, b) => -a.TokenString.Length.CompareTo (b.TokenString.Length));
+            def.Sort ((a, b) => -a.TokenStringLength.CompareTo(b.TokenStringLength));
             return def;
         }
 

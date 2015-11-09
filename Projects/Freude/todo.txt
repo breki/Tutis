@@ -1,3 +1,11 @@
+- external links
+	- implement support for Regex in WikiTextTokenDef
+- bullet lists
+- numbered lists
+- indent text
+- monospace style
+- preformatted text
+
 - helpe method to make anchors
 - add Full configuration for projects
 
