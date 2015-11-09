@@ -41,7 +41,7 @@ namespace Freude.Tests.FreudeTextParsingTests
             Assert.IsTrue(context.HasAnyErrors, "Parsing errors expected but there were none");
             Assert.IsTrue(
                 context.Errors.Any(x => string.Equals(x.Item1, expectedErrorMessage)), 
-                "Parsing error '{0]' expected, but it is missing", 
+                "Parsing error '{0}' expected, but it is missing", 
                 expectedErrorMessage);
             return this;
         }

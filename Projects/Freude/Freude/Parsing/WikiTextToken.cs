@@ -40,6 +40,7 @@ namespace Freude.Parsing
             DoubleSquareBracketsOpen,
             SingleSquareBracketsClose,
             DoubleSquareBracketsClose,
+            NamespaceSeparator,
             Pipe,
             DoubleApostrophe,
             TripleApostrophe,
@@ -57,7 +58,7 @@ namespace Freude.Parsing
             Header6End,
             HeaderAnchor,
             BulletList,
-            NumberedList,
+            NumberedList
         }
     }
 }

@@ -106,6 +106,20 @@ namespace Freude.Tests.FreudeTextParsingTests
             Assert.AreEqual (" text 2", tokens[4].Text);
         }
 
+        [Test]
+        public void TokenizeInternalLinkWithNamespaces()
+        {
+            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine("[[ns : link  ]]");
+            Assert.AreEqual (5, tokens.Count);
+            Assert.AreEqual (WikiTextToken.TokenType.DoubleSquareBracketsOpen, tokens[0].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
+            Assert.AreEqual ("ns ", tokens[1].Text);
+            Assert.AreEqual (WikiTextToken.TokenType.NamespaceSeparator, tokens[2].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[3].Type);
+            Assert.AreEqual (" link  ", tokens[3].Text);
+            Assert.AreEqual (WikiTextToken.TokenType.DoubleSquareBracketsClose, tokens[4].Type);
+        }
+
         [SetUp]
         public void Setup ()
         {

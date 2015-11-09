@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
@@ -158,6 +157,7 @@ namespace Freude.Parsing
                 new WikiTextTokenDef("[[", WikiTextToken.TokenType.DoubleSquareBracketsOpen, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText, x => WikiTextTokenScopes.LinkInternals),
                 new WikiTextTokenDef("]", WikiTextToken.TokenType.SingleSquareBracketsClose, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText | WikiTextTokenScopes.LinkInternals, x => WikiTextTokenScopes.InnerText),
                 new WikiTextTokenDef("]]", WikiTextToken.TokenType.DoubleSquareBracketsClose, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText | WikiTextTokenScopes.LinkInternals, x => WikiTextTokenScopes.InnerText),
+                new WikiTextTokenDef(":", WikiTextToken.TokenType.NamespaceSeparator, WikiTextTokenScopes.LinkInternals),
                 new WikiTextTokenDef("|", WikiTextToken.TokenType.Pipe, WikiTextTokenScopes.LinkInternals),
                 new WikiTextTokenDef("''", WikiTextToken.TokenType.DoubleApostrophe, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText | WikiTextTokenScopes.HeaderText, ModifyScopeForAnywhereTokens),
                 new WikiTextTokenDef("'''", WikiTextToken.TokenType.TripleApostrophe, WikiTextTokenScopes.LineStart | WikiTextTokenScopes.InnerText | WikiTextTokenScopes.HeaderText, ModifyScopeForAnywhereTokens),
