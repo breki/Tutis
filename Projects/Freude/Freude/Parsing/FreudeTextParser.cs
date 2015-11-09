@@ -184,7 +184,7 @@ namespace Freude.Parsing
             TextElement.TextStyle? style = currentStyle;
 
             TextParsingMode parsingMode = TextParsingMode.RegularText;
-            StringBuilder internalLinkPageName = new StringBuilder();
+            InternalLinkIdBuilder internalLinkBuilder = new InternalLinkIdBuilder ();
             StringBuilder internalLinkDescription = null;
 
             bool processingSuccessful = ProcessUntilEnd(
@@ -195,7 +195,7 @@ namespace Freude.Parsing
                     {
                         case WikiTextToken.TokenType.Text:
                             return HandleTextTokenInText(
-                                doc, parsingMode, t, internalLinkPageName, ref internalLinkDescription, ref paragraph, ref style);
+                                doc, parsingMode, t, internalLinkBuilder, ref internalLinkDescription, ref paragraph, ref style);
 
                         case WikiTextToken.TokenType.TripleApostrophe:
                             return HandleTripleApostropheTokenInText(ref style);
@@ -206,6 +206,9 @@ namespace Freude.Parsing
                         case WikiTextToken.TokenType.DoubleSquareBracketsOpen:
                             return HandleDoubleSquareBracketsOpenTokenInText(context, t, ref parsingMode);
 
+                        case WikiTextToken.TokenType.NamespaceSeparator:
+                            return HandleNamespaceSeparatorTokenInText (context, parsingMode, internalLinkBuilder, t);
+
                         case WikiTextToken.TokenType.Pipe:
                             return HandlePipeTokenInText(context, t, ref parsingMode);
 
@@ -214,8 +217,8 @@ namespace Freude.Parsing
                                 doc, 
                                 context, 
                                 ref parsingMode, 
-                                t, 
-                                internalLinkPageName, 
+                                t,
+                                internalLinkBuilder, 
                                 internalLinkDescription, 
                                 ref paragraph, 
                                 ref style);
@@ -239,15 +242,14 @@ namespace Freude.Parsing
             IDocumentElementContainer doc, 
             TextParsingMode parsingMode, 
             WikiTextToken token,
-            StringBuilder internalLinkPageName, 
+            InternalLinkIdBuilder linkIdBuilder, 
             ref StringBuilder internalLinkDescription, 
             ref ParagraphElement paragraph,
             ref TextElement.TextStyle? style)
         {
             Contract.Requires(doc != null);
             Contract.Requires(token != null);
-            Contract.Requires(internalLinkPageName != null);
-            Contract.Requires(internalLinkDescription != null);
+            Contract.Requires(linkIdBuilder != null);
 
             switch (parsingMode)
             {
@@ -255,7 +257,7 @@ namespace Freude.Parsing
                     AddTextToParagraph(doc, ref paragraph, ref style, token.Text);
                     return true;
                 case TextParsingMode.InternalLinkPageName:
-                    internalLinkPageName.Append(token.Text);
+                    linkIdBuilder.AppendText(token.Text);
                     return true;
                 case TextParsingMode.InternalLinkDescription:
                     if (internalLinkDescription == null)
@@ -329,6 +331,24 @@ namespace Freude.Parsing
             return true;
         }
 
+        private static bool HandleNamespaceSeparatorTokenInText(
+            ParsingContext context, TextParsingMode parsingMode, InternalLinkIdBuilder linkIdBuilder, WikiTextToken token)
+        {
+            Contract.Requires(context != null);
+            Contract.Requires(linkIdBuilder != null);
+            Contract.Requires(token != null);
+
+            if (parsingMode != TextParsingMode.InternalLinkPageName)
+            {
+                context.ReportError ("Token {0} is not allowed here".Fmt (token.Text));
+                return false;
+            }
+
+            linkIdBuilder.AddSeparator();
+
+            return true;
+        }
+
         private static bool HandlePipeTokenInText(ParsingContext context, WikiTextToken token, ref TextParsingMode parsingMode)
         {
             Contract.Requires(context != null);
@@ -349,7 +369,7 @@ namespace Freude.Parsing
             ParsingContext context,
             ref TextParsingMode parsingMode, 
             WikiTextToken token, 
-            StringBuilder internalLinkPageName,
+            InternalLinkIdBuilder linkIdBuilder,
             StringBuilder internalLinkDescription, 
             ref ParagraphElement paragraph, 
             ref TextElement.TextStyle? style)
@@ -357,7 +377,7 @@ namespace Freude.Parsing
             Contract.Requires(doc != null);
             Contract.Requires(context != null);
             Contract.Requires(token != null);
-            Contract.Requires(internalLinkPageName != null);
+            Contract.Requires(linkIdBuilder != null);
             Contract.Requires(internalLinkDescription != null);
 
             if (parsingMode != TextParsingMode.InternalLinkPageName
@@ -369,27 +389,25 @@ namespace Freude.Parsing
 
             parsingMode = TextParsingMode.RegularText;
             return AddInternalLink(
-                doc, context, internalLinkPageName, internalLinkDescription, ref paragraph, ref style);
+                doc, context, linkIdBuilder, internalLinkDescription, ref paragraph, ref style);
         }
 
         private static bool AddInternalLink(
             IDocumentElementContainer doc, 
             ParsingContext context,
-            StringBuilder internalLinkPageName, 
+            InternalLinkIdBuilder linkIdBuilder, 
             StringBuilder internalLinkDescription, 
             ref ParagraphElement paragraph, 
             ref TextElement.TextStyle? style)
         {
             Contract.Requires(doc != null);
             Contract.Requires(context != null);
-            Contract.Requires(internalLinkPageName != null);
+            Contract.Requires(linkIdBuilder != null);
 
-            string pageName = internalLinkPageName.ToString().Trim();
-            if (pageName.Length == 0)
-            {
-                context.ReportError ("Internal link has an empty page name");
+            InternalLinkId linkId = linkIdBuilder.Build (context);
+
+            if (linkId == null)
                 return false;
-            }
 
             string description = null;
             if (internalLinkDescription != null)
@@ -397,12 +415,12 @@ namespace Freude.Parsing
                 description = internalLinkDescription.ToString ().Trim ();
                 if (description.Length == 0)
                 {
-                    context.ReportError("Internal link ('{0}') has an empty description".Fmt(pageName));
+                    context.ReportError("Internal link ('{0}') has an empty description".Fmt(linkId));
                     return false;
                 }
             }
 
-            InternalLinkElement linkEl = new InternalLinkElement(pageName, description);
+            InternalLinkElement linkEl = new InternalLinkElement(linkId, description);
             AddToParagraph(doc, ref paragraph, ref style, linkEl);
 
             return true;

@@ -153,9 +153,11 @@
     <Compile Include="DocModel\IDocumentElementContainer.cs" />
     <Compile Include="DocModel\ImageElement.cs" />
     <Compile Include="DocModel\InternalLinkElement.cs" />
+    <Compile Include="DocModel\InternalLinkId.cs" />
     <Compile Include="DocModel\ParagraphElement.cs" />
     <Compile Include="DocModel\TextElement.cs" />
     <Compile Include="Parsing\FreudeTextParser.cs" />
+    <Compile Include="Parsing\InternalLinkIdBuilder.cs" />
     <Compile Include="Parsing\WikiTextTokenDef.cs" />
     <Compile Include="Parsing\WikiTextTokenizer.cs" />
     <Compile Include="Parsing\IFreudeTextParser.cs" />

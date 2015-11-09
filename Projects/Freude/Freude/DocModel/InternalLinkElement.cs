@@ -4,16 +4,16 @@ namespace Freude.DocModel
 {
     public class InternalLinkElement : IDocumentElement
     {
-        public InternalLinkElement(string linkName, string linkDescription = null)
+        public InternalLinkElement(InternalLinkId linkId, string linkDescription = null)
         {
-            Contract.Requires(linkName != null);
-            this.linkName = linkName;
+            Contract.Requires(linkId != null);
+            this.linkId = linkId;
             this.linkDescription = linkDescription;
         }
 
-        public string LinkName
+        public InternalLinkId LinkId
         {
-            get { return linkName; }
+            get { return linkId; }
         }
 
         public string LinkDescription
@@ -21,7 +21,7 @@ namespace Freude.DocModel
             get { return linkDescription; }
         }
 
-        private readonly string linkName;
+        private readonly InternalLinkId linkId;
         private readonly string linkDescription;
     }
 }

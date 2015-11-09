@@ -15,7 +15,7 @@ namespace Freude.Tests.FreudeTextParsingTests
             var par = fixture.AssertElement<ParagraphElement> (0);
             Assert.AreEqual(1, par.ChildrenCount);
             var link = fixture.AssertElement<InternalLinkElement> (par, 0);
-            Assert.AreEqual ("Main Page", link.LinkName);
+            Assert.AreEqual ("Main Page", link.LinkId.PageName);
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace Freude.Tests.FreudeTextParsingTests
             var par = fixture.AssertElement<ParagraphElement> (0);
             Assert.AreEqual(1, par.ChildrenCount);
             var link = fixture.AssertElement<InternalLinkElement> (par, 0);
-            Assert.AreEqual ("Main Page", link.LinkName);
+            Assert.AreEqual ("Main Page", link.LinkId.PageName);
         }
 
         [Test]
@@ -42,7 +42,7 @@ namespace Freude.Tests.FreudeTextParsingTests
             Assert.AreEqual (3, par.ChildrenCount);
             fixture.AssertText(par, 0, "before ");
             var link = fixture.AssertElement<InternalLinkElement> (par, 1);
-            Assert.AreEqual ("Main Page", link.LinkName);
+            Assert.AreEqual ("Main Page", link.LinkId.PageName);
             fixture.AssertText(par, 2, " after");
         }
 
@@ -52,10 +52,11 @@ namespace Freude.Tests.FreudeTextParsingTests
             fixture.Parse("[[ ]]").AssertError("Internal link has an empty page name");
         }
 
-        [Test]
-        public void ClosingBracketsAreMissing()
+        [TestCase ("[[ Main Page")]
+        [TestCase ("[[ Main Page | ")]
+        public void ClosingBracketsAreMissing(string text)
         {
-            fixture.Parse ("[[ Main Page").AssertError ("Missing token ']]'");
+            fixture.Parse (text).AssertError ("Missing token ']]'");
         }
 
         [Test]
@@ -68,7 +69,7 @@ namespace Freude.Tests.FreudeTextParsingTests
             var par = fixture.AssertElement<ParagraphElement> (0);
             Assert.AreEqual(1, par.ChildrenCount);
             var link = fixture.AssertElement<InternalLinkElement> (par, 0);
-            Assert.AreEqual ("Main Page", link.LinkName);
+            Assert.AreEqual ("Main Page", link.LinkId.PageName);
             Assert.AreEqual ("real name", link.LinkDescription);
         }
 
@@ -77,6 +78,22 @@ namespace Freude.Tests.FreudeTextParsingTests
         {
             fixture.Parse ("[[ Main Page |  ]]")
                 .AssertError ("Internal link ('Main Page') has an empty description");
+        }
+
+        [Test]
+        public void LinkWithNamespaces()
+        {
+            fixture.Parse ("[[ Category: Something else : Main Page ]]")
+                .AssertNoErrrors ()
+                .AssertChildCount (1);
+
+            var par = fixture.AssertElement<ParagraphElement> (0);
+            Assert.AreEqual (1, par.ChildrenCount);
+            var link = fixture.AssertElement<InternalLinkElement> (par, 0);
+            Assert.AreEqual (2, link.LinkId.NamespacePartsCount);            
+            Assert.AreEqual ("Category", link.LinkId.NamespaceParts[0]);            
+            Assert.AreEqual ("Something else", link.LinkId.NamespaceParts[1]);            
+            Assert.AreEqual ("Main Page", link.LinkId.PageName);            
         }
 
         [SetUp]
