@@ -128,6 +128,8 @@ namespace Freude.Tests.FreudeTextParsingTests
             Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[0].Type);
             Assert.AreEqual (" text ", tokens[0].Text);
             Assert.AreEqual (WikiTextToken.TokenType.SingleSquareBracketsOpen, tokens[1].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.ExternalLinkUrlLeadingSpace, tokens[2].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.ExternalLinkUrlLeadingSpace, tokens[3].Type);
             Assert.AreEqual (WikiTextToken.TokenType.ExternalLinkUrl, tokens[4].Type);
             Assert.AreEqual ("http://google.com", tokens[4].Text);
             Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[5].Type);

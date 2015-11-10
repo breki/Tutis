@@ -9,7 +9,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         public void SimpleLink()
         {
             fixture.Parse ("[[Main Page]]")
-                .AssertNoErrrors ()
+                .AssertNoErrors ()
                 .AssertChildCount (1);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
@@ -22,7 +22,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         public void PageNameShouldBeTrimmed()
         {
             fixture.Parse ("[[ Main Page ]]")
-                .AssertNoErrrors ()
+                .AssertNoErrors ()
                 .AssertChildCount (1);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
@@ -35,7 +35,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         public void TextLinkMix()
         {
             fixture.Parse ("before [[ Main Page ]] after")
-                .AssertNoErrrors ()
+                .AssertNoErrors ()
                 .AssertChildCount (1);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
@@ -63,7 +63,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         public void PipedLink()
         {
             fixture.Parse ("[[ Main Page | real name ]]")
-                .AssertNoErrrors ()
+                .AssertNoErrors ()
                 .AssertChildCount (1);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
@@ -84,7 +84,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         public void LinkWithNamespaces()
         {
             fixture.Parse ("[[ Category: Something else : Main Page ]]")
-                .AssertNoErrrors ()
+                .AssertNoErrors ()
                 .AssertChildCount (1);
 
             var par = fixture.AssertElement<ParagraphElement> (0);

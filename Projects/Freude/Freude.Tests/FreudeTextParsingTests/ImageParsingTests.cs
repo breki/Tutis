@@ -10,7 +10,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         public void SingleImageDoc()
         {
             fixture.Parse (@"[[http://www.arso.gov.si/vreme/napovedi%20in%20podatki/radar_anim.gif]]")
-                .AssertNoErrrors();
+                .AssertNoErrors();
 
             var par = fixture.AssertElement<ParagraphElement> (0);
             Assert.AreEqual (1, par.ChildrenCount);
@@ -21,7 +21,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         public void DoubleImagesDoc()
         {
             fixture.Parse(@"[[http://www.arso.gov.si/vreme/napovedi%20in%20podatki/radar_anim.gif]] [[http://google.com/test.png]]")
-                .AssertNoErrrors();
+                .AssertNoErrors();
 
             var par = fixture.AssertElement<ParagraphElement> (0);
             Assert.AreEqual (2, par.ChildrenCount);
@@ -33,7 +33,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         public void ImageWithTextAround()
         {
             fixture.Parse (@"text before [[http://www.arso.gov.si/vreme/napovedi%20in%20podatki/radar_anim.gif]] text after")
-                .AssertNoErrrors();
+                .AssertNoErrors();
 
             var par = fixture.AssertElement<ParagraphElement> (0);
             Assert.AreEqual (3, par.ChildrenCount);

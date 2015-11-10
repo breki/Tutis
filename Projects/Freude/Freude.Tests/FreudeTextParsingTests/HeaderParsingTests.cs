@@ -12,7 +12,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         {
             string equalsToken = new string ('=', headerLevel);
             fixture.Parse (equalsToken + " header " + equalsToken)
-                .AssertNoErrrors ()
+                .AssertNoErrors ()
                 .AssertChildCount (1);
 
             fixture.AssertElement<HeaderElement> (
@@ -28,7 +28,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         public void HeaderWithAnchor ()
         {
             fixture.Parse (@"== header==#anchor+test")
-                .AssertNoErrrors ()
+                .AssertNoErrors ()
                 .AssertChildCount (1);
 
             fixture.AssertElement<HeaderElement> (
@@ -49,7 +49,7 @@ par 1 line 2
 ==header==
 par 2 line 1
 par 2 line 2")
-                .AssertNoErrrors ()
+                .AssertNoErrors ()
                 .AssertChildCount (3);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
