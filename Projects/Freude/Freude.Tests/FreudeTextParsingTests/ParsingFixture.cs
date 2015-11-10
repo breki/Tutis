@@ -28,7 +28,7 @@ namespace Freude.Tests.FreudeTextParsingTests
             return this;
         }
 
-        public ParsingFixture AssertNoErrrors()
+        public ParsingFixture AssertNoErrors()
         {
             Contract.Ensures (Contract.Result<ParsingFixture> () != null);
 

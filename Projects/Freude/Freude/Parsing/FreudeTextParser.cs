@@ -95,6 +95,7 @@ namespace Freude.Parsing
                 case WikiTextToken.TokenType.DoubleApostrophe:
                 case WikiTextToken.TokenType.TripleApostrophe:
                 case WikiTextToken.TokenType.DoubleSquareBracketsOpen:
+                case WikiTextToken.TokenType.SingleSquareBracketsOpen:
                     HandleText (doc, context, tokenBuffer, ref currentParagraph, ref currentParagraphTextStyle);
                     break;
 
@@ -186,7 +187,8 @@ namespace Freude.Parsing
             TextParsingMode parsingMode = TextParsingMode.RegularText;
             InternalLinkIdBuilder internalLinkBuilder = new InternalLinkIdBuilder ();
             StringBuilder internalLinkDescription = null;
-
+            Uri externalLinkUrl = null;
+            
             bool processingSuccessful = ProcessUntilEnd(
                 tokenBuffer,
                 t =>
@@ -223,6 +225,25 @@ namespace Freude.Parsing
                                 ref paragraph, 
                                 ref style);
 
+                        case WikiTextToken.TokenType.SingleSquareBracketsOpen:
+                            return HandleSingleSquareBracketsOpenTokenInText (context, t, ref parsingMode);
+
+                        case WikiTextToken.TokenType.ExternalLinkUrlLeadingSpace:
+                            return HandleExternalLinkUrlLeadingSpaceTokenInText(context, t, parsingMode);
+
+                        case WikiTextToken.TokenType.ExternalLinkUrl:
+                            return HandleExternalLinkUrlTokenInText(context, t, ref parsingMode, ref externalLinkUrl);
+
+                        case WikiTextToken.TokenType.SingleSquareBracketsClose:
+                            return HandleSingleSquareBracketsCloseTokenInText (
+                                doc,
+                                context,
+                                ref parsingMode,
+                                t,
+                                externalLinkUrl,
+                                ref paragraph,
+                                ref style);
+
                         default:
                             throw new NotImplementedException("todo next: {0}".Fmt(t.Type));
                     }
@@ -243,7 +264,7 @@ namespace Freude.Parsing
             TextParsingMode parsingMode, 
             WikiTextToken token,
             InternalLinkIdBuilder linkIdBuilder, 
-            ref StringBuilder internalLinkDescription, 
+            ref StringBuilder textBuilder, 
             ref ParagraphElement paragraph,
             ref TextElement.TextStyle? style)
         {
@@ -260,9 +281,14 @@ namespace Freude.Parsing
                     linkIdBuilder.AppendText(token.Text);
                     return true;
                 case TextParsingMode.InternalLinkDescription:
-                    if (internalLinkDescription == null)
-                        internalLinkDescription = new StringBuilder();
-                    internalLinkDescription.Append(token.Text);
+                    if (textBuilder == null)
+                        textBuilder = new StringBuilder();
+                    textBuilder.Append(token.Text);
+                    return true;
+                case TextParsingMode.ExternalLinkDescription:
+                    if (textBuilder == null)
+                        textBuilder = new StringBuilder();
+                    textBuilder.Append(token.Text);
                     return true;
                 default:
                     throw new NotImplementedException("todo next:");
@@ -392,6 +418,74 @@ namespace Freude.Parsing
                 doc, context, linkIdBuilder, internalLinkDescription, ref paragraph, ref style);
         }
 
+        private static bool HandleSingleSquareBracketsOpenTokenInText (
+            ParsingContext context, WikiTextToken token, ref TextParsingMode parsingMode)
+        {
+            Contract.Requires (context != null);
+            Contract.Requires (token != null);
+
+            if (parsingMode != TextParsingMode.RegularText)
+            {
+                context.ReportError ("Token {0} is not allowed here".Fmt (token.Text));
+                return false;
+            }
+
+            parsingMode = TextParsingMode.ExternalLinkUrl;
+            return true;
+        }
+
+        private static bool HandleExternalLinkUrlLeadingSpaceTokenInText (
+            ParsingContext context, 
+            WikiTextToken token, 
+            TextParsingMode parsingMode)
+        {
+            if (parsingMode != TextParsingMode.ExternalLinkUrl)
+            {
+                context.ReportError ("Token {0} is not allowed here".Fmt (token.Text));
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool HandleExternalLinkUrlTokenInText (
+            ParsingContext context, 
+            WikiTextToken token, 
+            ref TextParsingMode parsingMode, 
+            ref Uri externalLinkUrl)
+        {
+            if (parsingMode != TextParsingMode.ExternalLinkUrl)
+            {
+                context.ReportError ("Token {0} is not allowed here".Fmt (token.Text));
+                return false;
+            }
+
+            externalLinkUrl = new Uri(token.Text.Trim());
+            parsingMode = TextParsingMode.ExternalLinkDescription;
+
+            return true;
+        }
+
+        private static bool HandleSingleSquareBracketsCloseTokenInText (
+            IDocumentElementContainer doc, 
+            ParsingContext context, 
+            ref TextParsingMode parsingMode, 
+            WikiTextToken token, 
+            Uri externalLinkUrl, 
+            ref ParagraphElement paragraph, 
+            ref TextElement.TextStyle? style)
+        {
+            if (parsingMode != TextParsingMode.ExternalLinkUrl
+                && parsingMode != TextParsingMode.ExternalLinkDescription)
+            {
+                context.ReportError ("Token {0} is not allowed here".Fmt (token.Text));
+                return false;
+            }
+
+            parsingMode = TextParsingMode.RegularText;
+            return AddExternalLink (doc, context, externalLinkUrl, ref paragraph, ref style);
+        }
+
         private static bool AddInternalLink(
             IDocumentElementContainer doc, 
             ParsingContext context,
@@ -421,6 +515,23 @@ namespace Freude.Parsing
             }
 
             InternalLinkElement linkEl = new InternalLinkElement(linkId, description);
+            AddToParagraph(doc, ref paragraph, ref style, linkEl);
+
+            return true;
+        }
+
+        private static bool AddExternalLink(
+            IDocumentElementContainer doc, 
+            ParsingContext context,
+            Uri externalLinkUrl, 
+            ref ParagraphElement paragraph, 
+            ref TextElement.TextStyle? style)
+        {
+            Contract.Requires(doc != null);
+            Contract.Requires(context != null);
+            Contract.Requires(externalLinkUrl != null);
+
+            ExternalLinkElement linkEl = new ExternalLinkElement (externalLinkUrl);
             AddToParagraph(doc, ref paragraph, ref style, linkEl);
 
             return true;
@@ -682,7 +793,9 @@ namespace Freude.Parsing
         {
             RegularText,
             InternalLinkPageName,
-            InternalLinkDescription
+            InternalLinkDescription,
+            ExternalLinkUrl,
+            ExternalLinkDescription,
         }
 
         private class TokenBuffer

@@ -62,16 +62,16 @@ namespace Freude.Parsing
                 && index <= wikiText.Length));
             Contract.Ensures (textTokenStart == null);
 
-            if (textTokenStart.HasValue)
-            {
-                WikiTextToken prevToken = new WikiTextToken (
-                    WikiTextToken.TokenType.Text,
-                    wikiText.Substring (textTokenStart.Value, index - textTokenStart.Value),
-                    scope);
+            if (!textTokenStart.HasValue) 
+                return;
 
-                tokens.Add (prevToken);
-                textTokenStart = null;
-            }
+            WikiTextToken prevToken = new WikiTextToken (
+                WikiTextToken.TokenType.Text,
+                wikiText.Substring (textTokenStart.Value, index - textTokenStart.Value),
+                scope);
+
+            tokens.Add (prevToken);
+            textTokenStart = null;
         }
 
         private WikiTextTokenDef LookForMatchingToken (
@@ -292,7 +292,7 @@ namespace Freude.Parsing
                 new WikiTextTokenDef("#", false, WikiTextToken.TokenType.HeaderAnchor, WikiTextTokenScopes.HeaderSuffix),
                 new WikiTextTokenDef("*", false, WikiTextToken.TokenType.BulletList, WikiTextTokenScopes.LineStart),
                 new WikiTextTokenDef("#", false, WikiTextToken.TokenType.NumberedList, WikiTextTokenScopes.LineStart),
-                new WikiTextTokenDef(" ", false, WikiTextToken.TokenType.ExternalLinkUrl, WikiTextTokenScopes.ExternalLinkUrl),
+                new WikiTextTokenDef(" ", false, WikiTextToken.TokenType.ExternalLinkUrlLeadingSpace, WikiTextTokenScopes.ExternalLinkUrl),
                 new WikiTextTokenDef(@"[\S^\]]", true, WikiTextToken.TokenType.ExternalLinkUrl, WikiTextTokenScopes.ExternalLinkUrl, x => WikiTextTokenScopes.ExternalLinkText)
             };
 

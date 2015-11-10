@@ -11,7 +11,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         public void SingleLineTextParagraph ()
         {
             fixture.Parse (@" this is some text ")
-                .AssertNoErrrors ()
+                .AssertNoErrors ()
                 .AssertChildCount (1);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
@@ -24,7 +24,7 @@ namespace Freude.Tests.FreudeTextParsingTests
             fixture.Parse (@"this is some text
    and this too
 and this too ")
-                .AssertNoErrrors ()
+                .AssertNoErrors ()
                 .AssertChildCount (1);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
@@ -39,7 +39,7 @@ and this too ")
 
 par 2 line 1
 par 2 line 2 ")
-                .AssertNoErrrors ()
+                .AssertNoErrors ()
                 .AssertChildCount (2);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
@@ -58,7 +58,7 @@ par 2 line 2 ")
 
 par 2 line 1
 par 2 line 2 ")
-                .AssertNoErrrors ()
+                .AssertNoErrors ()
                 .AssertChildCount (2);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
@@ -75,7 +75,7 @@ par 2 line 2 ")
      
 par 2 line 1
 par 2 line 2 ")
-                .AssertNoErrrors ()
+                .AssertNoErrors ()
                 .AssertChildCount (2);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
@@ -88,7 +88,7 @@ par 2 line 2 ")
         public void BoldInTheMiddle()
         {
             fixture.Parse("There is something '''bold''' in here")
-                .AssertNoErrrors()
+                .AssertNoErrors()
                 .AssertChildCount(1);
             var par = fixture.AssertElement<ParagraphElement> (0);
             Assert.AreEqual(3, par.ChildrenCount);
@@ -101,7 +101,7 @@ par 2 line 2 ")
         public void BoldAtStart()
         {
             fixture.Parse("''' bold ''' in here")
-                .AssertNoErrrors()
+                .AssertNoErrors()
                 .AssertChildCount(1);
             var par = fixture.AssertElement<ParagraphElement> (0);
             Assert.AreEqual(2, par.ChildrenCount);
@@ -113,7 +113,7 @@ par 2 line 2 ")
         public void ItalicInTheMiddle()
         {
             fixture.Parse("There is something ''italic'' in here")
-                .AssertNoErrrors()
+                .AssertNoErrors()
                 .AssertChildCount(1);
             var par = fixture.AssertElement<ParagraphElement> (0);
             Assert.AreEqual(3, par.ChildrenCount);
@@ -126,7 +126,7 @@ par 2 line 2 ")
         public void ItalicAtStart()
         {
             fixture.Parse("'' italic '' in here")
-                .AssertNoErrrors()
+                .AssertNoErrors()
                 .AssertChildCount(1);
             var par = fixture.AssertElement<ParagraphElement> (0);
             Assert.AreEqual(2, par.ChildrenCount);
@@ -138,7 +138,7 @@ par 2 line 2 ")
         public void BoldItalicCombo ()
         {
             fixture.Parse ("There is something '''''boldly italic'' in here.''' Yes!")
-                .AssertNoErrrors ()
+                .AssertNoErrors ()
                 .AssertChildCount (1);
             var par = fixture.AssertElement<ParagraphElement> (0);
             Assert.AreEqual (4, par.ChildrenCount);
@@ -152,7 +152,7 @@ par 2 line 2 ")
         public void MultilineStyling()  
         {
             fixture.Parse("There is something '''bold{0}and newline''' in here".Fmt(Environment.NewLine))
-                .AssertNoErrrors()
+                .AssertNoErrors()
                 .AssertChildCount(1);
             var par = fixture.AssertElement<ParagraphElement> (0);
             Assert.AreEqual(3, par.ChildrenCount);
