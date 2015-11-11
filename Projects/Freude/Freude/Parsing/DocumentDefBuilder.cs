@@ -69,6 +69,15 @@ namespace Freude.Parsing
             }
         }
 
+        public void StartNewParagraph(ParagraphElement.ParagraphType paragraphType)
+        {
+            FinalizeCurrentParagraph();
+
+            currentParagraph = new ParagraphElement (paragraphType);
+            currentParagraphTextStyle = TextElement.TextStyle.Regular;
+            doc.AddChild (currentParagraph);
+        }
+
         public void FinalizeCurrentParagraph ()
         {
             if (currentParagraph != null)
@@ -96,7 +105,7 @@ namespace Freude.Parsing
             if (currentParagraph != null) 
                 return;
 
-            currentParagraph = new ParagraphElement ();
+            currentParagraph = new ParagraphElement (ParagraphElement.ParagraphType.Regular);
             currentParagraphTextStyle = currentParagraphTextStyle ?? TextElement.TextStyle.Regular;
             doc.AddChild (currentParagraph);
         }
