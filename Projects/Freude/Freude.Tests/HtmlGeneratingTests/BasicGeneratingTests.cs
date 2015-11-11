@@ -10,7 +10,7 @@ namespace Freude.Tests.HtmlGeneratingTests
         [Test]
         public void SimpleParagraph()
         {
-            ParagraphElement par = new ParagraphElement(ParagraphElement.ParagraphType.Regular);
+            ParagraphElement par = new ParagraphElement(ParagraphElement.ParagraphType.Regular, 0);
             par.Children.Add(new TextElement("this is text"));
             doc.Children.Add(par);
 
@@ -21,7 +21,7 @@ namespace Freude.Tests.HtmlGeneratingTests
         [Test]
         public void EscapeText()
         {
-            ParagraphElement par = new ParagraphElement(ParagraphElement.ParagraphType.Regular);
+            ParagraphElement par = new ParagraphElement(ParagraphElement.ParagraphType.Regular, 0);
             par.Children.Add(new TextElement("this is text < & >"));
             doc.Children.Add(par);
 
@@ -32,7 +32,7 @@ namespace Freude.Tests.HtmlGeneratingTests
         [Test]
         public void ParagraphWithImage()
         {
-            ParagraphElement par = new ParagraphElement(ParagraphElement.ParagraphType.Regular);
+            ParagraphElement par = new ParagraphElement(ParagraphElement.ParagraphType.Regular, 0);
             par.Children.Add(new TextElement("text before"));
             par.Children.Add (new ImageElement (new Uri("http://www.arso.gov.si/vreme/napovedi%20in%20podatki/radar_anim.gif")));
             par.Children.Add(new TextElement("text after"));

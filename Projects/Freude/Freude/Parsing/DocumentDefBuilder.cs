@@ -69,11 +69,13 @@ namespace Freude.Parsing
             }
         }
 
-        public void StartNewParagraph(ParagraphElement.ParagraphType paragraphType)
+        public void StartNewParagraph(ParagraphElement.ParagraphType paragraphType, int indentation)
         {
+            Contract.Requires(indentation >= 0);
+
             FinalizeCurrentParagraph();
 
-            currentParagraph = new ParagraphElement (paragraphType);
+            currentParagraph = new ParagraphElement (paragraphType, indentation);
             currentParagraphTextStyle = TextElement.TextStyle.Regular;
             doc.AddChild (currentParagraph);
         }
@@ -81,9 +83,10 @@ namespace Freude.Parsing
         public void FinalizeCurrentParagraph ()
         {
             if (currentParagraph != null)
-                currentParagraph.Trim ();
-
-            currentParagraph = null;
+            {
+                currentParagraph.Trim();
+                currentParagraph = null;
+            }
         }
 
         private static void AddTextElementToParagraph (ParagraphElement paragraph, string text, TextElement.TextStyle currentStyle)
@@ -105,7 +108,7 @@ namespace Freude.Parsing
             if (currentParagraph != null) 
                 return;
 
-            currentParagraph = new ParagraphElement (ParagraphElement.ParagraphType.Regular);
+            currentParagraph = new ParagraphElement (ParagraphElement.ParagraphType.Regular, 0);
             currentParagraphTextStyle = currentParagraphTextStyle ?? TextElement.TextStyle.Regular;
             doc.AddChild (currentParagraph);
         }

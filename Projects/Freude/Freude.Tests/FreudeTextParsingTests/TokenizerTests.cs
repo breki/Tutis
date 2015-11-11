@@ -161,6 +161,16 @@ namespace Freude.Tests.FreudeTextParsingTests
         }
 
         [Test]
+        public void TokenizeBulletListWithExtraBullets()
+        {
+            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("* something *here*");
+            Assert.AreEqual (2, tokens.Count);
+            Assert.AreEqual (WikiTextToken.TokenType.BulletList, tokens[0].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
+            Assert.AreEqual (" something *here*", tokens[1].Text);
+        }
+
+        [Test]
         public void TokenizeBulletListWithStyling()
         {
             IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("* something '''here'''");
@@ -172,6 +182,16 @@ namespace Freude.Tests.FreudeTextParsingTests
             Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[3].Type);
             Assert.AreEqual ("here", tokens[3].Text);
             Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[4].Type);
+        }
+
+        [Test]
+        public void TokenizeIndentedBulletList ()
+        {
+            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("** something here");
+            Assert.AreEqual (2, tokens.Count);
+            Assert.AreEqual (WikiTextToken.TokenType.BulletList, tokens[0].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
+            Assert.AreEqual (" something here", tokens[1].Text);
         }
 
         [SetUp]
