@@ -156,6 +156,7 @@
     <Compile Include="CommandsTests\BuildCommandTests.cs" />
     <Compile Include="CommandsTests\DeployCommandTests.cs" />
     <Compile Include="FileStructureMocker.cs" />
+    <Compile Include="FreudeTextParsingTests\BulletListParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\ExternalLinkParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\ImageParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\HeaderParsingTests.cs" />

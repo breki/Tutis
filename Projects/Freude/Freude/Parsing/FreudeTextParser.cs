@@ -87,6 +87,7 @@ namespace Freude.Parsing
                 case WikiTextToken.TokenType.TripleApostrophe:
                 case WikiTextToken.TokenType.DoubleSquareBracketsOpen:
                 case WikiTextToken.TokenType.SingleSquareBracketsOpen:
+                case WikiTextToken.TokenType.BulletList:
                     HandleText (docBuilder, context, tokenBuffer);
                     break;
 
@@ -179,6 +180,9 @@ namespace Freude.Parsing
                 {
                     switch (t.Type)
                     {
+                        case WikiTextToken.TokenType.BulletList:
+                            return HandleBulletListTokenInText(docBuilder);
+
                         case WikiTextToken.TokenType.Text:
                             return HandleTextTokenInText(
                                 docBuilder, parsingMode, t, internalLinkBuilder, ref textBuilder);
@@ -244,6 +248,13 @@ namespace Freude.Parsing
                         break;
                 }
             }
+        }
+
+        private static bool HandleBulletListTokenInText(DocumentDefBuilder docBuilder)
+        {
+            Contract.Requires(docBuilder != null);
+            docBuilder.StartNewParagraph(ParagraphElement.ParagraphType.Bulleted);
+            return true;
         }
 
         private static bool HandleTextTokenInText(

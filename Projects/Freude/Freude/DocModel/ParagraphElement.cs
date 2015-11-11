@@ -5,6 +5,17 @@ namespace Freude.DocModel
 {
     public class ParagraphElement : IDocumentElementContainer
     {
+        public ParagraphElement(ParagraphType type)
+        {
+            this.type = type;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
+        public ParagraphType Type
+        {
+            get { return type; }
+        }
+
         public int ChildrenCount
         {
             get { return Children.Count; }
@@ -41,5 +52,13 @@ namespace Freude.DocModel
         }
 
         private readonly List<IDocumentElement> children = new List<IDocumentElement> ();
+        private readonly ParagraphType type = ParagraphType.Regular;
+
+        public enum ParagraphType
+        {
+            Regular,
+            Bulleted,
+            Numbered
+        }
     }
 }
