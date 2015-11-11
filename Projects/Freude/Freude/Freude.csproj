@@ -157,6 +157,7 @@
     <Compile Include="DocModel\InternalLinkId.cs" />
     <Compile Include="DocModel\ParagraphElement.cs" />
     <Compile Include="DocModel\TextElement.cs" />
+    <Compile Include="Parsing\DocumentDefBuilder.cs" />
     <Compile Include="Parsing\FreudeTextParser.cs" />
     <Compile Include="Parsing\InternalLinkIdBuilder.cs" />
     <Compile Include="Parsing\TokenBuffer.cs" />
