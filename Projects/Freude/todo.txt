@@ -1,5 +1,4 @@
 - external links
-	- implement support for Regex in WikiTextTokenDef
 - bullet lists
 - numbered lists
 - indent text
