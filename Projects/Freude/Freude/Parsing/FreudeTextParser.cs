@@ -232,8 +232,17 @@ namespace Freude.Parsing
 
             if (processingSuccessful)
             {
-                if (parsingMode == TextParsingMode.InternalLinkPageName || parsingMode == TextParsingMode.InternalLinkDescription)
-                    context.ReportError ("Missing token ']]'");
+                switch (parsingMode)
+                {
+                    case TextParsingMode.InternalLinkPageName:
+                    case TextParsingMode.InternalLinkDescription:
+                        context.ReportError ("Missing token ']]'");
+                        break;
+                    case TextParsingMode.ExternalLinkUrl:
+                    case TextParsingMode.ExternalLinkDescription:
+                        context.ReportError ("Missing token ']'");
+                        break;
+                }
             }
         }
 
