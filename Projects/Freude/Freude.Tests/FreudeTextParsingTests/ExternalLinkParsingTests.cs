@@ -45,6 +45,18 @@ namespace Freude.Tests.FreudeTextParsingTests
             Assert.AreEqual (new Uri("http://google.com"), link.Url);
             Assert.AreEqual ("Google Website", link.LinkDescription);
         }
+
+        [Test]
+        public void ClosingBracketIsMissing ()
+        {
+            fixture.Parse ("[http://google.com").AssertError ("Missing token ']'");
+        }
+
+        [Test]
+        public void ClosingBracketIsMissing2 ()
+        {
+            fixture.Parse ("[ http://google.com  Google Website ").AssertError ("Missing token ']'");
+        }
         
         [SetUp]
         public void Setup ()

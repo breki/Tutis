@@ -1,4 +1,3 @@
-- external links
 - bullet lists
 - numbered lists
 - indent text
