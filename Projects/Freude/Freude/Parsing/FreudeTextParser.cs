@@ -17,30 +17,24 @@ namespace Freude.Parsing
 
         public DocumentDef ParseText(string text, ParsingContext context)
         {
-            DocumentDef doc = new DocumentDef();
+            DocumentDefBuilder docBuilder = new DocumentDefBuilder();
 
             context.SetTextLines(text.SplitIntoLines());
-            ParagraphElement currentParagraph = null;
-            TextElement.TextStyle? currentParagraphTextStyle = null;
 
             while (!context.EndOfText)
             {
-                if (!ParseLine(doc, ref currentParagraph, ref currentParagraphTextStyle, context))
+                if (!ParseLine(docBuilder, context))
                     break;
             }
 
-            FinalizeCurrentParagraph(ref currentParagraph);
+            docBuilder.FinalizeCurrentParagraph();
 
-            return doc;
+            return docBuilder.Document;
         }
 
-        private bool ParseLine(
-            IDocumentElementContainer doc, 
-            ref ParagraphElement currentParagraph,
-            ref TextElement.TextStyle? currentParagraphTextStyle,
-            ParsingContext context)
+        private bool ParseLine(DocumentDefBuilder docBuilder, ParsingContext context)
         {
-            Contract.Requires(doc != null);
+            Contract.Requires (docBuilder != null);
 
             if (context.EndOfText)
                 return false;
@@ -49,22 +43,20 @@ namespace Freude.Parsing
 
             // we can ignore lines with nothing but whitespace
             if (lineText.Length == 0 || lineText.Trim ().Length == 0)
-                FinalizeCurrentParagraph(ref currentParagraph);
+                docBuilder.FinalizeCurrentParagraph();
             else
-                ProcessLine(doc, context, ref currentParagraph, ref currentParagraphTextStyle, lineText);
+                ProcessLine (docBuilder, context, lineText);
 
             context.IncrementLineCounter ();
             return true;
         }
 
         private void ProcessLine(
-            IDocumentElementContainer doc, 
+            DocumentDefBuilder docBuilder, 
             ParsingContext context,
-            ref ParagraphElement currentParagraph, 
-            ref TextElement.TextStyle? currentParagraphTextStyle,
             string lineText)
         {
-            Contract.Requires(doc != null);
+            Contract.Requires(docBuilder != null);
             Contract.Requires(lineText != null);
 
             WikiTokenizationSettings tokenizationSettings = new WikiTokenizationSettings();
@@ -86,8 +78,8 @@ namespace Freude.Parsing
                 case WikiTextToken.TokenType.Header4Start:
                 case WikiTextToken.TokenType.Header5Start:
                 case WikiTextToken.TokenType.Header6Start:
-                    FinalizeCurrentParagraph(ref currentParagraph);
-                    HandleHeaderLine(doc, context, tokenBuffer);
+                    docBuilder.FinalizeCurrentParagraph();
+                    HandleHeaderLine(docBuilder, context, tokenBuffer);
                     break;
 
                 case WikiTextToken.TokenType.Text:
@@ -95,7 +87,7 @@ namespace Freude.Parsing
                 case WikiTextToken.TokenType.TripleApostrophe:
                 case WikiTextToken.TokenType.DoubleSquareBracketsOpen:
                 case WikiTextToken.TokenType.SingleSquareBracketsOpen:
-                    HandleText (doc, context, tokenBuffer, ref currentParagraph, ref currentParagraphTextStyle);
+                    HandleText (docBuilder, context, tokenBuffer);
                     break;
 
                 default:
@@ -103,9 +95,9 @@ namespace Freude.Parsing
             }
         }
 
-        private static void HandleHeaderLine(IDocumentElementContainer doc, ParsingContext context, TokenBuffer tokenBuffer)
+        private static void HandleHeaderLine (DocumentDefBuilder docBuilder, ParsingContext context, TokenBuffer tokenBuffer)
         {
-            Contract.Requires(doc != null);
+            Contract.Requires(docBuilder != null);
             Contract.Requires(context != null);
             Contract.Requires(tokenBuffer != null);
 
@@ -151,7 +143,7 @@ namespace Freude.Parsing
                 return;
 
             HeaderElement headerEl = new HeaderElement (headerText.ToString ().Trim (), headerLevel);
-            doc.AddChild(headerEl);
+            docBuilder.AddRootChild(headerEl);
 
             tokenBuffer.MoveToNextToken();
             string anchorId;
@@ -169,18 +161,13 @@ namespace Freude.Parsing
         }
 
         private static void HandleText(
-            IDocumentElementContainer doc, 
+            DocumentDefBuilder docBuilder, 
             ParsingContext context, 
-            TokenBuffer tokenBuffer, 
-            ref ParagraphElement currentParagraph,
-            ref TextElement.TextStyle? currentStyle)
+            TokenBuffer tokenBuffer)
         {
-            Contract.Requires(doc != null);
+            Contract.Requires(docBuilder != null);
             Contract.Requires(context != null);
             Contract.Requires(tokenBuffer != null);
-
-            ParagraphElement paragraph = currentParagraph;
-            TextElement.TextStyle? style = currentStyle;
 
             TextParsingMode parsingMode = TextParsingMode.RegularText;
             InternalLinkIdBuilder internalLinkBuilder = new InternalLinkIdBuilder ();
@@ -194,13 +181,13 @@ namespace Freude.Parsing
                     {
                         case WikiTextToken.TokenType.Text:
                             return HandleTextTokenInText(
-                                doc, parsingMode, t, internalLinkBuilder, ref textBuilder, ref paragraph, ref style);
+                                docBuilder, parsingMode, t, internalLinkBuilder, ref textBuilder);
 
                         case WikiTextToken.TokenType.TripleApostrophe:
-                            return HandleTripleApostropheTokenInText(ref style);
+                            return HandleTripleApostropheTokenInText(docBuilder);
 
                         case WikiTextToken.TokenType.DoubleApostrophe:
-                            return HandleDoubleApostropheTokenInText(ref style);
+                            return HandleDoubleApostropheTokenInText (docBuilder);
 
                         case WikiTextToken.TokenType.DoubleSquareBracketsOpen:
                             return HandleDoubleSquareBracketsOpenTokenInText(context, t, ref parsingMode);
@@ -213,14 +200,12 @@ namespace Freude.Parsing
 
                         case WikiTextToken.TokenType.DoubleSquareBracketsClose:
                             return HandleDoubleSquareBracketsCloseTokenInText(
-                                doc, 
+                                docBuilder, 
                                 context, 
                                 ref parsingMode, 
                                 t,
                                 internalLinkBuilder, 
-                                textBuilder, 
-                                ref paragraph, 
-                                ref style);
+                                textBuilder);
 
                         case WikiTextToken.TokenType.SingleSquareBracketsOpen:
                             return HandleSingleSquareBracketsOpenTokenInText (context, t, ref parsingMode);
@@ -233,14 +218,12 @@ namespace Freude.Parsing
 
                         case WikiTextToken.TokenType.SingleSquareBracketsClose:
                             return HandleSingleSquareBracketsCloseTokenInText (
-                                doc,
+                                docBuilder,
                                 context,
                                 ref parsingMode,
                                 t,
                                 externalLinkUrl,
-                                textBuilder,
-                                ref paragraph,
-                                ref style);
+                                textBuilder);
 
                         default:
                             throw new NotImplementedException("todo next: {0}".Fmt(t.Type));
@@ -252,28 +235,23 @@ namespace Freude.Parsing
                 if (parsingMode == TextParsingMode.InternalLinkPageName || parsingMode == TextParsingMode.InternalLinkDescription)
                     context.ReportError ("Missing token ']]'");
             }
-
-            currentParagraph = paragraph;
-            currentStyle = style;
         }
 
         private static bool HandleTextTokenInText(
-            IDocumentElementContainer doc, 
+            DocumentDefBuilder docBuilder, 
             TextParsingMode parsingMode, 
             WikiTextToken token,
             InternalLinkIdBuilder linkIdBuilder, 
-            ref StringBuilder textBuilder, 
-            ref ParagraphElement paragraph,
-            ref TextElement.TextStyle? style)
+            ref StringBuilder textBuilder)
         {
-            Contract.Requires(doc != null);
+            Contract.Requires(docBuilder != null);
             Contract.Requires(token != null);
             Contract.Requires(linkIdBuilder != null);
 
             switch (parsingMode)
             {
                 case TextParsingMode.RegularText:
-                    AddTextToParagraph(doc, ref paragraph, ref style, token.Text);
+                    docBuilder.AddTextToParagraph(token.Text);
                     return true;
                 case TextParsingMode.InternalLinkPageName:
                     linkIdBuilder.AppendText(token.Text);
@@ -293,44 +271,44 @@ namespace Freude.Parsing
             }
         }
 
-        private static bool HandleTripleApostropheTokenInText(ref TextElement.TextStyle? style)
+        private static bool HandleTripleApostropheTokenInText(DocumentDefBuilder docBuilder)
         {
-            switch (style)
+            switch (docBuilder.CurrentParagraphTextStyle)
             {
                 case null:
                 case TextElement.TextStyle.Regular:
-                    style = TextElement.TextStyle.Bold;
+                    docBuilder.CurrentParagraphTextStyle = TextElement.TextStyle.Bold;
                     break;
                 case TextElement.TextStyle.Bold:
-                    style = TextElement.TextStyle.Regular;
+                    docBuilder.CurrentParagraphTextStyle = TextElement.TextStyle.Regular;
                     break;
                 case TextElement.TextStyle.Italic:
-                    style = TextElement.TextStyle.BoldItalic;
+                    docBuilder.CurrentParagraphTextStyle = TextElement.TextStyle.BoldItalic;
                     break;
                 case TextElement.TextStyle.BoldItalic:
-                    style = TextElement.TextStyle.Italic;
+                    docBuilder.CurrentParagraphTextStyle = TextElement.TextStyle.Italic;
                     break;
             }
 
             return true;
         }
 
-        private static bool HandleDoubleApostropheTokenInText(ref TextElement.TextStyle? style)
+        private static bool HandleDoubleApostropheTokenInText(DocumentDefBuilder docBuilder)
         {
-            switch (style)
+            switch (docBuilder.CurrentParagraphTextStyle)
             {
                 case null:
                 case TextElement.TextStyle.Regular:
-                    style = TextElement.TextStyle.Italic;
+                    docBuilder.CurrentParagraphTextStyle = TextElement.TextStyle.Italic;
                     break;
                 case TextElement.TextStyle.Italic:
-                    style = TextElement.TextStyle.Regular;
+                    docBuilder.CurrentParagraphTextStyle = TextElement.TextStyle.Regular;
                     break;
                 case TextElement.TextStyle.Bold:
-                    style = TextElement.TextStyle.BoldItalic;
+                    docBuilder.CurrentParagraphTextStyle = TextElement.TextStyle.BoldItalic;
                     break;
                 case TextElement.TextStyle.BoldItalic:
-                    style = TextElement.TextStyle.Bold;
+                    docBuilder.CurrentParagraphTextStyle = TextElement.TextStyle.Bold;
                     break;
             }
 
@@ -389,16 +367,14 @@ namespace Freude.Parsing
         }
 
         private static bool HandleDoubleSquareBracketsCloseTokenInText(
-            IDocumentElementContainer doc, 
+            DocumentDefBuilder docBuilder, 
             ParsingContext context,
             ref TextParsingMode parsingMode, 
             WikiTextToken token, 
             InternalLinkIdBuilder linkIdBuilder,
-            StringBuilder internalLinkDescription, 
-            ref ParagraphElement paragraph, 
-            ref TextElement.TextStyle? style)
+            StringBuilder internalLinkDescription)
         {
-            Contract.Requires(doc != null);
+            Contract.Requires(docBuilder != null);
             Contract.Requires(context != null);
             Contract.Requires(token != null);
             Contract.Requires(linkIdBuilder != null);
@@ -412,8 +388,7 @@ namespace Freude.Parsing
             }
 
             parsingMode = TextParsingMode.RegularText;
-            return AddInternalLink(
-                doc, context, linkIdBuilder, internalLinkDescription, ref paragraph, ref style);
+            return AddInternalLink(docBuilder, context, linkIdBuilder, internalLinkDescription);
         }
 
         private static bool HandleSingleSquareBracketsOpenTokenInText (
@@ -465,14 +440,12 @@ namespace Freude.Parsing
         }
 
         private static bool HandleSingleSquareBracketsCloseTokenInText (
-            IDocumentElementContainer doc, 
+            DocumentDefBuilder docBuilder, 
             ParsingContext context, 
             ref TextParsingMode parsingMode, 
             WikiTextToken token, 
             Uri externalLinkUrl, 
-            StringBuilder textBuilder, 
-            ref ParagraphElement paragraph, 
-            ref TextElement.TextStyle? style)
+            StringBuilder textBuilder)
         {
             if (parsingMode != TextParsingMode.ExternalLinkUrl
                 && parsingMode != TextParsingMode.ExternalLinkDescription)
@@ -482,18 +455,16 @@ namespace Freude.Parsing
             }
 
             parsingMode = TextParsingMode.RegularText;
-            return AddExternalLink (doc, externalLinkUrl, textBuilder, ref paragraph, ref style);
+            return AddExternalLink (docBuilder, externalLinkUrl, textBuilder);
         }
 
         private static bool AddInternalLink(
-            IDocumentElementContainer doc, 
+            DocumentDefBuilder docBuilder, 
             ParsingContext context,
             InternalLinkIdBuilder linkIdBuilder, 
-            StringBuilder internalLinkDescription, 
-            ref ParagraphElement paragraph, 
-            ref TextElement.TextStyle? style)
+            StringBuilder internalLinkDescription)
         {
-            Contract.Requires(doc != null);
+            Contract.Requires(docBuilder != null);
             Contract.Requires(context != null);
             Contract.Requires(linkIdBuilder != null);
 
@@ -514,19 +485,17 @@ namespace Freude.Parsing
             }
 
             InternalLinkElement linkEl = new InternalLinkElement(linkId, description);
-            AddToParagraph(doc, ref paragraph, ref style, linkEl);
+            docBuilder.AddToParagraph(linkEl);
 
             return true;
         }
 
         private static bool AddExternalLink(
-            IDocumentElementContainer doc, 
+            DocumentDefBuilder docBuilder, 
             Uri externalLinkUrl, 
-            StringBuilder externalLinkDescription,
-            ref ParagraphElement paragraph, 
-            ref TextElement.TextStyle? style)
+            StringBuilder externalLinkDescription)
         {
-            Contract.Requires(doc != null);
+            Contract.Requires(docBuilder != null);
             Contract.Requires(externalLinkUrl != null);
 
             string description = null;
@@ -538,7 +507,7 @@ namespace Freude.Parsing
             }
 
             ExternalLinkElement linkEl = new ExternalLinkElement (externalLinkUrl, description);
-            AddToParagraph(doc, ref paragraph, ref style, linkEl);
+            docBuilder.AddToParagraph(linkEl);
 
             return true;
         }
@@ -631,99 +600,6 @@ namespace Freude.Parsing
                 return false;
 
             return anchorRegex.IsMatch(anchorId);
-        }
-
-        private static void AddTextToParagraph(
-            IDocumentElementContainer doc, 
-            ref ParagraphElement currentParagraph, 
-            ref TextElement.TextStyle? currentStyle, 
-            string text)
-        {
-            Contract.Requires(doc != null);
-            Contract.Ensures(currentParagraph != null);
-            Contract.Ensures(currentStyle.HasValue);
-
-            CreateParagraphIfNoneIsAlreadyOpen(doc, ref currentParagraph, ref currentStyle);
-
-            int childrenCount = currentParagraph.ChildrenCount;
-            if (childrenCount > 0)
-            {
-                IDocumentElement lastChild = currentParagraph.Children[childrenCount - 1];
-                TextElement textChild = lastChild as TextElement;
-                if (textChild != null)
-                {
-                    // ReSharper disable once PossibleInvalidOperationException
-                    if (textChild.Style == currentStyle.Value)
-                        textChild.AppendText(text);
-                    else
-                        AddTextElementToParagraph(currentParagraph, text, currentStyle.Value);
-                }
-                else if (lastChild is InternalLinkElement)
-                    // ReSharper disable once PossibleInvalidOperationException
-                    AddTextElementToParagraph (currentParagraph, text, currentStyle.Value);
-                else 
-                    throw new InvalidOperationException("BUG: is this possible?");
-            }
-            else
-            {
-                AddToParagraph(
-                    // ReSharper disable once PossibleInvalidOperationException
-                    doc, ref currentParagraph, ref currentStyle, CreateTextElement (text, currentStyle.Value));
-            }
-        }
-
-        private static void AddTextElementToParagraph(ParagraphElement paragraph, string text, TextElement.TextStyle currentStyle)
-        {
-            Contract.Requires(paragraph != null);
-            Contract.Requires(text != null);
-            TextElement newStyleChild = CreateTextElement(text, currentStyle);
-            paragraph.AddChild(newStyleChild);
-        }
-
-        private static TextElement CreateTextElement(string text, TextElement.TextStyle currentStyle)
-        {
-            Contract.Requires(text != null);
-            return new TextElement (text, currentStyle);
-        }
-
-        private static void AddToParagraph(
-            IDocumentElementContainer doc, 
-            ref ParagraphElement currentParagraph, 
-            ref TextElement.TextStyle? currentStyle, 
-            IDocumentElement elementToAdd)
-        {
-            Contract.Requires(doc != null);
-            Contract.Requires(elementToAdd != null);
-            Contract.Ensures(currentParagraph != null);
-
-            CreateParagraphIfNoneIsAlreadyOpen(doc, ref currentParagraph, ref currentStyle);
-
-            currentParagraph.AddChild(elementToAdd);
-        }
-
-        private static void CreateParagraphIfNoneIsAlreadyOpen(
-            IDocumentElementContainer doc, 
-            ref ParagraphElement currentParagraph, 
-            ref TextElement.TextStyle? textStyle)
-        {
-            Contract.Requires(doc != null);
-            Contract.Ensures(currentParagraph != null);
-            Contract.Ensures(textStyle != null);
-
-            if (currentParagraph == null)
-            {
-                currentParagraph = new ParagraphElement();
-                textStyle = textStyle ?? TextElement.TextStyle.Regular;
-                doc.AddChild(currentParagraph);
-            }
-        }
-
-        private static void FinalizeCurrentParagraph(ref ParagraphElement currentParagraph)
-        {
-            if (currentParagraph != null)
-                currentParagraph.Trim();
-
-            currentParagraph = null;
         }
 
         private readonly IWikiTextTokenizer tokenizer;
