@@ -20,7 +20,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         }
         
         [Test]
-        public void WithWhitespaceAround()
+        public void WithWhiteSpaceAround()
         {
             fixture.Parse ("[ http://google.com  ]")
                 .AssertNoErrors ()

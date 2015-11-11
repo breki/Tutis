@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Freude.DocModel;
@@ -159,8 +158,7 @@ namespace Freude.Parsing
             if (!ProcessHeaderAnchor (context, tokenBuffer, out anchorId))
                 return;
 
-            ProcessUntilEnd(
-                tokenBuffer, 
+            tokenBuffer.ProcessUntilEnd (
                 t =>
                 {
                     context.ReportError("Unexpected token at the end of header");
@@ -188,9 +186,8 @@ namespace Freude.Parsing
             InternalLinkIdBuilder internalLinkBuilder = new InternalLinkIdBuilder ();
             StringBuilder textBuilder = null;
             Uri externalLinkUrl = null;
-            
-            bool processingSuccessful = ProcessUntilEnd(
-                tokenBuffer,
+
+            bool processingSuccessful = tokenBuffer.ProcessUntilEnd (
                 t =>
                 {
                     switch (t.Type)
@@ -485,7 +482,7 @@ namespace Freude.Parsing
             }
 
             parsingMode = TextParsingMode.RegularText;
-            return AddExternalLink (doc, context, externalLinkUrl, textBuilder, ref paragraph, ref style);
+            return AddExternalLink (doc, externalLinkUrl, textBuilder, ref paragraph, ref style);
         }
 
         private static bool AddInternalLink(
@@ -524,14 +521,12 @@ namespace Freude.Parsing
 
         private static bool AddExternalLink(
             IDocumentElementContainer doc, 
-            ParsingContext context,
             Uri externalLinkUrl, 
             StringBuilder externalLinkDescription,
             ref ParagraphElement paragraph, 
             ref TextElement.TextStyle? style)
         {
             Contract.Requires(doc != null);
-            Contract.Requires(context != null);
             Contract.Requires(externalLinkUrl != null);
 
             string description = null;
@@ -558,9 +553,8 @@ namespace Freude.Parsing
             Contract.Requires(tokenBuffer != null);
             Contract.Requires(headerText != null);
 
-            WikiTextToken.TokenType? actualEndingToken = ProcessUntilToken(
+            WikiTextToken.TokenType? actualEndingToken = tokenBuffer.ProcessUntilToken (
                 context, 
-                tokenBuffer, 
                 t =>
                 {
                     switch (t.Type)
@@ -613,7 +607,7 @@ namespace Freude.Parsing
 
             anchorId = null;
 
-            WikiTextToken token = ExpectToken(context, tokenBuffer, WikiTextToken.TokenType.Text);
+            WikiTextToken token = tokenBuffer.ExpectToken(context, WikiTextToken.TokenType.Text);
             if (token == null)
                 return false;
 
@@ -626,71 +620,6 @@ namespace Freude.Parsing
 
             anchorId = token.Text;
             tokenBuffer.MoveToNextToken();
-            return true;
-        }
-
-        private static WikiTextToken.TokenType? ProcessUntilToken(
-            ParsingContext context, 
-            TokenBuffer tokenBuffer, 
-            Func<WikiTextToken, bool> tokenFunc, 
-            params WikiTextToken.TokenType[] untilTypes)
-        {
-            Contract.Requires(context != null);
-            Contract.Requires(tokenBuffer != null);
-            Contract.Requires(tokenFunc != null);
-
-            while (!tokenBuffer.EndOfTokens)
-            {
-                WikiTextToken token = tokenBuffer.Token;
-                if (untilTypes.Contains(token.Type))
-                    return token.Type;
-
-                if (!tokenFunc(token))
-                    return null;
-
-                tokenBuffer.MoveToNextToken();
-            }
-
-            context.ReportError("Expected one of token types ({0}), but they are missing".Fmt(untilTypes.Concat(x => x.ToString(), ",")));
-            return null;
-        }
-
-        private static WikiTextToken ExpectToken(
-            ParsingContext context, TokenBuffer tokenBuffer, WikiTextToken.TokenType expectedTokenType)
-        {
-            Contract.Requires(context != null);
-            Contract.Requires(tokenBuffer != null);
-
-            if (tokenBuffer.EndOfTokens)
-            {
-                context.ReportError("Unexpected end, expected token '{0}'".Fmt(expectedTokenType));
-                return null;
-            }
-
-            WikiTextToken token = tokenBuffer.Token;
-            if (token.Type != WikiTextToken.TokenType.Text)
-            {
-                context.ReportError("Expected token '{0}' but got '{1}".Fmt(expectedTokenType, token.Type));
-                return null;
-            }
-
-            return token;
-        }
-
-        private static bool ProcessUntilEnd(TokenBuffer tokenBuffer, Func<WikiTextToken, bool> tokenFunc)
-        {
-            Contract.Requires(tokenBuffer != null);
-            Contract.Requires(tokenFunc != null);
-
-            while (!tokenBuffer.EndOfTokens)
-            {
-                WikiTextToken token = tokenBuffer.Token;
-                if (!tokenFunc(token))
-                    return false;
-
-                tokenBuffer.MoveToNextToken();
-            }
-
             return true;
         }
 
@@ -807,52 +736,6 @@ namespace Freude.Parsing
             InternalLinkDescription,
             ExternalLinkUrl,
             ExternalLinkDescription,
-        }
-
-        private class TokenBuffer
-        {
-            public TokenBuffer(IList<WikiTextToken> tokens)
-            {
-                Contract.Requires(tokens != null);
-                this.tokens = tokens;
-            }
-
-            public bool EndOfTokens
-            {
-                get { return tokenIndex >= tokens.Count; }
-            }
-
-            public WikiTextToken Token
-            {
-                get
-                {
-                    Contract.Ensures(Contract.Result<WikiTextToken>() != null);
-
-                    if (EndOfTokens)
-                        throw new InvalidOperationException("No more tokens");
-
-                    return tokens[tokenIndex];
-                }
-            }
-
-            public void MoveToNextToken()
-            {
-                if (EndOfTokens)
-                    throw new InvalidOperationException("No more tokens");
-
-                tokenIndex++;
-            }
-
-            [ContractInvariantMethod]
-            private void Invariant()
-            {
-                Contract.Invariant(tokens != null);
-                Contract.Invariant(Contract.ForAll(tokens, x => x != null));
-                Contract.Invariant(tokenIndex >= 0 && tokenIndex <= tokens.Count);
-            }
-
-            private readonly IList<WikiTextToken> tokens;
-            private int tokenIndex;
         }
     }
 }
