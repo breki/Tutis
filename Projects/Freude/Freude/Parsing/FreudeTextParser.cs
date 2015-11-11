@@ -186,7 +186,7 @@ namespace Freude.Parsing
 
             TextParsingMode parsingMode = TextParsingMode.RegularText;
             InternalLinkIdBuilder internalLinkBuilder = new InternalLinkIdBuilder ();
-            StringBuilder internalLinkDescription = null;
+            StringBuilder textBuilder = null;
             Uri externalLinkUrl = null;
             
             bool processingSuccessful = ProcessUntilEnd(
@@ -197,7 +197,7 @@ namespace Freude.Parsing
                     {
                         case WikiTextToken.TokenType.Text:
                             return HandleTextTokenInText(
-                                doc, parsingMode, t, internalLinkBuilder, ref internalLinkDescription, ref paragraph, ref style);
+                                doc, parsingMode, t, internalLinkBuilder, ref textBuilder, ref paragraph, ref style);
 
                         case WikiTextToken.TokenType.TripleApostrophe:
                             return HandleTripleApostropheTokenInText(ref style);
@@ -221,7 +221,7 @@ namespace Freude.Parsing
                                 ref parsingMode, 
                                 t,
                                 internalLinkBuilder, 
-                                internalLinkDescription, 
+                                textBuilder, 
                                 ref paragraph, 
                                 ref style);
 
@@ -241,6 +241,7 @@ namespace Freude.Parsing
                                 ref parsingMode,
                                 t,
                                 externalLinkUrl,
+                                textBuilder,
                                 ref paragraph,
                                 ref style);
 
@@ -472,6 +473,7 @@ namespace Freude.Parsing
             ref TextParsingMode parsingMode, 
             WikiTextToken token, 
             Uri externalLinkUrl, 
+            StringBuilder textBuilder, 
             ref ParagraphElement paragraph, 
             ref TextElement.TextStyle? style)
         {
@@ -483,7 +485,7 @@ namespace Freude.Parsing
             }
 
             parsingMode = TextParsingMode.RegularText;
-            return AddExternalLink (doc, context, externalLinkUrl, ref paragraph, ref style);
+            return AddExternalLink (doc, context, externalLinkUrl, textBuilder, ref paragraph, ref style);
         }
 
         private static bool AddInternalLink(
@@ -524,6 +526,7 @@ namespace Freude.Parsing
             IDocumentElementContainer doc, 
             ParsingContext context,
             Uri externalLinkUrl, 
+            StringBuilder externalLinkDescription,
             ref ParagraphElement paragraph, 
             ref TextElement.TextStyle? style)
         {
@@ -531,7 +534,15 @@ namespace Freude.Parsing
             Contract.Requires(context != null);
             Contract.Requires(externalLinkUrl != null);
 
-            ExternalLinkElement linkEl = new ExternalLinkElement (externalLinkUrl);
+            string description = null;
+            if (externalLinkDescription != null)
+            {
+                description = externalLinkDescription.ToString ().Trim ();
+                if (description.Length == 0)
+                    description = null;
+            }
+
+            ExternalLinkElement linkEl = new ExternalLinkElement (externalLinkUrl, description);
             AddToParagraph(doc, ref paragraph, ref style, linkEl);
 
             return true;
