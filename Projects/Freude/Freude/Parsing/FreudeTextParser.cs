@@ -181,7 +181,7 @@ namespace Freude.Parsing
                     switch (t.Type)
                     {
                         case WikiTextToken.TokenType.BulletList:
-                            return HandleBulletListTokenInText(docBuilder);
+                            return HandleBulletListTokenInText(docBuilder, t);
 
                         case WikiTextToken.TokenType.Text:
                             return HandleTextTokenInText(
@@ -250,10 +250,10 @@ namespace Freude.Parsing
             }
         }
 
-        private static bool HandleBulletListTokenInText(DocumentDefBuilder docBuilder)
+        private static bool HandleBulletListTokenInText(DocumentDefBuilder docBuilder, WikiTextToken token)
         {
             Contract.Requires(docBuilder != null);
-            docBuilder.StartNewParagraph(ParagraphElement.ParagraphType.Bulleted);
+            docBuilder.StartNewParagraph(ParagraphElement.ParagraphType.Bulleted, token.Text.Length - 1);
             return true;
         }
 

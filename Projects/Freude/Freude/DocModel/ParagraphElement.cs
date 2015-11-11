@@ -5,15 +5,23 @@ namespace Freude.DocModel
 {
     public class ParagraphElement : IDocumentElementContainer
     {
-        public ParagraphElement(ParagraphType type)
+        public ParagraphElement (ParagraphType type, int indentation)
         {
+            Contract.Requires(indentation >= 0);
+
             this.type = type;
+            this.indentation = indentation;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
         public ParagraphType Type
         {
             get { return type; }
+        }
+
+        public int Indentation
+        {
+            get { return indentation; }
         }
 
         public int ChildrenCount
@@ -52,7 +60,8 @@ namespace Freude.DocModel
         }
 
         private readonly List<IDocumentElement> children = new List<IDocumentElement> ();
-        private readonly ParagraphType type = ParagraphType.Regular;
+        private readonly ParagraphType type;
+        private readonly int indentation;
 
         public enum ParagraphType
         {
