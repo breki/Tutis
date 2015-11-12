@@ -161,6 +161,7 @@
     <Compile Include="FreudeTextParsingTests\ImageParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\HeaderParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\InternalLinkParsingTests.cs" />
+    <Compile Include="FreudeTextParsingTests\NumberedListParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\ParagraphParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\ParsingFixture.cs" />
     <Compile Include="FreudeTextParsingTests\TokenizerTests.cs" />

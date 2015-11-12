@@ -291,7 +291,7 @@ namespace Freude.Parsing
                 new WikiTextTokenDef("======", false, WikiTextToken.TokenType.Header6End, WikiTextTokenScopes.HeaderText, x => (x | WikiTextTokenScopes.HeaderSuffix) & ~WikiTextTokenScopes.HeaderText),
                 new WikiTextTokenDef("#", false, WikiTextToken.TokenType.HeaderAnchor, WikiTextTokenScopes.HeaderSuffix),
                 new WikiTextTokenDef(@"[\*]", true, WikiTextToken.TokenType.BulletList, WikiTextTokenScopes.LineStart, x => WikiTextTokenScopes.InnerText),
-                new WikiTextTokenDef("#", false, WikiTextToken.TokenType.NumberedList, WikiTextTokenScopes.LineStart, x => WikiTextTokenScopes.InnerText),
+                new WikiTextTokenDef(@"[#]", true, WikiTextToken.TokenType.NumberedList, WikiTextTokenScopes.LineStart, x => WikiTextTokenScopes.InnerText),
                 new WikiTextTokenDef(" ", false, WikiTextToken.TokenType.ExternalLinkUrlLeadingSpace, WikiTextTokenScopes.ExternalLinkUrl),
                 new WikiTextTokenDef(@"[\S^\]]", true, WikiTextToken.TokenType.ExternalLinkUrl, WikiTextTokenScopes.ExternalLinkUrl, x => WikiTextTokenScopes.ExternalLinkText)
             };
