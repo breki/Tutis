@@ -1,4 +1,6 @@
-﻿using Freude.DocModel;
+﻿using System;
+using Brejc.Common;
+using Freude.DocModel;
 using NUnit.Framework;
 
 namespace Freude.Tests.FreudeTextParsingTests
@@ -71,6 +73,19 @@ namespace Freude.Tests.FreudeTextParsingTests
             Assert.AreEqual (ParagraphElement.ParagraphType.Bulleted, par.Type);
             Assert.AreEqual (1, par.ChildrenCount);
             fixture.AssertText (par, 0, "something here", TextElement.TextStyle.Regular);
+        }
+
+        [Test]
+        public void Multiline()
+        {
+            fixture.Parse ("*   something here{0}and there".Fmt(Environment.NewLine))
+                .AssertNoErrors ()
+                .AssertChildCount (1);
+
+            var par = fixture.AssertElement<ParagraphElement> (0);
+            Assert.AreEqual (ParagraphElement.ParagraphType.Bulleted, par.Type);
+            Assert.AreEqual (1, par.ChildrenCount);
+            fixture.AssertText (par, 0, "something here and there", TextElement.TextStyle.Regular);
         }
 
         [SetUp]

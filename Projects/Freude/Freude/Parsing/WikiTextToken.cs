@@ -59,6 +59,7 @@ namespace Freude.Parsing
             HeaderAnchor,
             BulletList,
             NumberedList,
+            Indent,
             ExternalLinkUrlLeadingSpace,
             ExternalLinkUrl
         }
