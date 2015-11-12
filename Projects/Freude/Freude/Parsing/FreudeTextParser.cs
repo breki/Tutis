@@ -89,6 +89,7 @@ namespace Freude.Parsing
                 case WikiTextToken.TokenType.SingleSquareBracketsOpen:
                 case WikiTextToken.TokenType.BulletList:
                 case WikiTextToken.TokenType.NumberedList:
+                case WikiTextToken.TokenType.Indent:
                     HandleText (docBuilder, context, tokenBuffer);
                     break;
 
@@ -187,6 +188,9 @@ namespace Freude.Parsing
                         case WikiTextToken.TokenType.NumberedList:
                             return HandleNumberedListTokenInText(docBuilder, t);
 
+                        case WikiTextToken.TokenType.Indent:
+                            return HandleIndentTokenInText(docBuilder, t);
+
                         case WikiTextToken.TokenType.Text:
                             return HandleTextTokenInText(
                                 docBuilder, parsingMode, t, internalLinkBuilder, ref textBuilder);
@@ -265,6 +269,13 @@ namespace Freude.Parsing
         {
             Contract.Requires(docBuilder != null);
             docBuilder.StartNewParagraph(ParagraphElement.ParagraphType.Numbered, token.Text.Length - 1);
+            return true;
+        }
+
+        private static bool HandleIndentTokenInText(DocumentDefBuilder docBuilder, WikiTextToken token)
+        {
+            Contract.Requires(docBuilder != null);
+            docBuilder.StartNewParagraph(ParagraphElement.ParagraphType.Regular, token.Text.Length);
             return true;
         }
 

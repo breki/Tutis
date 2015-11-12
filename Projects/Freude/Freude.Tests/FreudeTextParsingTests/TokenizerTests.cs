@@ -195,7 +195,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         }
 
         [Test]
-        public void TokenizeNumberedListWithExtraBullets()
+        public void TokenizeNumberedListWithExtraHashes()
         {
             IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("# something #here#");
             Assert.AreEqual (2, tokens.Count);
@@ -205,7 +205,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         }
 
         [Test]
-        public void TokenizeNmberedListWithStyling()
+        public void TokenizeNumberedListWithStyling()
         {
             IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("# something '''here'''");
             Assert.AreEqual (5, tokens.Count);
@@ -224,6 +224,40 @@ namespace Freude.Tests.FreudeTextParsingTests
             IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("## something here");
             Assert.AreEqual (2, tokens.Count);
             Assert.AreEqual (WikiTextToken.TokenType.NumberedList, tokens[0].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
+            Assert.AreEqual (" something here", tokens[1].Text);
+        }
+
+        [Test]
+        public void TokenizeIndentedTextWithExtraColons()
+        {
+            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine (": something :here:");
+            Assert.AreEqual (2, tokens.Count);
+            Assert.AreEqual (WikiTextToken.TokenType.Indent, tokens[0].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
+            Assert.AreEqual (" something :here:", tokens[1].Text);
+        }
+
+        [Test]
+        public void TokenizeIndentedTextWithStyling()
+        {
+            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine (": something '''here'''");
+            Assert.AreEqual (5, tokens.Count);
+            Assert.AreEqual (WikiTextToken.TokenType.Indent, tokens[0].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
+            Assert.AreEqual (" something ", tokens[1].Text);
+            Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[2].Type);
+            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[3].Type);
+            Assert.AreEqual ("here", tokens[3].Text);
+            Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[4].Type);
+        }
+
+        [Test]
+        public void TokenizeMultipleIndentedTextList ()
+        {
+            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine (":: something here");
+            Assert.AreEqual (2, tokens.Count);
+            Assert.AreEqual (WikiTextToken.TokenType.Indent, tokens[0].Type);
             Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
             Assert.AreEqual (" something here", tokens[1].Text);
         }

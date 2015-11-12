@@ -1,10 +1,10 @@
-- numbered lists
-- indent text
-- monospace style
-- preformatted text
+- document processor
 
-- helpe method to make anchors
-- add Full configuration for projects
+- syntax still to do:
+	- monospace style
+	- preformatted text
+
+- helper method to make anchors
 
 - serve command
 - project properties from a file?
