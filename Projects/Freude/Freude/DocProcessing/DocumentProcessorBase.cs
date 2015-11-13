@@ -7,14 +7,10 @@ namespace Freude.DocProcessing
 {
     public class DocumentProcessorBase
     {
-        public bool ProcessingFinished { get; private set; }
-
         public void ProcessDocument(DocumentDef doc)
         {
             Contract.Requires(doc != null);
-            Contract.Ensures (ProcessingFinished);
 
-            ProcessingFinished = false;
             paragraphsStack.Clear();
             OnDocumentBegin(doc);
 
@@ -39,87 +35,61 @@ namespace Freude.DocProcessing
         protected virtual void OnDocumentBegin(DocumentDef doc)
         {
             Contract.Requires(doc != null);
-            Contract.Requires(!ProcessingFinished);
-            Contract.Ensures (!ProcessingFinished);
         }
 
         protected virtual void OnHeadingElement(HeadingElement headingEl)
         {
             Contract.Requires(headingEl != null);
-            Contract.Requires (!ProcessingFinished);
-            Contract.Ensures (!ProcessingFinished);
         }
 
         protected virtual void OnParagraphBegin(ParagraphElement el)
         {
             Contract.Requires(el != null);
-            Contract.Requires (!ProcessingFinished);
-            Contract.Ensures (!ProcessingFinished);
         }
 
         protected virtual void OnParagraphEnd(ParagraphElement el)
         {
             Contract.Requires(el != null);
-            Contract.Requires (!ProcessingFinished);
-            Contract.Ensures (!ProcessingFinished);
         }
 
         protected virtual void OnNumberedListBegin(ParagraphElement paragraphEl)
         {
             Contract.Requires (paragraphEl != null);
-            Contract.Requires (!ProcessingFinished);
-            Contract.Ensures (!ProcessingFinished);
         }
 
         protected virtual void OnNumberedListItemBegin(ParagraphElement paragraphEl)
         {
             Contract.Requires (paragraphEl != null);
-            Contract.Requires (!ProcessingFinished);
-            Contract.Ensures (!ProcessingFinished);
         }
 
         protected virtual void OnNumberedListItemEnd(ParagraphElement paragraphEl)
         {
             Contract.Requires (paragraphEl != null);
-            Contract.Requires (!ProcessingFinished);
-            Contract.Ensures (!ProcessingFinished);
         }
 
         protected virtual void OnNumberedListEnd(ParagraphElement paragraphEl)
         {
             Contract.Requires (paragraphEl != null);
-            Contract.Requires (!ProcessingFinished);
-            Contract.Ensures (!ProcessingFinished);
         }
 
         protected virtual void OnTextElement(TextElement textEl)
         {
             Contract.Requires(textEl != null);
-            Contract.Requires (!ProcessingFinished);
-            Contract.Ensures (!ProcessingFinished);
         }
 
         protected virtual void OnInternalLinkElement (InternalLinkElement linkEl)
         {
             Contract.Requires(linkEl != null);
-            Contract.Requires (!ProcessingFinished);
-            Contract.Ensures (!ProcessingFinished);
         }
 
         protected virtual void OnExternalLinkElement(ExternalLinkElement linkEl)
         {
             Contract.Requires (linkEl != null);
-            Contract.Requires (!ProcessingFinished);
-            Contract.Ensures (!ProcessingFinished);
         }
 
         protected virtual void OnDocumentEnd (DocumentDef doc)
         {
             Contract.Requires(doc != null);
-            Contract.Requires (!ProcessingFinished);
-            Contract.Ensures (ProcessingFinished);
-
-            ProcessingFinished = true;
         }
 
         private void ProcessParagraphElement(ParagraphElement paragraphEl)
@@ -144,6 +114,8 @@ namespace Freude.DocProcessing
 
         private void ProcessRegularParagraphElement(ParagraphElement paragraphEl)
         {
+            Contract.Requires(paragraphEl != null);
+
             EnsureParagraphStackIsCleared ();
 
             OnParagraphBegin (paragraphEl);
@@ -151,13 +123,18 @@ namespace Freude.DocProcessing
             OnParagraphEnd (paragraphEl);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         private void ProcessBulletedParagraphElement(ParagraphElement paragraphEl)
         {
+            Contract.Requires(paragraphEl != null);
+
             throw new NotImplementedException();
         }
 
         private void ProcessNumberedParagraphElement(ParagraphElement paragraphEl)
         {
+            Contract.Requires(paragraphEl != null);
+
             bool beginsNewList = EnsureParagraphStackIsClearedUntil(paragraphEl);
 
             if (beginsNewList)
@@ -165,11 +142,12 @@ namespace Freude.DocProcessing
 
             OnNumberedListItemBegin(paragraphEl);
             ProcessParagraphContents (paragraphEl);
-            OnNumberedListItemEnd (paragraphEl);
         }
 
         private void ProcessParagraphContents(ParagraphElement paragraphEl)
         {
+            Contract.Requires(paragraphEl != null);
+
             foreach (IDocumentElement el in paragraphEl.Children)
             {
                 TextElement textEl = el as TextElement;
@@ -198,6 +176,7 @@ namespace Freude.DocProcessing
                     case ParagraphElement.ParagraphType.Bulleted:
                         throw new NotImplementedException("todo next:");
                     case ParagraphElement.ParagraphType.Numbered:
+                        OnNumberedListItemEnd(stackedParagraph);
                         OnNumberedListEnd(stackedParagraph);
                         break;
                     default:
@@ -215,8 +194,26 @@ namespace Freude.DocProcessing
                 ParagraphElement stackedParagraph = paragraphsStack.Peek();
                 if (stackedParagraph.Type == paragraphEl.Type)
                 {
+                    if (stackedParagraph.Indentation >= paragraphEl.Indentation)
+                    {
+                        switch (stackedParagraph.Type)
+                        {
+                            case ParagraphElement.ParagraphType.Bulleted:
+                                break;
+                            case ParagraphElement.ParagraphType.Numbered:
+                                OnNumberedListItemEnd(stackedParagraph);
+                                break;
+                            default:
+                                throw new InvalidOperationException("BUG");
+                        }
+                    }
+
                     if (stackedParagraph.Indentation == paragraphEl.Indentation)
+                    {
+                        paragraphsStack.Pop ();
+                        paragraphsStack.Push(paragraphEl);
                         return false;
+                    }
 
                     if (stackedParagraph.Indentation < paragraphEl.Indentation)
                     {

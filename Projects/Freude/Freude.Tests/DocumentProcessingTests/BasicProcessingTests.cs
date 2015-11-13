@@ -1,19 +1,20 @@
-﻿using NUnit.Framework;
+﻿using System.Diagnostics.CodeAnalysis;
+using NUnit.Framework;
 
 namespace Freude.Tests.DocumentProcessingTests
 {
     public class BasicProcessingTests
     {
+        [SuppressMessage ("Microsoft.StyleCop.CSharp.Readability", "SA1118")]
         [Test]
         public void Headings()
         {
-            fixture.ProcessText(
-                @"= Title =
+            const string Text = @"= Title =
 
 == 1. Heading ==
 === 1.1 Heading ===
-This is a '''paragraph'''",
-@"<body>
+This is a '''paragraph'''";
+            const string ExpectedHtml = @"<body>
   <h1>
     Title
   </h1><h2>
@@ -21,19 +22,19 @@ This is a '''paragraph'''",
   </h2><h3>
     1.1 Heading
   </h3><p>This is a <strong>paragraph</strong></p>
-</body>");
+</body>";
+            fixture.ProcessText(Text, ExpectedHtml);
         }
 
         [Test]
         public void HeadingWithAnchor()
         {
-            fixture.ProcessText(
-                @"= Title =
+            const string Text = @"= Title =
 
 == 1. Heading ==
 === 1.1 Heading ===
-This is a '''paragraph'''",
-@"<body>
+This is a '''paragraph'''";
+            const string ExpectedHtml = @"<body>
   <h1>
     Title
   </h1><h2>
@@ -41,37 +42,35 @@ This is a '''paragraph'''",
   </h2><h3>
     1.1 Heading
   </h3><p>This is a <strong>paragraph</strong></p>
-</body>");
+</body>";
+            fixture.ProcessText(Text, ExpectedHtml);
         }
 
         [Test]
         public void InternalLink()
         {
-            fixture.ProcessText(
-                @"This is a [[Main Page|link to somewhere]]",
-@"<body>
+            const string ExpectedHtml = @"<body>
   <p>This is a <a href=""http://google.com/Main%20Page"">link to somewhere</a></p>
-</body>");
+</body>";
+            fixture.ProcessText(@"This is a [[Main Page|link to somewhere]]", ExpectedHtml);
         }
 
         [Test]
         public void InternalLinkNoDescription()
         {
-            fixture.ProcessText(
-                @"This is a [[Main Page]]",
-@"<body>
+            const string ExpectedHtml = @"<body>
   <p>This is a <a href=""http://google.com/Main%20Page"">Main Page</a></p>
-</body>");
+</body>";
+            fixture.ProcessText(@"This is a [[Main Page]]", ExpectedHtml);
         }
 
         [Test]
         public void ExternalLink ()
         {
-            fixture.ProcessText(
-                @"This is a [http://google.com link to somewhere]",
-@"<body>
+            const string ExpectedHtml = @"<body>
   <p>This is a <a href=""http://google.com/"">link to somewhere</a></p>
-</body>");
+</body>";
+            fixture.ProcessText(@"This is a [http://google.com link to somewhere]", ExpectedHtml);
         }
 
         [SetUp]
