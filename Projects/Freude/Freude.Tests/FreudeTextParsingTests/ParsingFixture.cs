@@ -12,6 +12,11 @@ namespace Freude.Tests.FreudeTextParsingTests
 {
     public class ParsingFixture
     {
+        public DocumentDef Doc
+        {
+            get { return doc; }
+        }
+
         public ParsingFixture()
         {
             context = new ParsingContext ();
