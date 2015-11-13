@@ -14,6 +14,15 @@ namespace Freude.Tests.DocumentProcessingTests
         }
 
         [Test]
+        public void TextShouldBeEscaped()
+        {
+            const string ExpectedHtml = @"<body>
+  <p>This is &lt;something special&gt;</p>
+</body>";
+            fixture.ProcessText(@"This is <something special>", ExpectedHtml);
+        }
+
+        [Test]
         public void NumberedList()
         {
             const string Text = @"# item 1
