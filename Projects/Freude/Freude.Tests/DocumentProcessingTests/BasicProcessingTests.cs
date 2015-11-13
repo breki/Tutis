@@ -5,16 +5,6 @@ namespace Freude.Tests.DocumentProcessingTests
     public class BasicProcessingTests
     {
         [Test]
-        public void SimpleParagraph()
-        {
-            fixture.ProcessText(
-                @"This is a '''paragraph'''",
-@"<body>
-  <p>This is a <strong>paragraph</strong></p>
-</body>");
-        }
-
-        [Test]
         public void Headings()
         {
             fixture.ProcessText(
@@ -81,22 +71,6 @@ This is a '''paragraph'''",
                 @"This is a [http://google.com link to somewhere]",
 @"<body>
   <p>This is a <a href=""http://google.com/"">link to somewhere</a></p>
-</body>");
-        }
-
-        [Test]
-        public void NumberedList()
-        {
-            fixture.ProcessText(
-                @"# item 1
-# item 2
-# item 3
-
-# item 4",
-@"<body>
-  <ol>
-    <li>item 1</li><li>item 2</li><li>item 3</li><li>item 4</li>
-  </ol>
 </body>");
         }
 
