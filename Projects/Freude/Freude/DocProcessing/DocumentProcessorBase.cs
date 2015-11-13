@@ -212,14 +212,32 @@ namespace Freude.DocProcessing
 
             while (paragraphsStack.Count > 0)
             {
-                ParagraphElement stackedParagraph = paragraphsStack.Pop();
-                if (stackedParagraph.Type == paragraphEl.Type && stackedParagraph.Indentation == paragraphEl.Indentation)
+                ParagraphElement stackedParagraph = paragraphsStack.Peek();
+                if (stackedParagraph.Type == paragraphEl.Type)
                 {
-                    paragraphsStack.Push(paragraphEl);
-                    return false;
-                }
+                    if (stackedParagraph.Indentation == paragraphEl.Indentation)
+                        return false;
 
-                throw new NotImplementedException("todo next:");
+                    if (stackedParagraph.Indentation < paragraphEl.Indentation)
+                    {
+                        paragraphsStack.Push (paragraphEl);
+                        return true;                        
+                    }
+
+                    switch (stackedParagraph.Type)
+                    {
+                        case ParagraphElement.ParagraphType.Bulleted:
+                            break;
+                        case ParagraphElement.ParagraphType.Numbered:
+                            paragraphsStack.Pop();
+                            OnNumberedListEnd(stackedParagraph);
+                            break;
+                        default:
+                            throw new InvalidOperationException("BUG");
+                    }
+                }
+                else
+                    throw new NotImplementedException("todo next:");
             }
 
             paragraphsStack.Push (paragraphEl);
