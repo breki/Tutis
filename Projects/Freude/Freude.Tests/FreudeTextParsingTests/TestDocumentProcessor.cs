@@ -90,6 +90,32 @@ namespace Freude.Tests.FreudeTextParsingTests
             }
         }
 
+        protected override void OnInternalLinkElement(InternalLinkElement linkEl)
+        {
+            writer.AddAttribute(HtmlTextWriterAttribute.Href, "http://google.com/{0}".Fmt(linkEl.LinkId));
+            writer.RenderBeginTag(HtmlTextWriterTag.A);
+
+            if (linkEl.LinkDescription != null)
+                writer.Write (linkEl.LinkDescription);
+            else
+                writer.Write (linkEl.LinkId);
+
+            writer.RenderEndTag();
+        }
+
+        protected override void OnExternalLinkElement(ExternalLinkElement linkEl)
+        {
+            writer.AddAttribute (HtmlTextWriterAttribute.Href, linkEl.Url.ToString());
+            writer.RenderBeginTag (HtmlTextWriterTag.A);
+
+            if (linkEl.LinkDescription != null)
+                writer.Write (linkEl.LinkDescription);
+            else
+                writer.Write (linkEl.Url);
+
+            writer.RenderEndTag ();
+        }
+
         protected override void OnDocumentEnd(DocumentDef doc)
         {
             writer.RenderEndTag();

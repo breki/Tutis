@@ -17,7 +17,8 @@ namespace Freude.Tests.DocumentProcessingTests
                 Assert.AreEqual (
 @"<body>
   <p>This is a <strong>paragraph</strong></p>
-</body>", result);
+</body>", 
+                    result);
             }
         }
 
@@ -43,7 +44,59 @@ This is a '''paragraph'''");
   </h2><h3>
     1.1 Header
   </h3><p>This is a <strong>paragraph</strong></p>
-</body>", result);
+</body>", 
+                    result);
+            }
+        }
+
+        [Test]
+        public void InternalLink()
+        {
+            fixture.Parse (@"This is a [[Main Page|link to somewhere]]");
+
+            using (TestDocumentProcessor processor = new TestDocumentProcessor ())
+            {
+                processor.ProcessDocument (fixture.Doc);
+                string result = processor.ResultHtml;
+                Assert.AreEqual (
+@"<body>
+  <p>This is a <a href=""http://google.com/Main%20Page"">link to somewhere</a></p>
+</body>", 
+                    result);
+            }
+        }
+
+        [Test]
+        public void InternalLinkNoDescription()
+        {
+            fixture.Parse (@"This is a [[Main Page]]");
+
+            using (TestDocumentProcessor processor = new TestDocumentProcessor ())
+            {
+                processor.ProcessDocument (fixture.Doc);
+                string result = processor.ResultHtml;
+                Assert.AreEqual (
+@"<body>
+  <p>This is a <a href=""http://google.com/Main%20Page"">Main Page</a></p>
+</body>", 
+                    result);
+            }
+        }
+
+        [Test]
+        public void ExternalLink ()
+        {
+            fixture.Parse (@"This is a [http://google.com link to somewhere]]");
+
+            using (TestDocumentProcessor processor = new TestDocumentProcessor ())
+            {
+                processor.ProcessDocument (fixture.Doc);
+                string result = processor.ResultHtml;
+                Assert.AreEqual (
+@"<body>
+  <p>This is a <a href=""http://google.com/"">link to somewhere</a></p>
+</body>", 
+                    result);
             }
         }
 
