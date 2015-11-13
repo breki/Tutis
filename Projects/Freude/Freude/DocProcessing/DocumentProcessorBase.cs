@@ -20,12 +20,12 @@ namespace Freude.DocProcessing
             foreach (IDocumentElement el in doc.Children)
             {
                 ParagraphElement paragraphEl = el as ParagraphElement;
-                HeaderElement headerEl = el as HeaderElement;
+                HeadingElement headingEl = el as HeadingElement;
 
                 if (paragraphEl != null)
                     ProcessParagraphElement(paragraphEl);
-                else if (headerEl != null)
-                    ProcessHeaderElement(headerEl);
+                else if (headingEl != null)
+                    ProcessHeadingElement(headingEl);
                 else
                     throw new NotImplementedException("todo next: {0}".Fmt(el.GetType().Name));
             }
@@ -40,9 +40,9 @@ namespace Freude.DocProcessing
             Contract.Ensures (!ProcessingFinished);
         }
 
-        protected virtual void OnHeaderElement(HeaderElement headerEl)
+        protected virtual void OnHeadingElement(HeadingElement headingEl)
         {
-            Contract.Requires(headerEl != null);
+            Contract.Requires(headingEl != null);
             Contract.Requires (!ProcessingFinished);
             Contract.Ensures (!ProcessingFinished);
         }
@@ -94,7 +94,26 @@ namespace Freude.DocProcessing
         private void ProcessParagraphElement(ParagraphElement paragraphEl)
         {
             Contract.Requires(paragraphEl != null);
-            OnParagraphBegin(paragraphEl);
+
+            switch (paragraphEl.Type)
+            {
+                case ParagraphElement.ParagraphType.Regular:
+                    ProcessRegularParagraphElement(paragraphEl);
+                    break;
+                case ParagraphElement.ParagraphType.Bulleted:
+                    ProcessBulletedParagraphElement(paragraphEl);
+                    break;
+                case ParagraphElement.ParagraphType.Numbered:
+                    ProcessNumberedParagraphElement(paragraphEl);
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+
+        private void ProcessRegularParagraphElement(ParagraphElement paragraphEl)
+        {
+            OnParagraphBegin (paragraphEl);
 
             foreach (IDocumentElement el in paragraphEl.Children)
             {
@@ -103,23 +122,33 @@ namespace Freude.DocProcessing
                 ExternalLinkElement externalLinkEl = el as ExternalLinkElement;
 
                 if (textEl != null)
-                    ProcessTextElement(textEl);
+                    ProcessTextElement (textEl);
                 else if (internalLinkEl != null)
-                    ProcessInternalLinkElement(internalLinkEl);
+                    ProcessInternalLinkElement (internalLinkEl);
                 else if (externalLinkEl != null)
                     ProcessExternalLinkElement (externalLinkEl);
                 else
                     throw new NotImplementedException ("todo next:");
             }
 
-            OnParagraphEnd(paragraphEl);
+            OnParagraphEnd (paragraphEl);
         }
 
-        private void ProcessHeaderElement(HeaderElement headerEl)
+        private void ProcessBulletedParagraphElement(ParagraphElement paragraphEl)
         {
-            Contract.Requires(headerEl != null);
+            throw new NotImplementedException();
+        }
 
-            OnHeaderElement(headerEl);
+        private void ProcessNumberedParagraphElement(ParagraphElement paragraphEl)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ProcessHeadingElement(HeadingElement headingEl)
+        {
+            Contract.Requires(headingEl != null);
+
+            OnHeadingElement(headingEl);
         }
 
         private void ProcessTextElement(TextElement textEl)

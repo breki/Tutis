@@ -161,7 +161,7 @@
     <Compile Include="FreudeTextParsingTests\BulletListParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\ExternalLinkParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\ImageParsingTests.cs" />
-    <Compile Include="FreudeTextParsingTests\HeaderParsingTests.cs" />
+    <Compile Include="FreudeTextParsingTests\HeadingParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\IndentedParagraphParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\InternalLinkParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\NumberedListParsingTests.cs" />

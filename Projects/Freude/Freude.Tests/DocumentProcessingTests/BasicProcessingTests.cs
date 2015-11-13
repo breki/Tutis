@@ -27,8 +27,8 @@ namespace Freude.Tests.DocumentProcessingTests
         {
             fixture.Parse(@"= Title =
 
-== 1. Header ==
-=== 1.1 Header ===
+== 1. Heading ==
+=== 1.1 Heading ===
 This is a '''paragraph'''");
 
             using (TestDocumentProcessor processor = new TestDocumentProcessor())
@@ -40,9 +40,36 @@ This is a '''paragraph'''");
   <h1>
     Title
   </h1><h2>
-    1. Header
+    1. Heading
   </h2><h3>
-    1.1 Header
+    1.1 Heading
+  </h3><p>This is a <strong>paragraph</strong></p>
+</body>", 
+                    result);
+            }
+        }
+
+        [Test]
+        public void HeadingWithAnchor()
+        {
+            fixture.Parse(@"= Title =
+
+== 1. Heading ==
+=== 1.1 Heading ===
+This is a '''paragraph'''");
+
+            using (TestDocumentProcessor processor = new TestDocumentProcessor())
+            {
+                processor.ProcessDocument(fixture.Doc);
+                string result = processor.ResultHtml;
+                Assert.AreEqual (
+@"<body>
+  <h1>
+    Title
+  </h1><h2>
+    1. Heading
+  </h2><h3>
+    1.1 Heading
   </h3><p>This is a <strong>paragraph</strong></p>
 </body>", 
                     result);
@@ -96,6 +123,32 @@ This is a '''paragraph'''");
 @"<body>
   <p>This is a <a href=""http://google.com/"">link to somewhere</a></p>
 </body>", 
+                    result);
+            }
+        }
+
+        [Test]
+        public void NumberedList()
+        {
+            fixture.Parse (@"# item 1
+# item 2
+# item 3
+
+# item 4");
+
+            using (TestDocumentProcessor processor = new TestDocumentProcessor ())
+            {
+                processor.ProcessDocument (fixture.Doc);
+                string result = processor.ResultHtml;
+                Assert.AreEqual (
+@"<body>
+  <ol>
+    <li>item 1</li>
+    <li>item 2</li>
+    <li>item 3</li>
+    <li>item 4</li>
+  </ol>
+</body>",
                     result);
             }
         }

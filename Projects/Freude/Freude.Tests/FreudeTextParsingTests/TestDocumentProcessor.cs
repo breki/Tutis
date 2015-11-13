@@ -31,10 +31,10 @@ namespace Freude.Tests.FreudeTextParsingTests
             writer.RenderBeginTag(HtmlTextWriterTag.Body);
         }
 
-        protected override void OnHeaderElement(HeaderElement headerEl)
+        protected override void OnHeadingElement(HeadingElement headingEl)
         {
-            writer.RenderBeginTag("h{0}".Fmt(headerEl.HeaderLevel));
-            writer.Write(headerEl.HeaderText);
+            writer.RenderBeginTag("h{0}".Fmt(headingEl.HeadingLevel));
+            writer.Write(headingEl.HeadingText);
             writer.RenderEndTag();
         }
 

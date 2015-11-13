@@ -43,13 +43,13 @@ namespace Freude.Tests.HtmlGeneratingTests
         }
 
         [Test]
-        public void HeaderParagraph ()
+        public void HeadingParagraph ()
         {
-            HeaderElement el = new HeaderElement("header", 3);
+            HeadingElement el = new HeadingElement("heading", 3);
             doc.Children.Add (el);
 
             string html = generator.GenerateHtml (doc);
-            Assert.AreEqual ("<h3>header</h3>", html);
+            Assert.AreEqual ("<h3>heading</h3>", html);
         }
 
         [SetUp]
