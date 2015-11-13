@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Freude.DocModel;
 
@@ -15,6 +15,7 @@ namespace Freude.DocProcessing
             Contract.Ensures (ProcessingFinished);
 
             ProcessingFinished = false;
+            paragraphsStack.Clear();
             OnDocumentBegin(doc);
 
             foreach (IDocumentElement el in doc.Children)
@@ -29,6 +30,8 @@ namespace Freude.DocProcessing
                 else
                     throw new NotImplementedException("todo next: {0}".Fmt(el.GetType().Name));
             }
+
+            EnsureParagraphStackIsCleared ();
 
             OnDocumentEnd (doc);
         }
@@ -57,6 +60,34 @@ namespace Freude.DocProcessing
         protected virtual void OnParagraphEnd(ParagraphElement el)
         {
             Contract.Requires(el != null);
+            Contract.Requires (!ProcessingFinished);
+            Contract.Ensures (!ProcessingFinished);
+        }
+
+        protected virtual void OnNumberedListBegin(ParagraphElement paragraphEl)
+        {
+            Contract.Requires (paragraphEl != null);
+            Contract.Requires (!ProcessingFinished);
+            Contract.Ensures (!ProcessingFinished);
+        }
+
+        protected virtual void OnNumberedListItemBegin(ParagraphElement paragraphEl)
+        {
+            Contract.Requires (paragraphEl != null);
+            Contract.Requires (!ProcessingFinished);
+            Contract.Ensures (!ProcessingFinished);
+        }
+
+        protected virtual void OnNumberedListItemEnd(ParagraphElement paragraphEl)
+        {
+            Contract.Requires (paragraphEl != null);
+            Contract.Requires (!ProcessingFinished);
+            Contract.Ensures (!ProcessingFinished);
+        }
+
+        protected virtual void OnNumberedListEnd(ParagraphElement paragraphEl)
+        {
+            Contract.Requires (paragraphEl != null);
             Contract.Requires (!ProcessingFinished);
             Contract.Ensures (!ProcessingFinished);
         }
@@ -94,7 +125,7 @@ namespace Freude.DocProcessing
         private void ProcessParagraphElement(ParagraphElement paragraphEl)
         {
             Contract.Requires(paragraphEl != null);
-
+            
             switch (paragraphEl.Type)
             {
                 case ParagraphElement.ParagraphType.Regular:
@@ -113,24 +144,10 @@ namespace Freude.DocProcessing
 
         private void ProcessRegularParagraphElement(ParagraphElement paragraphEl)
         {
+            EnsureParagraphStackIsCleared ();
+
             OnParagraphBegin (paragraphEl);
-
-            foreach (IDocumentElement el in paragraphEl.Children)
-            {
-                TextElement textEl = el as TextElement;
-                InternalLinkElement internalLinkEl = el as InternalLinkElement;
-                ExternalLinkElement externalLinkEl = el as ExternalLinkElement;
-
-                if (textEl != null)
-                    ProcessTextElement (textEl);
-                else if (internalLinkEl != null)
-                    ProcessInternalLinkElement (internalLinkEl);
-                else if (externalLinkEl != null)
-                    ProcessExternalLinkElement (externalLinkEl);
-                else
-                    throw new NotImplementedException ("todo next:");
-            }
-
+            ProcessParagraphContents(paragraphEl);
             OnParagraphEnd (paragraphEl);
         }
 
@@ -141,13 +158,79 @@ namespace Freude.DocProcessing
 
         private void ProcessNumberedParagraphElement(ParagraphElement paragraphEl)
         {
-            throw new NotImplementedException();
+            bool beginsNewList = EnsureParagraphStackIsClearedUntil(paragraphEl);
+
+            if (beginsNewList)
+                OnNumberedListBegin(paragraphEl);
+
+            OnNumberedListItemBegin(paragraphEl);
+            ProcessParagraphContents (paragraphEl);
+            OnNumberedListItemEnd (paragraphEl);
+        }
+
+        private void ProcessParagraphContents(ParagraphElement paragraphEl)
+        {
+            foreach (IDocumentElement el in paragraphEl.Children)
+            {
+                TextElement textEl = el as TextElement;
+                InternalLinkElement internalLinkEl = el as InternalLinkElement;
+                ExternalLinkElement externalLinkEl = el as ExternalLinkElement;
+
+                if (textEl != null)
+                    ProcessTextElement(textEl);
+                else if (internalLinkEl != null)
+                    ProcessInternalLinkElement(internalLinkEl);
+                else if (externalLinkEl != null)
+                    ProcessExternalLinkElement(externalLinkEl);
+                else
+                    throw new NotImplementedException("todo next:");
+            }
+        }
+
+        private void EnsureParagraphStackIsCleared()
+        {
+            while (paragraphsStack.Count > 0)
+            {
+                ParagraphElement stackedParagraph = paragraphsStack.Pop ();
+
+                switch (stackedParagraph.Type)
+                {
+                    case ParagraphElement.ParagraphType.Bulleted:
+                        throw new NotImplementedException("todo next:");
+                    case ParagraphElement.ParagraphType.Numbered:
+                        OnNumberedListEnd(stackedParagraph);
+                        break;
+                    default:
+                        throw new InvalidOperationException("BUG");
+                }
+            }
+        }
+
+        private bool EnsureParagraphStackIsClearedUntil(ParagraphElement paragraphEl)
+        {
+            Contract.Requires(paragraphEl != null);
+
+            while (paragraphsStack.Count > 0)
+            {
+                ParagraphElement stackedParagraph = paragraphsStack.Pop();
+                if (stackedParagraph.Type == paragraphEl.Type && stackedParagraph.Indentation == paragraphEl.Indentation)
+                {
+                    paragraphsStack.Push(paragraphEl);
+                    return false;
+                }
+
+                throw new NotImplementedException("todo next:");
+            }
+
+            paragraphsStack.Push (paragraphEl);
+            return true;
         }
 
         private void ProcessHeadingElement(HeadingElement headingEl)
         {
             Contract.Requires(headingEl != null);
 
+            EnsureParagraphStackIsCleared ();
             OnHeadingElement(headingEl);
         }
 
@@ -171,5 +254,7 @@ namespace Freude.DocProcessing
 
             OnExternalLinkElement(linkEl);
         }
+
+        private readonly Stack<ParagraphElement> paragraphsStack = new Stack<ParagraphElement> ();
     }
 }
