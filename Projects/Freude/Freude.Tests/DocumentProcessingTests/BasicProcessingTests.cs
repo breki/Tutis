@@ -27,21 +27,25 @@ This is a '''paragraph'''";
         }
 
         [Test]
-        public void HeadingWithAnchor()
+        public void HeadingsShouldBeEscaped()
         {
-            const string Text = @"= Title =
-
-== 1. Heading ==
-=== 1.1 Heading ===
-This is a '''paragraph'''";
+            const string Text = @"= <special> title =";
             const string ExpectedHtml = @"<body>
   <h1>
-    Title
-  </h1><h2>
+    &lt;special&gt; title
+  </h1>
+</body>";
+            fixture.ProcessText (Text, ExpectedHtml);
+        }
+
+        [Test]
+        public void HeadingWithAnchor()
+        {
+            const string Text = @"== 1. Heading ==#link1";
+            const string ExpectedHtml = @"<body>
+  <h2 id=""link1"">
     1. Heading
-  </h2><h3>
-    1.1 Heading
-  </h3><p>This is a <strong>paragraph</strong></p>
+  </h2>
 </body>";
             fixture.ProcessText(Text, ExpectedHtml);
         }

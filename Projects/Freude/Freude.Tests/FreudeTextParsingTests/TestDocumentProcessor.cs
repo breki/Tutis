@@ -33,8 +33,11 @@ namespace Freude.Tests.FreudeTextParsingTests
 
         protected override void OnHeadingElement(HeadingElement headingEl)
         {
+            if (headingEl.AnchorId != null)
+                writer.AddAttribute("id", headingEl.AnchorId);
+
             writer.RenderBeginTag("h{0}".Fmt(headingEl.HeadingLevel));
-            writer.Write(headingEl.HeadingText);
+            writer.WriteEncodedText(headingEl.HeadingText);
             writer.RenderEndTag();
         }
 
@@ -90,7 +93,7 @@ namespace Freude.Tests.FreudeTextParsingTests
                     throw new NotSupportedException();
             }
 
-            writer.Write(textEl.Text);
+            writer.WriteEncodedText(textEl.Text);
 
             switch (textEl.Style)
             {
@@ -116,9 +119,9 @@ namespace Freude.Tests.FreudeTextParsingTests
             writer.RenderBeginTag(HtmlTextWriterTag.A);
 
             if (linkEl.LinkDescription != null)
-                writer.Write (linkEl.LinkDescription);
+                writer.WriteEncodedText(linkEl.LinkDescription);
             else
-                writer.Write (linkEl.LinkId);
+                writer.WriteEncodedText(linkEl.LinkId.ToString());
 
             writer.RenderEndTag();
         }
@@ -129,9 +132,9 @@ namespace Freude.Tests.FreudeTextParsingTests
             writer.RenderBeginTag (HtmlTextWriterTag.A);
 
             if (linkEl.LinkDescription != null)
-                writer.Write (linkEl.LinkDescription);
+                writer.WriteEncodedText(linkEl.LinkDescription);
             else
-                writer.Write (linkEl.Url);
+                writer.Write(linkEl.Url);
 
             writer.RenderEndTag ();
         }
