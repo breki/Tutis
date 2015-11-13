@@ -72,14 +72,14 @@ namespace Freude.Parsing
 
             switch (firstToken.Type)
             {
-                case WikiTextToken.TokenType.Header1Start:
-                case WikiTextToken.TokenType.Header2Start:
-                case WikiTextToken.TokenType.Header3Start:
-                case WikiTextToken.TokenType.Header4Start:
-                case WikiTextToken.TokenType.Header5Start:
-                case WikiTextToken.TokenType.Header6Start:
+                case WikiTextToken.TokenType.Heading1Start:
+                case WikiTextToken.TokenType.Heading2Start:
+                case WikiTextToken.TokenType.Heading3Start:
+                case WikiTextToken.TokenType.Heading4Start:
+                case WikiTextToken.TokenType.Heading5Start:
+                case WikiTextToken.TokenType.Heading6Start:
                     docBuilder.FinalizeCurrentParagraph();
-                    HandleHeaderLine(docBuilder, context, tokenBuffer);
+                    HandleHeadingLine(docBuilder, context, tokenBuffer);
                     break;
 
                 case WikiTextToken.TokenType.Text:
@@ -98,7 +98,7 @@ namespace Freude.Parsing
             }
         }
 
-        private static void HandleHeaderLine (DocumentDefBuilder docBuilder, ParsingContext context, TokenBuffer tokenBuffer)
+        private static void HandleHeadingLine (DocumentDefBuilder docBuilder, ParsingContext context, TokenBuffer tokenBuffer)
         {
             Contract.Requires(docBuilder != null);
             Contract.Requires(context != null);
@@ -107,32 +107,32 @@ namespace Freude.Parsing
             WikiTextToken firstToken = tokenBuffer.Token;
 
             WikiTextToken.TokenType endingTokenNeeded;
-            int headerLevel;
+            int headingLevel;
             switch (firstToken.Type)
             {
-                case WikiTextToken.TokenType.Header1Start:
-                    headerLevel = 1;
-                    endingTokenNeeded = WikiTextToken.TokenType.Header1End;
+                case WikiTextToken.TokenType.Heading1Start:
+                    headingLevel = 1;
+                    endingTokenNeeded = WikiTextToken.TokenType.Heading1End;
                     break;
-                case WikiTextToken.TokenType.Header2Start:
-                    headerLevel = 2;
-                    endingTokenNeeded = WikiTextToken.TokenType.Header2End;
+                case WikiTextToken.TokenType.Heading2Start:
+                    headingLevel = 2;
+                    endingTokenNeeded = WikiTextToken.TokenType.Heading2End;
                     break;
-                case WikiTextToken.TokenType.Header3Start:
-                    headerLevel = 3;
-                    endingTokenNeeded = WikiTextToken.TokenType.Header3End;
+                case WikiTextToken.TokenType.Heading3Start:
+                    headingLevel = 3;
+                    endingTokenNeeded = WikiTextToken.TokenType.Heading3End;
                     break;
-                case WikiTextToken.TokenType.Header4Start:
-                    headerLevel = 4;
-                    endingTokenNeeded = WikiTextToken.TokenType.Header4End;
+                case WikiTextToken.TokenType.Heading4Start:
+                    headingLevel = 4;
+                    endingTokenNeeded = WikiTextToken.TokenType.Heading4End;
                     break;
-                case WikiTextToken.TokenType.Header5Start:
-                    headerLevel = 5;
-                    endingTokenNeeded = WikiTextToken.TokenType.Header5End;
+                case WikiTextToken.TokenType.Heading5Start:
+                    headingLevel = 5;
+                    endingTokenNeeded = WikiTextToken.TokenType.Heading5End;
                     break;
-                case WikiTextToken.TokenType.Header6Start:
-                    headerLevel = 6;
-                    endingTokenNeeded = WikiTextToken.TokenType.Header6End;
+                case WikiTextToken.TokenType.Heading6Start:
+                    headingLevel = 6;
+                    endingTokenNeeded = WikiTextToken.TokenType.Heading6End;
                     break;
 
                 default:
@@ -141,26 +141,26 @@ namespace Freude.Parsing
 
             tokenBuffer.MoveToNextToken();
 
-            StringBuilder headerText = new StringBuilder();
-            if (!ProcessHeaderText(context, tokenBuffer, endingTokenNeeded, headerText))
+            StringBuilder headingText = new StringBuilder();
+            if (!ProcessHeadingText(context, tokenBuffer, endingTokenNeeded, headingText))
                 return;
 
-            HeaderElement headerEl = new HeaderElement (headerText.ToString ().Trim (), headerLevel);
-            docBuilder.AddRootChild(headerEl);
+            HeadingElement headingEl = new HeadingElement (headingText.ToString ().Trim (), headingLevel);
+            docBuilder.AddRootChild(headingEl);
 
             tokenBuffer.MoveToNextToken();
             string anchorId;
-            if (!ProcessHeaderAnchor (context, tokenBuffer, out anchorId))
+            if (!ProcessHeadingAnchor (context, tokenBuffer, out anchorId))
                 return;
 
             tokenBuffer.ProcessUntilEnd (
                 t =>
                 {
-                    context.ReportError("Unexpected token at the end of header");
+                    context.ReportError("Unexpected token at the end of heading");
                     return false;
                 });
 
-            headerEl.AnchorId = anchorId;
+            headingEl.AnchorId = anchorId;
         }
 
         private static void HandleText(
@@ -554,15 +554,15 @@ namespace Freude.Parsing
             return true;
         }
 
-        private static bool ProcessHeaderText(
+        private static bool ProcessHeadingText(
             ParsingContext context, 
             TokenBuffer tokenBuffer, 
             WikiTextToken.TokenType endingTokenNeeded, 
-            StringBuilder headerText)
+            StringBuilder headingText)
         {
             Contract.Requires(context != null);
             Contract.Requires(tokenBuffer != null);
-            Contract.Requires(headerText != null);
+            Contract.Requires(headingText != null);
 
             WikiTextToken.TokenType? actualEndingToken = tokenBuffer.ProcessUntilToken (
                 context, 
@@ -571,13 +571,13 @@ namespace Freude.Parsing
                     switch (t.Type)
                     {
                         case WikiTextToken.TokenType.Text:
-                            headerText.Append(t.Text);
+                            headingText.Append(t.Text);
                             return true;
                         case WikiTextToken.TokenType.DoubleApostrophe:
                         case WikiTextToken.TokenType.TripleApostrophe:
                             throw new NotImplementedException("todo next: add support");
                         default:
-                            context.ReportError("Unexpected token in header definition: {0}".Fmt(t.Text));
+                            context.ReportError("Unexpected token in heading definition: {0}".Fmt(t.Text));
                             return false;
                     }
                 }, 
@@ -586,7 +586,7 @@ namespace Freude.Parsing
             return actualEndingToken != null && actualEndingToken == endingTokenNeeded;
         }
 
-        private static bool ProcessHeaderAnchor(ParsingContext context, TokenBuffer tokenBuffer, out string anchorId)
+        private static bool ProcessHeadingAnchor(ParsingContext context, TokenBuffer tokenBuffer, out string anchorId)
         {
             Contract.Requires(context != null);
             Contract.Requires(tokenBuffer != null);
@@ -595,15 +595,15 @@ namespace Freude.Parsing
             if (!tokenBuffer.EndOfTokens)
             {
                 WikiTextToken token = tokenBuffer.Token;
-                if (token.Type == WikiTextToken.TokenType.HeaderAnchor)
+                if (token.Type == WikiTextToken.TokenType.HeadingAnchor)
                 {
                     tokenBuffer.MoveToNextToken();
-                    if (!FetchHeaderAnchor(context, tokenBuffer, out anchorId))
+                    if (!FetchHeadingAnchor(context, tokenBuffer, out anchorId))
                         return false;
                 }
                 else
                 {
-                    context.ReportError("Unexpected tokens after ending header token");
+                    context.ReportError("Unexpected tokens after ending heading token");
                     return false;
                 }
             }
@@ -611,7 +611,7 @@ namespace Freude.Parsing
             return true;
         }
 
-        private static bool FetchHeaderAnchor(ParsingContext context, TokenBuffer tokenBuffer, out string anchorId)
+        private static bool FetchHeadingAnchor(ParsingContext context, TokenBuffer tokenBuffer, out string anchorId)
         {
             Contract.Requires(context != null);
             Contract.Requires(tokenBuffer != null);
@@ -625,7 +625,7 @@ namespace Freude.Parsing
             string potentialAnchorId = token.Text;
             if (!ValidateAnchor(potentialAnchorId))
             {
-                context.ReportError("Invalid header anchor ID: '{0}'".Fmt(potentialAnchorId));
+                context.ReportError("Invalid heading anchor ID: '{0}'".Fmt(potentialAnchorId));
                 return false;
             }
 

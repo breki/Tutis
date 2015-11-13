@@ -32,8 +32,8 @@ namespace Freude.HtmlGenerating
         [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]
         private static void RenderElement(IDocumentElement element, XmlWriter writer)
         {
-            if (element is HeaderElement)
-                RenderHeaderElement ((HeaderElement)element, writer);
+            if (element is HeadingElement)
+                RenderHeadingElement ((HeadingElement)element, writer);
             else if (element is ImageElement)
                 RenderImageElement ((ImageElement)element, writer);
             else if (element is ParagraphElement)
@@ -44,11 +44,11 @@ namespace Freude.HtmlGenerating
                 throw new NotImplementedException("Rendering of {0} element not yet implemented".Fmt(element.GetType().Name));
         }
 
-        private static void RenderHeaderElement(HeaderElement element, XmlWriter writer)
+        private static void RenderHeadingElement(HeadingElement element, XmlWriter writer)
         {
-            string elName = "h{0}".Fmt(element.HeaderLevel);
+            string elName = "h{0}".Fmt(element.HeadingLevel);
             writer.WriteStartElement (elName);
-            writer.WriteValue(element.HeaderText);
+            writer.WriteValue(element.HeadingText);
             writer.WriteEndElement ();
         }
 
