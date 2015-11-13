@@ -143,10 +143,7 @@ This is a '''paragraph'''");
                 Assert.AreEqual (
 @"<body>
   <ol>
-    <li>item 1</li>
-    <li>item 2</li>
-    <li>item 3</li>
-    <li>item 4</li>
+    <li>item 1</li><li>item 2</li><li>item 3</li><li>item 4</li>
   </ol>
 </body>",
                     result);

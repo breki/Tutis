@@ -48,6 +48,26 @@ namespace Freude.Tests.FreudeTextParsingTests
             writer.RenderEndTag();
         }
 
+        protected override void OnNumberedListBegin(ParagraphElement paragraphEl)
+        {
+            writer.RenderBeginTag (HtmlTextWriterTag.Ol);
+        }
+
+        protected override void OnNumberedListItemBegin(ParagraphElement paragraphEl)
+        {
+            writer.RenderBeginTag (HtmlTextWriterTag.Li);
+        }
+
+        protected override void OnNumberedListItemEnd(ParagraphElement paragraphEl)
+        {
+            writer.RenderEndTag ();
+        }
+
+        protected override void OnNumberedListEnd(ParagraphElement paragraphEl)
+        {
+            writer.RenderEndTag ();
+        }
+
         protected override void OnTextElement(TextElement textEl)
         {
             base.OnTextElement(textEl);
