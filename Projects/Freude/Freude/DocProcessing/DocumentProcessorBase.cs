@@ -19,10 +19,13 @@ namespace Freude.DocProcessing
 
             foreach (IDocumentElement el in doc.Children)
             {
-                if (el is ParagraphElement)
-                    ProcessParagraphElement((ParagraphElement)el);
-                else if (el is HeaderElement)
-                    ProcessHeaderElement((HeaderElement)el);
+                ParagraphElement paragraphEl = el as ParagraphElement;
+                HeaderElement headerEl = el as HeaderElement;
+
+                if (paragraphEl != null)
+                    ProcessParagraphElement(paragraphEl);
+                else if (headerEl != null)
+                    ProcessHeaderElement(headerEl);
                 else
                     throw new NotImplementedException("todo next: {0}".Fmt(el.GetType().Name));
             }
@@ -65,6 +68,20 @@ namespace Freude.DocProcessing
             Contract.Ensures (!ProcessingFinished);
         }
 
+        protected virtual void OnInternalLinkElement (InternalLinkElement linkEl)
+        {
+            Contract.Requires(linkEl != null);
+            Contract.Requires (!ProcessingFinished);
+            Contract.Ensures (!ProcessingFinished);
+        }
+
+        protected virtual void OnExternalLinkElement(ExternalLinkElement linkEl)
+        {
+            Contract.Requires (linkEl != null);
+            Contract.Requires (!ProcessingFinished);
+            Contract.Ensures (!ProcessingFinished);
+        }
+
         protected virtual void OnDocumentEnd (DocumentDef doc)
         {
             Contract.Requires(doc != null);
@@ -81,10 +98,16 @@ namespace Freude.DocProcessing
 
             foreach (IDocumentElement el in paragraphEl.Children)
             {
-                if (el is ParagraphElement)
-                    ProcessParagraphElement ((ParagraphElement)el);
-                else if (el is TextElement)
-                    ProcessTextElement((TextElement)el);
+                TextElement textEl = el as TextElement;
+                InternalLinkElement internalLinkEl = el as InternalLinkElement;
+                ExternalLinkElement externalLinkEl = el as ExternalLinkElement;
+
+                if (textEl != null)
+                    ProcessTextElement(textEl);
+                else if (internalLinkEl != null)
+                    ProcessInternalLinkElement(internalLinkEl);
+                else if (externalLinkEl != null)
+                    ProcessExternalLinkElement (externalLinkEl);
                 else
                     throw new NotImplementedException ("todo next:");
             }
@@ -104,6 +127,20 @@ namespace Freude.DocProcessing
             Contract.Requires(textEl != null);
 
             OnTextElement(textEl);
+        }
+
+        private void ProcessInternalLinkElement(InternalLinkElement linkEl)
+        {
+            Contract.Requires(linkEl != null);
+
+            OnInternalLinkElement(linkEl);
+        }
+
+        private void ProcessExternalLinkElement(ExternalLinkElement linkEl)
+        {
+            Contract.Requires(linkEl != null);
+
+            OnExternalLinkElement(linkEl);
         }
     }
 }

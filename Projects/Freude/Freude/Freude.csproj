@@ -174,9 +174,9 @@
     <Compile Include="StringEx.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\CustomDictionary.xml">
+    <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
       <Link>Properties\CustomDictionary.xml</Link>
-    </Content>
+    </CodeAnalysisDictionary>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\lib\StyleCop\StyleCop.Targets" />

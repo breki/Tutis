@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{67BC74E2-8AB9-401B-95AC-F08EEFC54216}"
 	ProjectSection(SolutionItems) = preProject
 		CodeAnalysisRules.ruleset = CodeAnalysisRules.ruleset
+		CustomDictionary.xml = CustomDictionary.xml
 		Freude.ProjectVersion.txt = Freude.ProjectVersion.txt
 		todo.txt = todo.txt
 	EndProjectSection

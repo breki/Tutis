@@ -1,4 +1,5 @@
 - document processor
+	- is text escaped?
 
 - syntax still to do:
 	- monospace style
