@@ -111,8 +111,8 @@ namespace Freude.Commands
         {
             string freudeText = fileSystem.ReadFileAsString(fileName);
 
-            ParsingContext parsingContext = new ParsingContext();
-            DocumentDef doc = freudeTextParser.ParseText(freudeText, parsingContext);
+            ParsingContext parsingContext;
+            DocumentDef doc = freudeTextParser.ParseText(freudeText, out parsingContext);
 
             // todo: report parsing errors and warnings
 

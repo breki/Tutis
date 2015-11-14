@@ -14,7 +14,12 @@ namespace Freude.DocModel
 
         public string Text
         {
-            get { return text; }
+            get
+            {
+                Contract.Ensures(Contract.Result<System.String>() != null);
+
+                return text;
+            }
         }
 
         public TextStyle Style

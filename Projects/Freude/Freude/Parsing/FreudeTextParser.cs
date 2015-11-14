@@ -15,11 +15,11 @@ namespace Freude.Parsing
             this.tokenizer = tokenizer;
         }
 
-        public DocumentDef ParseText(string text, ParsingContext context)
+        public DocumentDef ParseText(string text, out ParsingContext context)
         {
             DocumentDefBuilder docBuilder = new DocumentDefBuilder();
 
-            context.SetTextLines(text.SplitIntoLines());
+            context = new ParsingContext(text.SplitIntoLines());
 
             while (!context.EndOfText)
             {
@@ -420,7 +420,6 @@ namespace Freude.Parsing
             Contract.Requires(context != null);
             Contract.Requires(token != null);
             Contract.Requires(linkIdBuilder != null);
-            Contract.Requires(internalLinkDescription != null);
 
             if (parsingMode != TextParsingMode.InternalLinkPageName
                 && parsingMode != TextParsingMode.InternalLinkDescription)
