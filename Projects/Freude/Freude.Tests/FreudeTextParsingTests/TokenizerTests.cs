@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Freude.Parsing;
+﻿using Freude.Parsing;
 using NUnit.Framework;
 
 namespace Freude.Tests.FreudeTextParsingTests
@@ -9,257 +8,227 @@ namespace Freude.Tests.FreudeTextParsingTests
         [Test]
         public void TokenizeStuff()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizePart(" text [[link  ]] text 2");
-            Assert.AreEqual(5, tokens.Count);
-            Assert.AreEqual(WikiTextToken.TokenType.Text, tokens[0].Type);
-            Assert.AreEqual(" text ", tokens[0].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.DoubleSquareBracketsOpen, tokens[1].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[2].Type);
-            Assert.AreEqual ("link  ", tokens[2].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.DoubleSquareBracketsClose, tokens[3].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[4].Type);
-            Assert.AreEqual (" text 2", tokens[4].Text);
+            fixture.TokenizePart(" text [[link  ]] text 2")
+                .TokensCount(5)
+                .ExpectText(" text ")
+                .Expect(WikiTextToken.TokenType.DoubleSquareBracketsOpen)
+                .ExpectText("link  ")
+                .Expect(WikiTextToken.TokenType.DoubleSquareBracketsClose)
+                .ExpectText(" text 2");
         }
 
         [Test]
         public void EndingToken()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizePart("text]");
-            Assert.AreEqual (2, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[0].Type);
-            Assert.AreEqual ("text", tokens[0].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.SingleSquareBracketsClose, tokens[1].Type);
+            fixture.TokenizePart("text]")
+                .TokensCount(2)
+                .ExpectText("text")
+                .Expect(WikiTextToken.TokenType.SingleSquareBracketsClose);
         }
 
         [Test]
         public void LineBeginningOnlyTokens()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine("==text===");
-            Assert.AreEqual (3, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.Heading2Start, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
-            Assert.AreEqual ("text", tokens[1].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.Heading3End, tokens[2].Type);
+            fixture.TokenizeWholeLine("==text===")
+                .TokensCount(3)
+                .Expect(WikiTextToken.TokenType.Heading2Start)
+                .ExpectText("text")
+                .Expect(WikiTextToken.TokenType.Heading3End);
         }
 
         [Test]
         public void HeadingAnchor()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("==text==#anchor");
-            Assert.AreEqual (5, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.Heading2Start, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
-            Assert.AreEqual ("text", tokens[1].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.Heading2End, tokens[2].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.HeadingAnchor, tokens[3].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[4].Type);
-            Assert.AreEqual ("anchor", tokens[4].Text);
+            fixture.TokenizeWholeLine ("==text==#anchor")
+                .TokensCount(5)
+                .Expect(WikiTextToken.TokenType.Heading2Start)
+                .ExpectText("text")
+                .Expect(WikiTextToken.TokenType.Heading2End)
+                .Expect(WikiTextToken.TokenType.HeadingAnchor)
+                .ExpectText("anchor");
         }
 
         [Test]
-        public void BoldInMiddleTest()
+        public void BoldInMiddleTest ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("There is something '''bold''' in here");
-            Assert.AreEqual (5, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[1].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[2].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[3].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[4].Type);
+            fixture.TokenizeWholeLine("There is something '''bold''' in here")
+                .TokensCount(5)
+                .Expect(WikiTextToken.TokenType.Text)
+                .Expect(WikiTextToken.TokenType.TripleApostrophe)
+                .Expect(WikiTextToken.TokenType.Text)
+                .Expect(WikiTextToken.TokenType.TripleApostrophe)
+                .Expect(WikiTextToken.TokenType.Text);
         }
 
         [Test]
-        public void BoldAtStartTest()
+        public void BoldAtStartTest ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("'''bold''' in here");
-            Assert.AreEqual (4, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[2].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[3].Type);
+            fixture.TokenizeWholeLine("'''bold''' in here")
+                .TokensCount(4)
+                .Expect(WikiTextToken.TokenType.TripleApostrophe)
+                .Expect(WikiTextToken.TokenType.Text)
+                .Expect(WikiTextToken.TokenType.TripleApostrophe)
+                .Expect(WikiTextToken.TokenType.Text);
         }
 
         [Test]
-        public void ItalicTest()
+        public void ItalicTest ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("There is something ''italic'' in here");
-            Assert.AreEqual (5, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.DoubleApostrophe, tokens[1].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[2].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.DoubleApostrophe, tokens[3].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[4].Type);
+            fixture.TokenizeWholeLine("There is something ''italic'' in here")
+                .TokensCount(5)
+                .Expect(WikiTextToken.TokenType.Text)
+                .Expect(WikiTextToken.TokenType.DoubleApostrophe)
+                .Expect(WikiTextToken.TokenType.Text)
+                .Expect(WikiTextToken.TokenType.DoubleApostrophe)
+                .Expect(WikiTextToken.TokenType.Text);
         }
 
         [Test]
-        public void TokenizeInternalLink()
+        public void TokenizeInternalLink ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine(" text [[link  ]] text 2");
-            Assert.AreEqual (5, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[0].Type);
-            Assert.AreEqual (" text ", tokens[0].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.DoubleSquareBracketsOpen, tokens[1].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[2].Type);
-            Assert.AreEqual ("link  ", tokens[2].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.DoubleSquareBracketsClose, tokens[3].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[4].Type);
-            Assert.AreEqual (" text 2", tokens[4].Text);
+            fixture.TokenizeWholeLine(" text [[link  ]] text 2")
+                .TokensCount(5)
+                .ExpectText(" text ")
+                .Expect(WikiTextToken.TokenType.DoubleSquareBracketsOpen)
+                .ExpectText("link  ")
+                .Expect(WikiTextToken.TokenType.DoubleSquareBracketsClose)
+                .ExpectText(" text 2");
         }
 
         [Test]
-        public void TokenizeInternalLinkWithNamespaces()
+        public void TokenizeInternalLinkWithNamespaces ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine("[[ns : link  ]]");
-            Assert.AreEqual (5, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.DoubleSquareBracketsOpen, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
-            Assert.AreEqual ("ns ", tokens[1].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.NamespaceSeparator, tokens[2].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[3].Type);
-            Assert.AreEqual (" link  ", tokens[3].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.DoubleSquareBracketsClose, tokens[4].Type);
+            fixture.TokenizeWholeLine ("[[ns : link  ]]")
+                .TokensCount (5)
+                .Expect (WikiTextToken.TokenType.DoubleSquareBracketsOpen)
+                .ExpectText ("ns ")
+                .Expect (WikiTextToken.TokenType.NamespaceSeparator)
+                .ExpectText (" link  ")
+                .Expect (WikiTextToken.TokenType.DoubleSquareBracketsClose);
         }
 
         [Test]
-        public void TokenizeExternalLink()
+        public void TokenizeExternalLink ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine (" text [  http://google.com  Google Website ] text 2");
-            Assert.AreEqual (8, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[0].Type);
-            Assert.AreEqual (" text ", tokens[0].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.SingleSquareBracketsOpen, tokens[1].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.ExternalLinkUrlLeadingSpace, tokens[2].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.ExternalLinkUrlLeadingSpace, tokens[3].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.ExternalLinkUrl, tokens[4].Type);
-            Assert.AreEqual ("http://google.com", tokens[4].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[5].Type);
-            Assert.AreEqual ("  Google Website ", tokens[5].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.SingleSquareBracketsClose, tokens[6].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[7].Type);
-            Assert.AreEqual (" text 2", tokens[7].Text);
+            fixture.TokenizeWholeLine (" text [  http://google.com  Google Website ] text 2")
+                .TokensCount(8)
+                .ExpectText(" text ")
+                .Expect(WikiTextToken.TokenType.SingleSquareBracketsOpen)
+                .Expect(WikiTextToken.TokenType.ExternalLinkUrlLeadingSpace)
+                .Expect(WikiTextToken.TokenType.ExternalLinkUrlLeadingSpace)
+                .Expect(WikiTextToken.TokenType.ExternalLinkUrl, "http://google.com")
+                .ExpectText("  Google Website ")
+                .Expect(WikiTextToken.TokenType.SingleSquareBracketsClose)
+                .ExpectText(" text 2");
         }
 
         [Test]
-        public void TokenizeExternalLinkSimple()
+        public void TokenizeExternalLinkSimple ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("[http://google.com]");
-            Assert.AreEqual (3, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.SingleSquareBracketsOpen, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.ExternalLinkUrl, tokens[1].Type);
-            Assert.AreEqual ("http://google.com", tokens[1].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.SingleSquareBracketsClose, tokens[2].Type);
+            fixture.TokenizeWholeLine ("[http://google.com]")
+                .TokensCount(3)
+                .Expect(WikiTextToken.TokenType.SingleSquareBracketsOpen)
+                .Expect(WikiTextToken.TokenType.ExternalLinkUrl, "http://google.com")
+                .Expect(WikiTextToken.TokenType.SingleSquareBracketsClose);
         }
 
         [Test]
-        public void TokenizeBulletList()
+        public void TokenizeBulletList ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("* something here");
-            Assert.AreEqual (2, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.BulletList, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
-            Assert.AreEqual (" something here", tokens[1].Text);
+            fixture.TokenizeWholeLine ("* something here")
+                .TokensCount(2)
+                .Expect(WikiTextToken.TokenType.BulletList)
+                .ExpectText(" something here");
         }
 
         [Test]
-        public void TokenizeBulletListWithExtraBullets()
+        public void TokenizeBulletListWithExtraBullets ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("* something *here*");
-            Assert.AreEqual (2, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.BulletList, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
-            Assert.AreEqual (" something *here*", tokens[1].Text);
+            fixture.TokenizeWholeLine("* something *here*")
+                .TokensCount(2)
+                .Expect(WikiTextToken.TokenType.BulletList)
+                .ExpectText(" something *here*");
         }
 
         [Test]
-        public void TokenizeBulletListWithStyling()
+        public void TokenizeBulletListWithStyling ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("* something '''here'''");
-            Assert.AreEqual (5, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.BulletList, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
-            Assert.AreEqual (" something ", tokens[1].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[2].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[3].Type);
-            Assert.AreEqual ("here", tokens[3].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[4].Type);
+            fixture.TokenizeWholeLine("* something '''here'''")
+                .TokensCount(5)
+                .Expect(WikiTextToken.TokenType.BulletList)
+                .ExpectText(" something ")
+                .Expect(WikiTextToken.TokenType.TripleApostrophe)
+                .ExpectText("here")
+                .Expect(WikiTextToken.TokenType.TripleApostrophe);
         }
 
         [Test]
         public void TokenizeIndentedBulletList ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("** something here");
-            Assert.AreEqual (2, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.BulletList, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
-            Assert.AreEqual (" something here", tokens[1].Text);
+            fixture.TokenizeWholeLine("** something here")
+                .TokensCount(2)
+                .Expect(WikiTextToken.TokenType.BulletList)
+                .ExpectText(" something here");
         }
 
         [Test]
-        public void TokenizeNumberedListWithExtraHashes()
+        public void TokenizeNumberedListWithExtraHashes ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("# something #here#");
-            Assert.AreEqual (2, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.NumberedList, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
-            Assert.AreEqual (" something #here#", tokens[1].Text);
+            fixture.TokenizeWholeLine("# something #here#")
+                .TokensCount(2)
+                .Expect(WikiTextToken.TokenType.NumberedList)
+                .ExpectText(" something #here#");
         }
 
         [Test]
-        public void TokenizeNumberedListWithStyling()
+        public void TokenizeNumberedListWithStyling ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("# something '''here'''");
-            Assert.AreEqual (5, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.NumberedList, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
-            Assert.AreEqual (" something ", tokens[1].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[2].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[3].Type);
-            Assert.AreEqual ("here", tokens[3].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[4].Type);
+            fixture.TokenizeWholeLine("# something '''here'''")
+                .TokensCount(5)
+                .Expect(WikiTextToken.TokenType.NumberedList)
+                .ExpectText(" something ")
+                .Expect(WikiTextToken.TokenType.TripleApostrophe)
+                .ExpectText("here")
+                .Expect(WikiTextToken.TokenType.TripleApostrophe);
         }
 
         [Test]
         public void TokenizeIndentedNumberedList ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine ("## something here");
-            Assert.AreEqual (2, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.NumberedList, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
-            Assert.AreEqual (" something here", tokens[1].Text);
+            fixture.TokenizeWholeLine("## something here")
+                .TokensCount(2)
+                .Expect(WikiTextToken.TokenType.NumberedList)
+                .ExpectText(" something here");
         }
 
         [Test]
-        public void TokenizeIndentedTextWithExtraColons()
+        public void TokenizeIndentedTextWithExtraColons ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine (": something :here:");
-            Assert.AreEqual (2, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.Indent, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
-            Assert.AreEqual (" something :here:", tokens[1].Text);
+            fixture.TokenizeWholeLine(": something :here:")
+                .TokensCount(2)
+                .Expect(WikiTextToken.TokenType.Indent)
+                .ExpectText(" something :here:");
         }
 
         [Test]
-        public void TokenizeIndentedTextWithStyling()
+        public void TokenizeIndentedTextWithStyling ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine (": something '''here'''");
-            Assert.AreEqual (5, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.Indent, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
-            Assert.AreEqual (" something ", tokens[1].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[2].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[3].Type);
-            Assert.AreEqual ("here", tokens[3].Text);
-            Assert.AreEqual (WikiTextToken.TokenType.TripleApostrophe, tokens[4].Type);
+            fixture.TokenizeWholeLine(": something '''here'''")
+                .TokensCount(5)
+                .Expect(WikiTextToken.TokenType.Indent)
+                .ExpectText(" something ")
+                .Expect(WikiTextToken.TokenType.TripleApostrophe)
+                .ExpectText("here")
+                .Expect(WikiTextToken.TokenType.TripleApostrophe);
         }
 
         [Test]
         public void TokenizeMultipleIndentedTextList ()
         {
-            IList<WikiTextToken> tokens = fixture.TokenizeWholeLine (":: something here");
-            Assert.AreEqual (2, tokens.Count);
-            Assert.AreEqual (WikiTextToken.TokenType.Indent, tokens[0].Type);
-            Assert.AreEqual (WikiTextToken.TokenType.Text, tokens[1].Type);
-            Assert.AreEqual (" something here", tokens[1].Text);
+            fixture.TokenizeWholeLine(":: something here")
+                .TokensCount(2)
+                .Expect(WikiTextToken.TokenType.Indent)
+                .ExpectText(" something here");
         }
 
         [SetUp]

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -19,7 +18,6 @@ namespace Freude.Tests.FreudeTextParsingTests
 
         public ParsingFixture()
         {
-            context = new ParsingContext ();
             tokenizer = new WikiTextTokenizer();
             parser = new FreudeTextParser (tokenizer);
         }
@@ -29,7 +27,7 @@ namespace Freude.Tests.FreudeTextParsingTests
             Contract.Requires(text != null);
             Contract.Ensures (Contract.Result<ParsingFixture> () != null);
 
-            doc = parser.ParseText (text, context);
+            doc = parser.ParseText (text, out context);
             return this;
         }
 
@@ -107,23 +105,23 @@ namespace Freude.Tests.FreudeTextParsingTests
             return this;
         }
 
-        public IList<WikiTextToken> TokenizePart(string wikiText)
+        public TokenizerAssert TokenizePart (string wikiText)
         {
             WikiTokenizationSettings settings = new WikiTokenizationSettings();
             settings.IsWholeLine = false;
-            return tokenizer.TokenizeWikiText(wikiText, settings);
+            return new TokenizerAssert(tokenizer.TokenizeWikiText(wikiText, settings));
         }
 
-        public IList<WikiTextToken> TokenizeWholeLine(string wikiText)
+        public TokenizerAssert TokenizeWholeLine (string wikiText)
         {
             WikiTokenizationSettings settings = new WikiTokenizationSettings ();
             settings.IsWholeLine = true;
-            return tokenizer.TokenizeWikiText (wikiText, settings);
+            return new TokenizerAssert(tokenizer.TokenizeWikiText (wikiText, settings));
         }
 
         private readonly WikiTextTokenizer tokenizer;
         private readonly FreudeTextParser parser;
-        private readonly ParsingContext context;
+        private ParsingContext context;
         private DocumentDef doc;
     }
 }

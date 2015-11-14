@@ -6,17 +6,17 @@ namespace Freude.Parsing
     [ContractClass(typeof(IFreudeTextParserContract))]
     public interface IFreudeTextParser
     {
-        DocumentDef ParseText(string text, ParsingContext context);
+        DocumentDef ParseText(string text, out ParsingContext context);
     }
 
     [ContractClassFor(typeof(IFreudeTextParser))]
     internal abstract class IFreudeTextParserContract : IFreudeTextParser
     {
-        DocumentDef IFreudeTextParser.ParseText(string text, ParsingContext context)
+        DocumentDef IFreudeTextParser.ParseText(string text, out ParsingContext context)
         {
             Contract.Requires(text != null);
-            Contract.Requires(context != null);
             Contract.Ensures(Contract.Result<DocumentDef>() != null);
+            Contract.Ensures(Contract.ValueAtReturn(out context) != null);
             throw new System.NotImplementedException();
         }
     }

@@ -150,6 +150,15 @@ and this is another";
             fixture.ProcessText (Text, ExpectedHtml);
         }
 
+        [Test]
+        public void IndentedParagraph ()
+        {
+            const string ExpectedHtml = @"<body>
+  <p class=""indent-1"">This is a <strong>paragraph</strong></p>
+</body>";
+            fixture.ProcessText (@": This is a '''paragraph'''", ExpectedHtml);
+        }
+
         [SetUp]
         public void Setup()
         {

@@ -1,5 +1,5 @@
 - document processor
-	- is text escaped?
+	- mix of numbered lists and bullet list
 
 - syntax still to do:
 	- monospace style

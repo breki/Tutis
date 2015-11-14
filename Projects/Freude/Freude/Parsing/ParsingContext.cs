@@ -7,14 +7,33 @@ namespace Freude.Parsing
 {
     public class ParsingContext
     {
+        public ParsingContext (IEnumerable<string> textLines)
+        {
+            Contract.Requires (textLines != null);
+            Contract.Requires (Contract.ForAll (textLines, x => x != null));
+
+            this.lines = textLines.ToArray ();
+            line = 1;
+
+            //Contract.Assume (Contract.ForAll (lines, x => x != null));
+        }
+
         public IList<Tuple<string, int, int?>> Errors
         {
-            get { return errors; }
+            get
+            {
+                Contract.Ensures (Contract.Result<IList<Tuple<string, int, int?>>> () != null);
+                return errors;
+            }
         }
 
         public int Line
         {
-            get { return line; }
+            get
+            {
+                Contract.Ensures(Contract.Result<int>() >= 1);
+                return line;
+            }
         }
 
         public bool HasAnyErrors
@@ -36,20 +55,8 @@ namespace Freude.Parsing
                 if (EndOfText)
                     throw new InvalidOperationException();
 
-                Contract.Assume(lines[line - 1] != null);
                 return lines[line - 1];
             }
-        }
-
-        public void SetTextLines (IEnumerable<string> textLines)
-        {
-            Contract.Requires(textLines != null);
-            Contract.Requires (Contract.ForAll (textLines, x => x != null));
-
-            this.lines = textLines.ToArray();
-            line = 1;
-
-            Contract.Assume (Contract.ForAll (lines, x => x != null));
         }
 
         public void IncrementLineCounter()
@@ -75,13 +82,12 @@ namespace Freude.Parsing
         {
             Contract.Invariant(line >= 1);
             Contract.Invariant(line <= lines.Length + 1);
+            Contract.Invariant(Contract.ForAll(lines, x => x != null));
             Contract.Invariant(EndOfText || CurrentLine.Length >= 0);
-            Contract.Invariant(lines == null || Contract.ForAll(lines, x => x != null));
-            Contract.Invariant(errors != null);
         }
 
-        private string[] lines;
-        private int line = 1;
+        private readonly string[] lines;
+        private int line;
         private readonly List<Tuple<string, int, int?>> errors = new List<Tuple<string, int, int?>>();
     }
 }

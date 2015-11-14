@@ -16,6 +16,12 @@ namespace Freude.Tests.FreudeTextParsingTests
             get { return resultHtml; }
         }
 
+        public string CssParagraphIndentClass
+        {
+            get { return cssParagraphIndentClass; }
+            set { cssParagraphIndentClass = value; }
+        }
+
         public void Dispose()
         {
             Dispose(true);
@@ -43,6 +49,9 @@ namespace Freude.Tests.FreudeTextParsingTests
 
         protected override void OnParagraphBegin(ParagraphElement el)
         {
+            if (el.Indentation > 0)
+                writer.AddAttribute(HtmlTextWriterAttribute.Class, "{0}-{1}".Fmt(CssParagraphIndentClass, el.Indentation));
+
             writer.RenderBeginTag(HtmlTextWriterTag.P);
         }
 
@@ -199,5 +208,6 @@ namespace Freude.Tests.FreudeTextParsingTests
         private TextWriter textWriter;
         private StringBuilder textBuilder;
         private string resultHtml;
+        private string cssParagraphIndentClass = "indent";
     }
 }

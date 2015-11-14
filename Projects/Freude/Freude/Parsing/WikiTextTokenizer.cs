@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Globalization;
@@ -137,8 +138,8 @@ namespace Freude.Parsing
             int charOffset, 
             char textChar)
         {
-            Contract.Requires(tokenIndex >= 0 && tokenIndex < partiallyMatchingTokens.Count);
-            Contract.Ensures(tokenIndex >= 0 && tokenIndex < partiallyMatchingTokens.Count);
+            Contract.Requires (tokenIndex >= 0 && tokenIndex < partiallyMatchingTokens.Count);
+            Contract.Ensures (tokenIndex >= 0 && tokenIndex <= partiallyMatchingTokens.Count);
 
             WikiTextTokenDef tokenDef = partiallyMatchingTokens[tokenIndex];
 
