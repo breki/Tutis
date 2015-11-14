@@ -86,6 +86,70 @@ and this is another";
             fixture.ProcessText (Text, ExpectedHtml);
         }
 
+        [Test]
+        public void BulletList()
+        {
+            const string Text = @"* item 1
+* item 2
+* item 3
+  
+* item 4";
+            const string ExpectedHtml = @"<body>
+  <ul>
+    <li>item 1</li><li>item 2</li><li>item 3</li><li>item 4</li>
+  </ul>
+</body>";
+            fixture.ProcessText(Text, ExpectedHtml);
+        }
+
+        [Test]
+        public void MultilineBulletListItems()
+        {
+            const string Text = @"* item 1
+* item 2
+that continues here";
+            const string ExpectedHtml = @"<body>
+  <ul>
+    <li>item 1</li><li>item 2 that continues here</li>
+  </ul>
+</body>";
+            fixture.ProcessText (Text, ExpectedHtml);
+        }
+
+        [Test]
+        public void BulletListBetweenParagraphs()
+        {
+            const string Text = @"this is a paragraph
+* item 1
+* item 2
+
+and this is another";
+            const string ExpectedHtml = @"<body>
+  <p>this is a paragraph</p><ul>
+    <li>item 1</li><li>item 2</li>
+  </ul><p>and this is another</p>
+</body>";
+            fixture.ProcessText (Text, ExpectedHtml);
+        }
+
+        [Test]
+        public void MultilevelBulletLists()
+        {
+            const string Text = @"
+* item 1
+** item 11
+** item 22
+* item 2";
+            const string ExpectedHtml = @"<body>
+  <ul>
+    <li>item 1<ul>
+      <li>item 11</li><li>item 22</li>
+    </ul></li><li>item 2</li>
+  </ul>
+</body>";
+            fixture.ProcessText (Text, ExpectedHtml);
+        }
+
         [SetUp]
         public void Setup()
         {

@@ -72,6 +72,26 @@ namespace Freude.DocProcessing
             Contract.Requires (paragraphEl != null);
         }
 
+        protected virtual void OnBulletListBegin(ParagraphElement paragraphEl)
+        {
+            Contract.Requires (paragraphEl != null);
+        }
+
+        protected virtual void OnBulletListItemBegin(ParagraphElement paragraphEl)
+        {
+            Contract.Requires (paragraphEl != null);
+        }
+
+        protected virtual void OnBulletListItemEnd(ParagraphElement paragraphEl)
+        {
+            Contract.Requires (paragraphEl != null);
+        }
+
+        protected virtual void OnBulletListEnd(ParagraphElement paragraphEl)
+        {
+            Contract.Requires (paragraphEl != null);
+        }
+
         protected virtual void OnTextElement(TextElement textEl)
         {
             Contract.Requires(textEl != null);
@@ -128,7 +148,13 @@ namespace Freude.DocProcessing
         {
             Contract.Requires(paragraphEl != null);
 
-            throw new NotImplementedException();
+            bool beginsNewList = EnsureParagraphStackIsClearedUntil (paragraphEl);
+
+            if (beginsNewList)
+                OnBulletListBegin (paragraphEl);
+
+            OnBulletListItemBegin (paragraphEl);
+            ProcessParagraphContents (paragraphEl);
         }
 
         private void ProcessNumberedParagraphElement(ParagraphElement paragraphEl)
@@ -174,7 +200,9 @@ namespace Freude.DocProcessing
                 switch (stackedParagraph.Type)
                 {
                     case ParagraphElement.ParagraphType.Bulleted:
-                        throw new NotImplementedException("todo next:");
+                        OnBulletListItemEnd (stackedParagraph);
+                        OnBulletListEnd (stackedParagraph);
+                        break;
                     case ParagraphElement.ParagraphType.Numbered:
                         OnNumberedListItemEnd(stackedParagraph);
                         OnNumberedListEnd(stackedParagraph);
@@ -199,6 +227,7 @@ namespace Freude.DocProcessing
                         switch (stackedParagraph.Type)
                         {
                             case ParagraphElement.ParagraphType.Bulleted:
+                                OnBulletListItemEnd(stackedParagraph);
                                 break;
                             case ParagraphElement.ParagraphType.Numbered:
                                 OnNumberedListItemEnd(stackedParagraph);
@@ -221,12 +250,14 @@ namespace Freude.DocProcessing
                         return true;                        
                     }
 
+                    paragraphsStack.Pop ();
+
                     switch (stackedParagraph.Type)
                     {
                         case ParagraphElement.ParagraphType.Bulleted:
+                            OnBulletListEnd(stackedParagraph);
                             break;
                         case ParagraphElement.ParagraphType.Numbered:
-                            paragraphsStack.Pop();
                             OnNumberedListEnd(stackedParagraph);
                             break;
                         default:
