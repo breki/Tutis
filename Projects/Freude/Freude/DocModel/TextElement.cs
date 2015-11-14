@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Text;
 
 namespace Freude.DocModel
 {
@@ -8,7 +9,7 @@ namespace Freude.DocModel
         public TextElement(string text, TextStyle style = TextStyle.Regular)
         {
             Contract.Requires(text != null);
-            this.text = text;
+            textBuilder = new StringBuilder(text);
             this.style = style;
         }
 
@@ -16,9 +17,9 @@ namespace Freude.DocModel
         {
             get
             {
-                Contract.Ensures(Contract.Result<System.String>() != null);
+                Contract.Ensures(Contract.Result<string>() != null);
 
-                return text;
+                return textBuilder.ToString();
             }
         }
 
@@ -32,27 +33,35 @@ namespace Freude.DocModel
             if (textToAppend == null)
                 throw new ArgumentNullException("textToAppend");
 
-            text += ' ' + textToAppend.Trim();
+            bool existingTextEndsWithWhitespace = textBuilder.Length > 0 && textBuilder[textBuilder.Length-1] == ' ';
+            bool textToAppendEndsWithWhitespace = textToAppend.EndsWith(" ");
+
+            if (!existingTextEndsWithWhitespace)
+                textBuilder.Append(' ');
+
+            textBuilder.Append(textToAppend.Trim());
+            if (textToAppendEndsWithWhitespace)
+                textBuilder.Append(' ');
         }
 
         public void TrimStart()
         {
-            text = text.TrimStart();
+            textBuilder = new StringBuilder(textBuilder.ToString().TrimStart());
         }
 
         public void TrimEnd()
         {
-            text = text.TrimEnd();
+            textBuilder = new StringBuilder (textBuilder.ToString ().TrimEnd());
         }
 
         [ContractInvariantMethod]
         private void Invariant()
         {
-            Contract.Invariant(text != null);
+            Contract.Invariant(textBuilder != null);
         }
 
-        private string text;
         private readonly TextStyle style;
+        private StringBuilder textBuilder;
 
         public enum TextStyle
         {

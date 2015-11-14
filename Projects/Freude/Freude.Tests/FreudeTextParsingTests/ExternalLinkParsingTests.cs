@@ -57,7 +57,32 @@ namespace Freude.Tests.FreudeTextParsingTests
         {
             fixture.Parse ("[ http://google.com  Google Website ").AssertError ("Missing token ']'");
         }
-        
+
+        [Test]
+        public void InvalidUrl()
+        {
+            fixture.Parse ("[google.com]")
+                .AssertError ("Invalid external link URL 'google.com': Invalid URI: The format of the URI could not be determined.");
+        }
+
+        [Test]
+        public void IfSpaceIsBetweenTextAndLinkItShouldBePreserved()
+        {
+            const string Text = @"First line.
+See [[#UsingAi]] section for more details.";
+
+            fixture.Parse (Text)
+                .AssertNoErrors ()
+                .AssertChildCount (1);
+
+            var par = fixture.AssertElement<ParagraphElement> (0);
+            Assert.AreEqual (3, par.ChildrenCount);
+            fixture.AssertText (par, 0, "First line. See ");
+            var link = fixture.AssertElement<InternalLinkElement> (par, 1);
+            Assert.AreEqual ("#UsingAi", link.LinkId.ToString());
+            fixture.AssertText (par, 2, " section for more details.");
+        }
+
         [SetUp]
         public void Setup ()
         {
