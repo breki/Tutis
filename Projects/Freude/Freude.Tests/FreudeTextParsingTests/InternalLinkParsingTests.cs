@@ -96,6 +96,20 @@ namespace Freude.Tests.FreudeTextParsingTests
             Assert.AreEqual ("Main Page", link.LinkId.PageName);            
         }
 
+        [Test]
+        public void IfSpaceIsBetweenTextAndLinkItShouldBePreserved ()
+        {
+            fixture.Parse ("this is [[#something]]")
+                .AssertNoErrors ()
+                .AssertChildCount (1);
+
+            var par = fixture.AssertElement<ParagraphElement> (0);
+            Assert.AreEqual (2, par.ChildrenCount);
+            fixture.AssertText (par, 0, "this is ");
+            var link = fixture.AssertElement<InternalLinkElement> (par, 1);
+            Assert.AreEqual ("#something", link.LinkId.ToString());
+        }
+
         [SetUp]
         public void Setup ()
         {

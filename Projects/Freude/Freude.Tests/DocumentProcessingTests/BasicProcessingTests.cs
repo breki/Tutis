@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Web.Compilation;
 using NUnit.Framework;
 
 namespace Freude.Tests.DocumentProcessingTests

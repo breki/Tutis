@@ -474,7 +474,18 @@ namespace Freude.Parsing
                 return false;
             }
 
-            externalLinkUrl = new Uri(token.Text.Trim());
+            string uriString = token.Text.Trim ();
+
+            try
+            {
+                externalLinkUrl = new Uri(uriString);
+            }
+            catch (UriFormatException ex)
+            {
+                context.ReportError ("Invalid external link URL '{0}': {1}".Fmt(uriString, ex.Message));
+                return false;
+            }
+
             parsingMode = TextParsingMode.ExternalLinkDescription;
 
             return true;
