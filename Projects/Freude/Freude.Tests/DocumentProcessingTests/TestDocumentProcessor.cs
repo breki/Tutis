@@ -7,7 +7,7 @@ using Brejc.Common;
 using Freude.DocModel;
 using Freude.DocProcessing;
 
-namespace Freude.Tests.FreudeTextParsingTests
+namespace Freude.Tests.DocumentProcessingTests
 {
     public class TestDocumentProcessor : DocumentProcessorBase, IDisposable
     {

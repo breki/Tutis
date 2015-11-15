@@ -159,6 +159,7 @@
     <Compile Include="DocumentProcessingTests\BasicProcessingTests.cs" />
     <Compile Include="DocumentProcessingTests\ParagraphsProcessingTests.cs" />
     <Compile Include="DocumentProcessingTests\ProcessingFixture.cs" />
+    <Compile Include="DocumentProcessingTests\TestDocumentProcessor.cs" />
     <Compile Include="FileStructureMocker.cs" />
     <Compile Include="FreudeTextParsingTests\BulletListParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\ExternalLinkParsingTests.cs" />
@@ -168,7 +169,6 @@
     <Compile Include="FreudeTextParsingTests\NumberedListParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\ParagraphParsingTests.cs" />
     <Compile Include="FreudeTextParsingTests\ParsingFixture.cs" />
-    <Compile Include="FreudeTextParsingTests\TestDocumentProcessor.cs" />
     <Compile Include="FreudeTextParsingTests\TokenizerAssert.cs" />
     <Compile Include="FreudeTextParsingTests\TokenizerTests.cs" />
     <Compile Include="ProjectServicesTests\ProjectBuilderTests.cs" />

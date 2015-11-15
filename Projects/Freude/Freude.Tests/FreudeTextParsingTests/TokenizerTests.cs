@@ -145,6 +145,18 @@ namespace Freude.Tests.FreudeTextParsingTests
         }
 
         [Test]
+        public void TokenizeExternalLink2()
+        {
+            fixture.TokenizeWholeLine ("See [http://google.com] section")
+                .TokensCount (5)
+                .ExpectText ("See ")
+                .Expect (WikiTextToken.TokenType.SingleSquareBracketsOpen)
+                .Expect (WikiTextToken.TokenType.ExternalLinkUrl, "http://google.com")
+                .Expect (WikiTextToken.TokenType.SingleSquareBracketsClose)
+                .ExpectText (" section");
+        }
+
+        [Test]
         public void TokenizeBulletList ()
         {
             fixture.TokenizeWholeLine ("* something here")
