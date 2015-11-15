@@ -1,11 +1,11 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using Brejc.Common.Console;
 using Brejc.Common.FileSystem;
 using Freude.DocModel;
-using Freude.HtmlGenerating;
 using Freude.Parsing;
 using Freude.ProjectServices;
 using Freude.Templating;
@@ -22,19 +22,16 @@ namespace Freude.Commands
             IFileSystem fileSystem, 
             IProjectBuilder projectBuilder,
             IFreudeTextParser freudeTextParser,
-            IHtmlGenerator htmlGenerator,
             IFreudeTemplatingEngine freudeTemplatingEngine)
         {
             Contract.Requires(fileSystem != null);
             Contract.Requires(projectBuilder != null);
             Contract.Requires(freudeTextParser != null);
-            Contract.Requires(htmlGenerator != null);
             Contract.Requires(freudeTemplatingEngine != null);
 
             this.fileSystem = fileSystem;
             this.projectBuilder = projectBuilder;
             this.freudeTextParser = freudeTextParser;
-            this.htmlGenerator = htmlGenerator;
             this.freudeTemplatingEngine = freudeTemplatingEngine;
 
             AddArg ("project source dir", "path to the project source directory").Value ((x, env) => projectSourceDirectory = x);
@@ -114,19 +111,20 @@ namespace Freude.Commands
             ParsingContext parsingContext;
             DocumentDef doc = freudeTextParser.ParseText(freudeText, out parsingContext);
 
-            // todo: report parsing errors and warnings
+            throw new NotImplementedException();
+            //// todo: report parsing errors and warnings
 
-            string docHtml = htmlGenerator.GenerateHtml(doc);
+            //string docHtml = htmlGenerator.GenerateHtml(doc);
 
-            ICompiledRazorTemplate template = project.GetTemplate("default");
-            string expandedBody = freudeTemplatingEngine.ExpandTemplate(template, doc, docHtml, project);
+            //ICompiledRazorTemplate template = project.GetTemplate("default");
+            //string expandedBody = freudeTemplatingEngine.ExpandTemplate(template, doc, docHtml, project);
 
-            string destinationFileName = ConstructDestinationFileName (fileName);
-            destinationFileName = Path.ChangeExtension(destinationFileName, expandedFileExtension);
+            //string destinationFileName = ConstructDestinationFileName (fileName);
+            //destinationFileName = Path.ChangeExtension(destinationFileName, expandedFileExtension);
 
-            fileSystem.EnsureDirectoryExists(Path.GetDirectoryName(destinationFileName));
-            fileSystem.WriteFile(destinationFileName, expandedBody, Encoding.UTF8);
-            log.InfoFormat ("Built file '{0}'", destinationFileName);
+            //fileSystem.EnsureDirectoryExists(Path.GetDirectoryName(destinationFileName));
+            //fileSystem.WriteFile(destinationFileName, expandedBody, Encoding.UTF8);
+            //log.InfoFormat ("Built file '{0}'", destinationFileName);
         }
 
         private void CopyFileToBuildDir(string fileName)
@@ -152,7 +150,6 @@ namespace Freude.Commands
         private readonly IFileSystem fileSystem;
         private readonly IProjectBuilder projectBuilder;
         private readonly IFreudeTextParser freudeTextParser;
-        private readonly IHtmlGenerator htmlGenerator;
         private readonly IFreudeTemplatingEngine freudeTemplatingEngine;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }

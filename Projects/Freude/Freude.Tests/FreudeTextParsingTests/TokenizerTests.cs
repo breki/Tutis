@@ -107,6 +107,18 @@ namespace Freude.Tests.FreudeTextParsingTests
                 .Expect (WikiTextToken.TokenType.DoubleSquareBracketsClose);
         }
 
+        [Test, Ignore("todo")]
+        public void TokenizeInternalLinkWithSeveralPipes()
+        {
+            fixture.TokenizeWholeLine ("[[image:monkey.png||]]")
+                .TokensCount (5)
+                .Expect (WikiTextToken.TokenType.DoubleSquareBracketsOpen)
+                .ExpectText ("ns ")
+                .Expect (WikiTextToken.TokenType.NamespaceSeparator)
+                .ExpectText (" link  ")
+                .Expect (WikiTextToken.TokenType.DoubleSquareBracketsClose);
+        }
+
         [Test]
         public void TokenizeExternalLink ()
         {

@@ -5,7 +5,6 @@ using Brejc.Common.Console;
 using Brejc.Common.FileSystem;
 using Brejc.Common.Ftp;
 using Freude.Commands;
-using Freude.HtmlGenerating;
 using Freude.Parsing;
 using Freude.ProjectServices;
 using Freude.Templating;
@@ -31,14 +30,13 @@ namespace Freude
             IFtpChannelFactory ftpChannelFactory = new FtpChannelFactoryUsingSockets ();
             IFtpCommunicator ftpCommunicator = new FtpCommunicator ();
             IFtpSessionFactory ftpSessionFactory = new FtpSessionFactory(ftpChannelFactory, ftpCommunicator, fileSystem);
-            IHtmlGenerator htmlGenerator = new HtmlGenerator();
             IFreudeTemplatingEngine freudeTemplatingEngine = new FreudeTemplatingEngine (razorCompiler);
             IWikiTextTokenizer wikiTextTokenizer = new WikiTextTokenizer();
             IFreudeTextParser freudeTextParser = new FreudeTextParser (wikiTextTokenizer);
             IProjectBuilder projectBuilder = new ProjectBuilder (fileSystem);
 
             ConsoleShell consoleShell = new ConsoleShell ("ScalableMaps.Mapmaker.exe");
-            consoleShell.RegisterCommand (new BuildCommand (fileSystem, projectBuilder, freudeTextParser, htmlGenerator, freudeTemplatingEngine));
+            consoleShell.RegisterCommand (new BuildCommand (fileSystem, projectBuilder, freudeTextParser, freudeTemplatingEngine));
             consoleShell.RegisterCommand (new DeployCommand(projectBuilder, ftpSessionFactory));
 
             try

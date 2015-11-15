@@ -117,8 +117,6 @@
     <Compile Include="Commands\BuildCommand.cs" />
     <Compile Include="Commands\DeployCommand.cs" />
     <Compile Include="FreudeProject.cs" />
-    <Compile Include="HtmlGenerating\HtmlGenerator.cs" />
-    <Compile Include="HtmlGenerating\IHtmlGenerator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectServices\IProjectBuilder.cs" />
     <Compile Include="ProjectServices\ProjectBuilder.cs" />
