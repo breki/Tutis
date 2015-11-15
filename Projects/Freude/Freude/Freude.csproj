@@ -152,7 +152,6 @@
     <Compile Include="DocModel\HeadingElement.cs" />
     <Compile Include="DocModel\IDocumentElement.cs" />
     <Compile Include="DocModel\IDocumentElementContainer.cs" />
-    <Compile Include="DocModel\ImageElement.cs" />
     <Compile Include="DocModel\InternalLinkElement.cs" />
     <Compile Include="DocModel\InternalLinkId.cs" />
     <Compile Include="DocModel\ParagraphElement.cs" />
