@@ -42,6 +42,9 @@ namespace Freude.Parsing
                 else
                 {
                     AddToTextToken (index, ref textTokenStart);
+                    // be sure to remove any LineStart scopes
+                    if ((scope & (int)WikiTextTokenScopes.LineStart) != 0)
+                        scope = (scope | (int)WikiTextTokenScopes.InnerText) & ~(int)WikiTextTokenScopes.LineStart;
                     index++;
                 }
             }
