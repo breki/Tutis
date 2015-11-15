@@ -37,7 +37,7 @@ namespace Freude.Parsing
             currentParagraph.AddChild (elementToAdd);
         }
 
-        public void AddTextToParagraph (string text)
+        public void AddTextToParagraph (string text, bool isFirstElementOfContinuedLine)
         {
             Contract.Requires(text != null);
 
@@ -54,11 +54,13 @@ namespace Freude.Parsing
                     if (textChild.Style == currentParagraphTextStyle.Value)
                         textChild.AppendText (text);
                     else
-                        AddTextElementToParagraph (currentParagraph, text, currentParagraphTextStyle.Value);
+                        AddTextElementToParagraph (
+                            currentParagraph, text, currentParagraphTextStyle.Value, isFirstElementOfContinuedLine);
                 }
-                else if (lastChild is InternalLinkElement)
+                else if (lastChild is InternalLinkElement || lastChild is ExternalLinkElement)
                     // ReSharper disable once PossibleInvalidOperationException
-                    AddTextElementToParagraph (currentParagraph, text, currentParagraphTextStyle.Value);
+                    AddTextElementToParagraph (
+                        currentParagraph, text, currentParagraphTextStyle.Value, isFirstElementOfContinuedLine);
                 else
                     throw new InvalidOperationException ("BUG: is this possible?");
             }
@@ -89,11 +91,17 @@ namespace Freude.Parsing
             }
         }
 
-        private static void AddTextElementToParagraph (ParagraphElement paragraph, string text, TextElement.TextStyle currentStyle)
+        private static void AddTextElementToParagraph (
+            ParagraphElement paragraph, 
+            string text, 
+            TextElement.TextStyle currentStyle,
+            bool insertSpaceBefore)
         {
             Contract.Requires (paragraph != null);
             Contract.Requires (text != null);
-            TextElement newStyleChild = CreateTextElement (text, currentStyle);
+            TextElement newStyleChild = CreateTextElement (
+                insertSpaceBefore ? ' ' + text : text, 
+                currentStyle);
             paragraph.AddChild (newStyleChild);
         }
 

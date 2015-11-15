@@ -69,7 +69,7 @@ namespace Freude.Tests.FreudeTextParsingTests
         public void IfSpaceIsBetweenTextAndLinkItShouldBePreserved()
         {
             const string Text = @"First line.
-See [[#UsingAi]] section for more details.";
+See [http://google.com] section for more details.";
 
             fixture.Parse (Text)
                 .AssertNoErrors ()
@@ -78,8 +78,7 @@ See [[#UsingAi]] section for more details.";
             var par = fixture.AssertElement<ParagraphElement> (0);
             Assert.AreEqual (3, par.ChildrenCount);
             fixture.AssertText (par, 0, "First line. See ");
-            var link = fixture.AssertElement<InternalLinkElement> (par, 1);
-            Assert.AreEqual ("#UsingAi", link.LinkId.ToString());
+            var link = fixture.AssertElement<ExternalLinkElement> (par, 1);
             fixture.AssertText (par, 2, " section for more details.");
         }
 
