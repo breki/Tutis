@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Contracts;
+using System.Globalization;
 
 namespace Freude.Parsing
 {
@@ -27,6 +28,11 @@ namespace Freude.Parsing
         public WikiTextTokenScopes Scopes
         {
             get { return scopes; }
+        }
+
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.InvariantCulture, "{0} ('{1}')", tokenType, text);
         }
 
         private readonly TokenType tokenType;

@@ -23,12 +23,12 @@ namespace Freude.Tests.FreudeTextParsingTests
         {
             fixture.Parse (@"this is some text
    and this too
-and this too ")
+and this: too ")
                 .AssertNoErrors ()
                 .AssertChildCount (1);
 
             var par = fixture.AssertElement<ParagraphElement> (0);
-            fixture.AssertText(par, 0, @"this is some text and this too and this too");
+            fixture.AssertText(par, 0, @"this is some text and this too and this: too");
         }
 
         [Test]

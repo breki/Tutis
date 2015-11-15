@@ -243,6 +243,14 @@ namespace Freude.Tests.FreudeTextParsingTests
                 .ExpectText(" something here");
         }
 
+        [Test]
+        public void ColonInsideTextShouldNotBeTreatedAsIndent ()
+        {
+            fixture.TokenizeWholeLine("(menu:")
+                .TokensCount(1)
+                .ExpectText("(menu:");
+        }
+
         [SetUp]
         public void Setup ()
         {
