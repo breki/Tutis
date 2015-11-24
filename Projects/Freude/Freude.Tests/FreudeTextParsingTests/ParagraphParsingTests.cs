@@ -85,10 +85,24 @@ par 2 line 2 ")
         }
 
         [Test] 
-        public void NewlineBetweenDifferentStyledTextElementsShouldBecomeSpace()
+        public void NewlineBetweenDifferentStyledTextElementsShouldBecomeSpace1()
         {
             fixture.Parse (@"'''line 1'''
 line 2")
+                .AssertNoErrors ()
+                .AssertChildCount (1);
+
+            var par = fixture.AssertElement<ParagraphElement> (0);
+            Assert.AreEqual(2, par.ChildrenCount);
+            fixture.AssertText (par, 0, @"line 1");
+            fixture.AssertText (par, 1, @" line 2");
+        }
+
+        [Test] 
+        public void NewlineBetweenDifferentStyledTextElementsShouldBecomeSpace2()
+        {
+            fixture.Parse (@"line 1
+'''line 2'''")
                 .AssertNoErrors ()
                 .AssertChildCount (1);
 

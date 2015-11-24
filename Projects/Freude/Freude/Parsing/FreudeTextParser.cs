@@ -176,13 +176,12 @@ namespace Freude.Parsing
             InternalLinkIdBuilder internalLinkBuilder = new InternalLinkIdBuilder ();
             StringBuilder textBuilder = null;
             Uri externalLinkUrl = null;
-            bool isFirstElementOfContinuedLine = true;
+            bool isFirstTextElementOfContinuedLine = true;
 
             bool processingSuccessful = tokenBuffer.ProcessUntilEnd (
                 t =>
                 {
-                    bool flagCopy = isFirstElementOfContinuedLine;
-                    isFirstElementOfContinuedLine = false;
+                    bool flagCopy = isFirstTextElementOfContinuedLine;
 
                     switch (t.Type)
                     {
@@ -196,8 +195,11 @@ namespace Freude.Parsing
                             return HandleIndentTokenInText(docBuilder, t);
 
                         case WikiTextToken.TokenType.Text:
+                        {
+                            isFirstTextElementOfContinuedLine = false;
                             return HandleTextTokenInText(
                                 docBuilder, parsingMode, t, flagCopy, internalLinkBuilder, ref textBuilder);
+                        }
 
                         case WikiTextToken.TokenType.TripleApostrophe:
                             return HandleTripleApostropheTokenInText(docBuilder);
