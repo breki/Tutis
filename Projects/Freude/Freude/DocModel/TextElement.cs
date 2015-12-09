@@ -34,7 +34,7 @@ namespace Freude.DocModel
                 throw new ArgumentNullException("textToAppend");
 
             bool existingTextEndsWithWhitespace = textBuilder.Length > 0 && textBuilder[textBuilder.Length-1] == ' ';
-            bool textToAppendEndsWithWhitespace = textToAppend.EndsWith(" ");
+            bool textToAppendEndsWithWhitespace = textToAppend.EndsWith(" ", StringComparison.Ordinal);
 
             if (!existingTextEndsWithWhitespace)
                 textBuilder.Append(' ');
