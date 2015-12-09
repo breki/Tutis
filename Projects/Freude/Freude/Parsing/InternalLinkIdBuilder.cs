@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text;
 using Freude.DocModel;
@@ -8,20 +7,32 @@ namespace Freude.Parsing
 {
     public class InternalLinkIdBuilder
     {
+        public bool WasBuilt
+        {
+            get { return wasBuilt; }
+        }
+
         public void AppendText(string text)
         {
             Contract.Requires(text != null);
+            Contract.Requires(!WasBuilt);
             currentPartBuilder.Append(text);
         }
 
         public void AddSeparator()
         {
-            FinalizeCurrentPart();
+            Contract.Requires (!WasBuilt);
+
+            FinalizeCurrentPart ();
         }
 
         public InternalLinkId Build(ParsingContext context)
         {
             Contract.Requires(context != null);
+            Contract.Requires(!WasBuilt);
+            Contract.Ensures(WasBuilt);
+
+            wasBuilt = true;
 
             if (currentPartBuilder.Length > 0)
                 FinalizeCurrentPart();
@@ -33,7 +44,7 @@ namespace Freude.Parsing
             }
 
             List<string> namespaceParts = new List<string>();
-
+                
             for (int i = 0; i < parts.Count - 1; i++)
             {
                 string partText = parts[i].Trim();
@@ -66,5 +77,6 @@ namespace Freude.Parsing
 
         private readonly List<string> parts = new List<string>();
         private readonly StringBuilder currentPartBuilder = new StringBuilder();
+        private bool wasBuilt;
     }
 }

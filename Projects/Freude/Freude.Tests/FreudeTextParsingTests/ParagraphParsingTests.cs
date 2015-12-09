@@ -85,7 +85,7 @@ par 2 line 2 ")
         }
 
         [Test] 
-        public void NewlineBetweenDifferentStyledTextElementsShouldBecomeSpace1()
+        public void NewLineBetweenDifferentStyledTextElementsShouldBecomeSpace1()
         {
             fixture.Parse (@"'''line 1'''
 line 2")
@@ -99,7 +99,7 @@ line 2")
         }
 
         [Test] 
-        public void NewlineBetweenDifferentStyledTextElementsShouldBecomeSpace2()
+        public void NewLineBetweenDifferentStyledTextElementsShouldBecomeSpace2()
         {
             fixture.Parse (@"line 1
 '''line 2'''")

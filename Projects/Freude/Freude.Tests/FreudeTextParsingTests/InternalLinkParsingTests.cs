@@ -110,6 +110,23 @@ namespace Freude.Tests.FreudeTextParsingTests
             Assert.AreEqual ("#something", link.LinkId.ToString());
         }
 
+        [Test]
+        public void MultipleInternalLinksOnTheSameLine()
+        {
+            fixture.Parse("available for [[help:Features#ContinentalThemes|continental]] and [[help:Features#WorldThemes|world]] themes)")
+                .AssertNoErrors ()
+                .AssertChildCount (1);
+
+            var par = fixture.AssertElement<ParagraphElement> (0);
+            Assert.AreEqual (5, par.ChildrenCount);
+            var link = fixture.AssertElement<InternalLinkElement> (par, 1);
+            Assert.AreEqual ("help:Features#ContinentalThemes", link.LinkId.ToString ());
+            Assert.AreEqual ("continental", link.LinkDescription);
+            link = fixture.AssertElement<InternalLinkElement> (par, 3);
+            Assert.AreEqual ("help:Features#WorldThemes", link.LinkId.ToString ());
+            Assert.AreEqual ("world", link.LinkDescription);
+        }
+
         [SetUp]
         public void Setup ()
         {
