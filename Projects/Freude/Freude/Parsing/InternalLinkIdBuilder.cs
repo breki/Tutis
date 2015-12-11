@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text;
 using Freude.DocModel;
@@ -12,10 +13,20 @@ namespace Freude.Parsing
             get { return wasBuilt; }
         }
 
+        public void Clear ()
+        {
+            Contract.Ensures (!WasBuilt);
+
+            wasBuilt = false;
+            parts.Clear();
+            currentPartBuilder.Clear();
+        }
+
         public void AppendText(string text)
         {
             Contract.Requires(text != null);
             Contract.Requires(!WasBuilt);
+
             currentPartBuilder.Append(text);
         }
 

@@ -436,7 +436,14 @@ namespace Freude.Parsing
             }
 
             parsingMode = TextParsingMode.RegularText;
-            return AddInternalLink(docBuilder, context, linkIdBuilder, internalLinkDescription);
+            bool result = AddInternalLink(docBuilder, context, linkIdBuilder, internalLinkDescription);
+
+            linkIdBuilder.Clear();
+
+            if (internalLinkDescription != null)
+                internalLinkDescription.Clear();
+
+            return result;
         }
 
         private static bool HandleSingleSquareBracketsOpenTokenInText (
