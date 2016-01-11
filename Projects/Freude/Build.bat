@@ -1,1 +1,0 @@
-lib\cs-script\cscs.exe /verbose /sconfig /nl BuildScripts\BuildScript.cs %*
