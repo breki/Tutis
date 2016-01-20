@@ -7,6 +7,7 @@ namespace SelfSignedHttpsListener
         public static int Main (string[] args)
         {
             ConsoleShell consoleShell = new ConsoleShell("ScalableMaps.Mapmaker.exe");
+            consoleShell.RegisterCommand(new MakeCertificateCommand());
             consoleShell.RegisterCommand(new RunWebServerCommand());
             ConsoleShellResult consoleShellResult = consoleShell.ParseCommandLine(args);
 

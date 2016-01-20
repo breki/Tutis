@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -13,7 +12,9 @@ namespace SelfSignedHttpsListener
 {
     public class RunWebServerCommand : StandardConsoleCommandBase
     {
-        public RunWebServerCommand()
+        public const int DefaultPort = 13522;
+
+        public RunWebServerCommand ()
         {
             AddSetting("port", "port number the web server should run on. The default is {0}".Fmt(DefaultPort))
                 .IntValue((portToUse, env) => port = portToUse);
@@ -176,7 +177,6 @@ namespace SelfSignedHttpsListener
             consoleStopSignal.Set ();
         }
 
-        private const int DefaultPort = 13522;
         private static readonly ManualResetEvent consoleStopSignal = new ManualResetEvent (false);
         private static HttpListener listener;
         private static string serviceUrl;
