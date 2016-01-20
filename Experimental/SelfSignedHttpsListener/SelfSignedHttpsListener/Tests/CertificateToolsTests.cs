@@ -22,5 +22,18 @@ namespace SelfSignedHttpsListener.Tests
             CertificateStoreInstaller installer = new CertificateStoreInstaller();
             installer.InstallCertificate(cert);
         }
+
+        [Test]
+        public void BindCertificateToPort()
+        {
+            SelfSignedCertificateGenerator generator = new SelfSignedCertificateGenerator ();
+            X509Certificate2 cert = generator.GenerateCertificate ();
+
+            CertificateStoreInstaller installer = new CertificateStoreInstaller ();
+            installer.InstallCertificate (cert);
+
+            CertificateBinder binder = new CertificateBinder();
+            binder.BindCertificate(cert, RunWebServerCommand.DefaultPort);
+        }
     }
 }

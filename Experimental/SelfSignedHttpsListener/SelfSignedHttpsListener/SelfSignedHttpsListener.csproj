@@ -53,13 +53,14 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CertificateBinder.cs" />
     <Compile Include="CertificateStoreInstaller.cs" />
-    <Compile Include="GenerateCertificateCommand.cs" />
+    <Compile Include="MakeCertificateCommand.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RunWebServerCommand.cs" />
     <Compile Include="SelfSignedCertificateGenerator.cs" />
-    <Compile Include="Tests\GenerateCertificateCommandTests.cs" />
+    <Compile Include="Tests\MakeCertificateCommandTests.cs" />
     <Compile Include="Tests\CertificateToolsTests.cs" />
   </ItemGroup>
   <ItemGroup>
