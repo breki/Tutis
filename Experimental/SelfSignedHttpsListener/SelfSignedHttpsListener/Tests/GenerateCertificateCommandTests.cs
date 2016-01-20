@@ -1,11 +1,11 @@
 ﻿using LibroLib.ConsoleShells;
 using NUnit.Framework;
 
-namespace SelfSignedHttpsListener
+namespace SelfSignedHttpsListener.Tests
 {
     public class GenerateCertificateCommandTests
     {
-        [Test]
+        [Test, Explicit]
         public void Test()
         {
             IConsoleEnvironment shell = new ConsoleShell ("whatever");
