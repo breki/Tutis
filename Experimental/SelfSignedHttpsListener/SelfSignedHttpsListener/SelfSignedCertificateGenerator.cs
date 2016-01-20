@@ -10,7 +10,6 @@ using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509;
-using X509Certificate = System.Security.Cryptography.X509Certificates.X509Certificate;
 
 namespace SelfSignedHttpsListener
 {
@@ -28,7 +27,7 @@ namespace SelfSignedHttpsListener
             set { signatureAlgorithm = value; }
         }
 
-        public X509Certificate GenerateCertificate()
+        public X509Certificate2 GenerateCertificate()
         {
             X509V3CertificateGenerator certificateGenerator = new X509V3CertificateGenerator ();
 
@@ -48,7 +47,7 @@ namespace SelfSignedHttpsListener
             Org.BouncyCastle.X509.X509Certificate certificate = certificateGenerator.Generate (issuerKeyPair.Private, random);
 
             //X509Certificate convertedCertificate = ConvertToX509Certificate2 (certificate, issuerKeyPair.Private, random);
-            X509Certificate convertedCertificate = DotNetUtilities.ToX509Certificate(certificate);
+            X509Certificate2 convertedCertificate = ConvertToX509Certificate2(certificate);
             return convertedCertificate;
         }
 
@@ -116,6 +115,12 @@ namespace SelfSignedHttpsListener
                     Password,
                     X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
             }
+        }
+
+        private static X509Certificate2 ConvertToX509Certificate2 (
+            Org.BouncyCastle.X509.X509Certificate certificate)
+        {
+            return new X509Certificate2(DotNetUtilities.ToX509Certificate(certificate));
         }
 
         private string signatureAlgorithm = "SHA256WithRSA";
