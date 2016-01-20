@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="CodeAnalysis" ToolsVersion="11.0">
+  <Include Path="packages\FxCop-11.1.0.0.0\tool\Rule Sets\basiccorrectnessrules.ruleset" Action="Default" />
+  <Include Path="packages\FxCop-11.1.0.0.0\tool\Rule Sets\basicdesignguidelinerules.ruleset" Action="Default" />
+  <Include Path="packages\FxCop-11.1.0.0.0\tool\Rule Sets\extendedcorrectnessrules.ruleset" Action="Default" />
+  <Include Path="packages\FxCop-11.1.0.0.0\tool\Rule Sets\extendeddesignguidelinerules.ruleset" Action="Default" />
+  <Include Path="packages\FxCop-11.1.0.0.0\tool\Rule Sets\globalizationrules.ruleset" Action="Default" />
+  <Include Path="packages\FxCop-11.1.0.0.0\tool\Rule Sets\managedminimumrules.ruleset" Action="Default" />
+  <Include Path="packages\FxCop-11.1.0.0.0\tool\Rule Sets\minimumrecommendedrules.ruleset" Action="Default" />
+  <Include Path="packages\FxCop-11.1.0.0.0\tool\Rule Sets\securityrules.ruleset" Action="Default" />
+  <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
+    <Rule Id="CA1004" Action="None" />
+    <Rule Id="CA1005" Action="None" />
+    <Rule Id="CA1020" Action="None" />
+    <Rule Id="CA1021" Action="None" />
+    <Rule Id="CA1032" Action="None" />
+    <Rule Id="CA1034" Action="None" />
+    <Rule Id="CA1040" Action="None" />
+    <Rule Id="CA1054" Action="None" />
+    <Rule Id="CA1056" Action="None" />
+    <Rule Id="CA1062" Action="None" />
+    <Rule Id="CA1303" Action="None" />
+    <Rule Id="CA1500" Action="None" />
+    <Rule Id="CA2204" Action="None" />
+  </Rules>
+</RuleSet>

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Dictionary>
+  <Words>
+    <Unrecognized>
+    </Unrecognized>
+    <Recognized>
+      <Word>Configurator</Word>
+      <Word>Ctx</Word>
+      <Word>Mpxd</Word>
+      <Word>Multi</Word>
+      <Word>Perf</Word>
+      <Word>Ps</Word>
+      <Word>Rm</Word>
+      <Word>Tasklet</Word>
+      <Word>Topo</Word>
+      <Word>uuid</Word>
+      <Word>Uid</Word>
+      <Word>Uids</Word>
+      <Word>Vda</Word>
+      <Word>Vm</Word>
+      <Word>Xd</Word>
+      <Word>Xen</Word>
+      <Word>api</Word>
+      <Word>ip</Word>
+      <Word>o</Word>
+      <Word>cpu</Word>
+      <Word>username</Word>
+      <Word>hdx</Word>
+      <Word>gpo</Word>
+      <Word>uu</Word>
+      <Word>id</Word>
+      <Word>in</Word>
+      <Word>def</Word>
+      <Word>ps</Word>
+      <Word>Multi</Word>
+    </Recognized>
+    <Compound>
+      <Term CompoundAlternate="Logon">logon</Term>
+      <Term CompoundAlternate="uuid">uuid</Term>
+    </Compound>
+    <Deprecated>
+      <Term PreferredAlternate="EnterpriseServices">ComPlus</Term>
+    </Deprecated>
+    </Words>
+  <Acronyms>
+    <CasingExceptions>
+      <Acronym>IoC</Acronym>
+      <Acronym>Xd</Acronym>
+      <Acronym>Ip</Acronym>
+      <Acronym>api</Acronym>
+      <Acronym>Os</Acronym>
+    </CasingExceptions>
+  </Acronyms>
+</Dictionary>
