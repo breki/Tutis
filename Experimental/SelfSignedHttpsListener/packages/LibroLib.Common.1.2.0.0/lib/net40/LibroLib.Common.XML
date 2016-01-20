@@ -1,0 +1,1382 @@
+﻿<?xml version="1.0"?>
+<doc>
+  <assembly>
+    <name>LibroLib.Common</name>
+  </assembly>
+  <members>
+    <member name="T:JetBrains.Annotations.CanBeNullAttribute">
+      <summary>
+            Indicates that the value of the marked element could be <c>null</c> sometimes,
+            so the check for <c>null</c> is necessary before its usage.
+            </summary>
+      <example>
+        <code>
+            [CanBeNull] object Test() =&gt; null;
+            
+            void UseTest() {
+              var p = Test();
+              var s = p.ToString(); // Warning: Possible 'System.NullReferenceException'
+            }
+            </code>
+      </example>
+    </member>
+    <member name="T:JetBrains.Annotations.NotNullAttribute">
+      <summary>
+            Indicates that the value of the marked element could never be <c>null</c>.
+            </summary>
+      <example>
+        <code>
+            [NotNull] object Foo() {
+              return null; // Warning: Possible 'null' assignment
+            }
+            </code>
+      </example>
+    </member>
+    <member name="T:JetBrains.Annotations.ItemNotNullAttribute">
+      <summary>
+            Can be applied to symbols of types derived from IEnumerable as well as to symbols of Task
+            and Lazy classes to indicate that the value of a collection item, of the Task.Result property
+            or of the Lazy.Value property can never be null.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.ItemCanBeNullAttribute">
+      <summary>
+            Can be applied to symbols of types derived from IEnumerable as well as to symbols of Task
+            and Lazy classes to indicate that the value of a collection item, of the Task.Result property
+            or of the Lazy.Value property can be null.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.StringFormatMethodAttribute">
+      <summary>
+            Indicates that the marked method builds string by format pattern and (optional) arguments.
+            Parameter, which contains format string, should be given in constructor. The format string
+            should be in <see cref="M:System.String.Format(System.IFormatProvider,System.String,System.Object[])" />-like form.
+            </summary>
+      <example>
+        <code>
+            [StringFormatMethod("message")]
+            void ShowError(string message, params object[] args) { /* do something */ }
+            
+            void Foo() {
+              ShowError("Failed: {0}"); // Warning: Non-existing argument in format string
+            }
+            </code>
+      </example>
+    </member>
+    <member name="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <param name="formatParameterName">
+            Specifies which parameter of an annotated method should be treated as format-string
+            </param>
+    </member>
+    <member name="T:JetBrains.Annotations.ValueProviderAttribute">
+      <summary>
+            For a parameter that is expected to be one of the limited set of values.
+            Specify fields of which type should be used as values for this parameter.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.InvokerParameterNameAttribute">
+      <summary>
+            Indicates that the function argument should be string literal and match one
+            of the parameters of the caller function. For example, ReSharper annotates
+            the parameter of <see cref="T:System.ArgumentNullException" />.
+            </summary>
+      <example>
+        <code>
+            void Foo(string param) {
+              if (param == null)
+                throw new ArgumentNullException("par"); // Warning: Cannot resolve symbol
+            }
+            </code>
+      </example>
+    </member>
+    <member name="T:JetBrains.Annotations.NotifyPropertyChangedInvocatorAttribute">
+      <summary>
+             Indicates that the method is contained in a type that implements
+             <c>System.ComponentModel.INotifyPropertyChanged</c> interface and this method
+             is used to notify that some property value changed.
+             </summary>
+      <remarks>
+             The method should be non-static and conform to one of the supported signatures:
+             <list><item><c>NotifyChanged(string)</c></item><item><c>NotifyChanged(params string[])</c></item><item><c>NotifyChanged{T}(Expression{Func{T}})</c></item><item><c>NotifyChanged{T,U}(Expression{Func{T,U}})</c></item><item><c>SetProperty{T}(ref T, T, string)</c></item></list></remarks>
+      <example>
+        <code>
+             public class Foo : INotifyPropertyChanged {
+               public event PropertyChangedEventHandler PropertyChanged;
+             
+               [NotifyPropertyChangedInvocator]
+               protected virtual void NotifyChanged(string propertyName) { ... }
+            
+               string _name;
+             
+               public string Name {
+                 get { return _name; }
+                 set { _name = value; NotifyChanged("LastName"); /* Warning */ }
+               }
+             }
+             </code>
+             Examples of generated notifications:
+             <list><item><c>NotifyChanged("Property")</c></item><item><c>NotifyChanged(() =&gt; Property)</c></item><item><c>NotifyChanged((VM x) =&gt; x.Property)</c></item><item><c>SetProperty(ref myField, value, "Property")</c></item></list></example>
+    </member>
+    <member name="T:JetBrains.Annotations.ContractAnnotationAttribute">
+      <summary>
+            Describes dependency between method input and output.
+            </summary>
+      <syntax>
+        <p>Function Definition Table syntax:</p>
+        <list>
+          <item>FDT      ::= FDTRow [;FDTRow]*</item>
+          <item>FDTRow   ::= Input =&gt; Output | Output &lt;= Input</item>
+          <item>Input    ::= ParameterName: Value [, Input]*</item>
+          <item>Output   ::= [ParameterName: Value]* {halt|stop|void|nothing|Value}</item>
+          <item>Value    ::= true | false | null | notnull | canbenull</item>
+        </list>
+            If method has single input parameter, it's name could be omitted.<br />
+            Using <c>halt</c> (or <c>void</c>/<c>nothing</c>, which is the same)
+            for method output means that the methos doesn't return normally.<br /><c>canbenull</c> annotation is only applicable for output parameters.<br />
+            You can use multiple <c>[ContractAnnotation]</c> for each FDT row,
+            or use single attribute with rows separated by semicolon.<br /></syntax>
+      <examples>
+        <list>
+          <item>
+            <code>
+            [ContractAnnotation("=&gt; halt")]
+            public void TerminationMethod()
+            </code>
+          </item>
+          <item>
+            <code>
+            [ContractAnnotation("halt &lt;= condition: false")]
+            public void Assert(bool condition, string text) // regular assertion method
+            </code>
+          </item>
+          <item>
+            <code>
+            [ContractAnnotation("s:null =&gt; true")]
+            public bool IsNullOrEmpty(string s) // string.IsNullOrEmpty()
+            </code>
+          </item>
+          <item>
+            <code>
+            // A method that returns null if the parameter is null,
+            // and not null if the parameter is not null
+            [ContractAnnotation("null =&gt; null; notnull =&gt; notnull")]
+            public object Transform(object data) 
+            </code>
+          </item>
+          <item>
+            <code>
+            [ContractAnnotation("s:null=&gt;false; =&gt;true,result:notnull; =&gt;false, result:null")]
+            public bool TryParse(string s, out Person result)
+            </code>
+          </item>
+        </list>
+      </examples>
+    </member>
+    <member name="T:JetBrains.Annotations.LocalizationRequiredAttribute">
+      <summary>
+            Indicates that marked element should be localized or not.
+            </summary>
+      <example>
+        <code>
+            [LocalizationRequiredAttribute(true)]
+            class Foo {
+              string str = "my string"; // Warning: Localizable string
+            }
+            </code>
+      </example>
+    </member>
+    <member name="T:JetBrains.Annotations.CannotApplyEqualityOperatorAttribute">
+      <summary>
+            Indicates that the value of the marked type (or its derivatives)
+            cannot be compared using '==' or '!=' operators and <c>Equals()</c>
+            should be used instead. However, using '==' or '!=' for comparison
+            with <c>null</c> is always permitted.
+            </summary>
+      <example>
+        <code>
+            [CannotApplyEqualityOperator]
+            class NoEquality { }
+            
+            class UsesNoEquality {
+              void Test() {
+                var ca1 = new NoEquality();
+                var ca2 = new NoEquality();
+                if (ca1 != null) { // OK
+                  bool condition = ca1 == ca2; // Warning
+                }
+              }
+            }
+            </code>
+      </example>
+    </member>
+    <member name="T:JetBrains.Annotations.BaseTypeRequiredAttribute">
+      <summary>
+            When applied to a target attribute, specifies a requirement for any type marked
+            with the target attribute to implement or inherit specific type or types.
+            </summary>
+      <example>
+        <code>
+            [BaseTypeRequired(typeof(IComponent)] // Specify requirement
+            class ComponentAttribute : Attribute { }
+            
+            [Component] // ComponentAttribute requires implementing IComponent interface
+            class MyComponent : IComponent { }
+            </code>
+      </example>
+    </member>
+    <member name="T:JetBrains.Annotations.UsedImplicitlyAttribute">
+      <summary>
+            Indicates that the marked symbol is used implicitly (e.g. via reflection, in external library),
+            so this symbol will not be marked as unused (as well as by other usage inspections).
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.MeansImplicitUseAttribute">
+      <summary>
+            Should be used on attributes and causes ReSharper to not mark symbols marked with such attributes
+            as unused (as well as by other usage inspections)
+            </summary>
+    </member>
+    <member name="F:JetBrains.Annotations.ImplicitUseKindFlags.Access">
+      <summary>Only entity marked with attribute considered used.</summary>
+    </member>
+    <member name="F:JetBrains.Annotations.ImplicitUseKindFlags.Assign">
+      <summary>Indicates implicit assignment to a member.</summary>
+    </member>
+    <member name="F:JetBrains.Annotations.ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature">
+      <summary>
+            Indicates implicit instantiation of a type with fixed constructor signature.
+            That means any unused constructor parameters won't be reported as such.
+            </summary>
+    </member>
+    <member name="F:JetBrains.Annotations.ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature">
+      <summary>Indicates implicit instantiation of a type.</summary>
+    </member>
+    <member name="T:JetBrains.Annotations.ImplicitUseTargetFlags">
+      <summary>
+            Specify what is considered used implicitly when marked
+            with <see cref="T:JetBrains.Annotations.MeansImplicitUseAttribute" /> or <see cref="T:JetBrains.Annotations.UsedImplicitlyAttribute" />.
+            </summary>
+    </member>
+    <member name="F:JetBrains.Annotations.ImplicitUseTargetFlags.Members">
+      <summary>Members of entity marked with attribute are considered used.</summary>
+    </member>
+    <member name="F:JetBrains.Annotations.ImplicitUseTargetFlags.WithMembers">
+      <summary>Entity marked with attribute and all its members considered used.</summary>
+    </member>
+    <member name="T:JetBrains.Annotations.PublicAPIAttribute">
+      <summary>
+            This attribute is intended to mark publicly available API
+            which should not be removed and so is treated as used.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.InstantHandleAttribute">
+      <summary>
+            Tells code analysis engine if the parameter is completely handled when the invoked method is on stack.
+            If the parameter is a delegate, indicates that delegate is executed while the method is executed.
+            If the parameter is an enumerable, indicates that it is enumerated while the method is executed.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.PureAttribute">
+      <summary>
+            Indicates that a method does not make any observable state changes.
+            The same as <c>System.Diagnostics.Contracts.PureAttribute</c>.
+            </summary>
+      <example>
+        <code>
+            [Pure] int Multiply(int x, int y) =&gt; x * y;
+            
+            void M() {
+              Multiply(123, 42); // Waring: Return value of pure method is not used
+            }
+            </code>
+      </example>
+    </member>
+    <member name="T:JetBrains.Annotations.MustUseReturnValueAttribute">
+      <summary>
+            Indicates that the return value of method invocation must be used.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.ProvidesContextAttribute">
+      <summary>
+            Indicates the type member or parameter of some type, that should be used instead of all other ways
+            to get the value that type. This annotation is useful when you have some "context" value evaluated
+            and stored somewhere, meaning that all other ways to get this value must be consolidated with existing one.
+            </summary>
+      <example>
+        <code>
+            class Foo {
+              [ProvidesContext] IBarService _barService = ...;
+            
+              void ProcessNode(INode node) {
+                DoSomething(node, node.GetGlobalServices().Bar);
+                //              ^ Warning: use value of '_barService' field
+              }
+            }
+            </code>
+      </example>
+    </member>
+    <member name="T:JetBrains.Annotations.PathReferenceAttribute">
+      <summary>
+            Indicates that a parameter is a path to a file or a folder within a web project.
+            Path can be relative or absolute, starting from web root (~).
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.SourceTemplateAttribute">
+      <summary>
+            An extension method marked with this attribute is processed by ReSharper code completion
+            as a 'Source Template'. When extension method is completed over some expression, it's source code
+            is automatically expanded like a template at call site.
+            </summary>
+      <remarks>
+            Template method body can contain valid source code and/or special comments starting with '$'.
+            Text inside these comments is added as source code when the template is applied. Template parameters
+            can be used either as additional method parameters or as identifiers wrapped in two '$' signs.
+            Use the <see cref="T:JetBrains.Annotations.MacroAttribute" /> attribute to specify macros for parameters.
+            </remarks>
+      <example>
+            In this example, the <c>forEach</c> method is a source template available over all values
+            of enumerable types, producing ordinary C# <c>foreach</c> statement and placing caret inside block:
+            <code>
+            [SourceTemplate]
+            public static void forEach&lt;T&gt;(this IEnumerable&lt;T&gt; xs) {
+              foreach (var x in xs) {
+                 //$ $END$
+              }
+            }
+            </code></example>
+    </member>
+    <member name="T:JetBrains.Annotations.MacroAttribute">
+      <summary>
+            Allows specifying a macro for a parameter of a <see cref="T:JetBrains.Annotations.SourceTemplateAttribute">source template</see>.
+            </summary>
+      <remarks>
+            You can apply the attribute on the whole method or on any of its additional parameters. The macro expression
+            is defined in the <see cref="P:JetBrains.Annotations.MacroAttribute.Expression" /> property. When applied on a method, the target
+            template parameter is defined in the <see cref="P:JetBrains.Annotations.MacroAttribute.Target" /> property. To apply the macro silently
+            for the parameter, set the <see cref="P:JetBrains.Annotations.MacroAttribute.Editable" /> property value = -1.
+            </remarks>
+      <example>
+            Applying the attribute on a source template method:
+            <code>
+            [SourceTemplate, Macro(Target = "item", Expression = "suggestVariableName()")]
+            public static void forEach&lt;T&gt;(this IEnumerable&lt;T&gt; collection) {
+              foreach (var item in collection) {
+                //$ $END$
+              }
+            }
+            </code>
+            Applying the attribute on a template method parameter:
+            <code>
+            [SourceTemplate]
+            public static void something(this Entity x, [Macro(Expression = "guid()", Editable = -1)] string newguid) {
+              /*$ var $x$Id = "$newguid$" + x.ToString();
+              x.DoSomething($x$Id); */
+            }
+            </code></example>
+    </member>
+    <member name="P:JetBrains.Annotations.MacroAttribute.Expression">
+      <summary>
+            Allows specifying a macro that will be executed for a <see cref="T:JetBrains.Annotations.SourceTemplateAttribute">source template</see>
+            parameter when the template is expanded.
+            </summary>
+    </member>
+    <member name="P:JetBrains.Annotations.MacroAttribute.Editable">
+      <summary>
+            Allows specifying which occurrence of the target parameter becomes editable when the template is deployed.
+            </summary>
+      <remarks>
+            If the target parameter is used several times in the template, only one occurrence becomes editable;
+            other occurrences are changed synchronously. To specify the zero-based index of the editable occurrence,
+            use values &gt;= 0. To make the parameter non-editable when the template is expanded, use -1.
+            </remarks>&gt;
+        </member>
+    <member name="P:JetBrains.Annotations.MacroAttribute.Target">
+      <summary>
+            Identifies the target parameter of a <see cref="T:JetBrains.Annotations.SourceTemplateAttribute">source template</see> if the
+            <see cref="T:JetBrains.Annotations.MacroAttribute" /> is applied on a template method.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AspMvcActionAttribute">
+      <summary>
+            ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter
+            is an MVC action. If applied to a method, the MVC action name is calculated
+            implicitly from the context. Use this attribute for custom wrappers similar to
+            <c>System.Web.Mvc.Html.ChildActionExtensions.RenderAction(HtmlHelper, String)</c>.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AspMvcAreaAttribute">
+      <summary>
+            ASP.NET MVC attribute. Indicates that a parameter is an MVC area.
+            Use this attribute for custom wrappers similar to
+            <c>System.Web.Mvc.Html.ChildActionExtensions.RenderAction(HtmlHelper, String)</c>.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AspMvcControllerAttribute">
+      <summary>
+            ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter is
+            an MVC controller. If applied to a method, the MVC controller name is calculated
+            implicitly from the context. Use this attribute for custom wrappers similar to
+            <c>System.Web.Mvc.Html.ChildActionExtensions.RenderAction(HtmlHelper, String, String)</c>.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AspMvcMasterAttribute">
+      <summary>
+            ASP.NET MVC attribute. Indicates that a parameter is an MVC Master. Use this attribute
+            for custom wrappers similar to <c>System.Web.Mvc.Controller.View(String, String)</c>.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AspMvcModelTypeAttribute">
+      <summary>
+            ASP.NET MVC attribute. Indicates that a parameter is an MVC model type. Use this attribute
+            for custom wrappers similar to <c>System.Web.Mvc.Controller.View(String, Object)</c>.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AspMvcPartialViewAttribute">
+      <summary>
+            ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter is an MVC
+            partial view. If applied to a method, the MVC partial view name is calculated implicitly
+            from the context. Use this attribute for custom wrappers similar to
+            <c>System.Web.Mvc.Html.RenderPartialExtensions.RenderPartial(HtmlHelper, String)</c>.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AspMvcSuppressViewErrorAttribute">
+      <summary>
+            ASP.NET MVC attribute. Allows disabling inspections for MVC views within a class or a method.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AspMvcDisplayTemplateAttribute">
+      <summary>
+            ASP.NET MVC attribute. Indicates that a parameter is an MVC display template.
+            Use this attribute for custom wrappers similar to 
+            <c>System.Web.Mvc.Html.DisplayExtensions.DisplayForModel(HtmlHelper, String)</c>.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AspMvcEditorTemplateAttribute">
+      <summary>
+            ASP.NET MVC attribute. Indicates that a parameter is an MVC editor template.
+            Use this attribute for custom wrappers similar to
+            <c>System.Web.Mvc.Html.EditorExtensions.EditorForModel(HtmlHelper, String)</c>.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AspMvcTemplateAttribute">
+      <summary>
+            ASP.NET MVC attribute. Indicates that a parameter is an MVC template.
+            Use this attribute for custom wrappers similar to
+            <c>System.ComponentModel.DataAnnotations.UIHintAttribute(System.String)</c>.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AspMvcViewAttribute">
+      <summary>
+            ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter
+            is an MVC view component. If applied to a method, the MVC view name is calculated implicitly
+            from the context. Use this attribute for custom wrappers similar to
+            <c>System.Web.Mvc.Controller.View(Object)</c>.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AspMvcViewComponentAttribute">
+      <summary>
+            ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter
+            is an MVC view component name.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AspMvcViewComponentViewAttribute">
+      <summary>
+            ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter
+            is an MVC view component view. If applied to a method, the MVC view component view name is default.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AspMvcActionSelectorAttribute">
+      <summary>
+            ASP.NET MVC attribute. When applied to a parameter of an attribute,
+            indicates that this parameter is an MVC action name.
+            </summary>
+      <example>
+        <code>
+            [ActionName("Foo")]
+            public ActionResult Login(string returnUrl) {
+              ViewBag.ReturnUrl = Url.Action("Foo"); // OK
+              return RedirectToAction("Bar"); // Error: Cannot resolve action
+            }
+            </code>
+      </example>
+    </member>
+    <member name="T:JetBrains.Annotations.RazorSectionAttribute">
+      <summary>
+            Razor attribute. Indicates that a parameter or a method is a Razor section.
+            Use this attribute for custom wrappers similar to 
+            <c>System.Web.WebPages.WebPageBase.RenderSection(String)</c>.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.CollectionAccessAttribute">
+      <summary>
+            Indicates how method, constructor invocation or property access
+            over collection type affects content of the collection.
+            </summary>
+    </member>
+    <member name="F:JetBrains.Annotations.CollectionAccessType.None">
+      <summary>Method does not use or modify content of the collection.</summary>
+    </member>
+    <member name="F:JetBrains.Annotations.CollectionAccessType.Read">
+      <summary>Method only reads content of the collection but does not modify it.</summary>
+    </member>
+    <member name="F:JetBrains.Annotations.CollectionAccessType.ModifyExistingContent">
+      <summary>Method can change content of the collection but does not add new elements.</summary>
+    </member>
+    <member name="F:JetBrains.Annotations.CollectionAccessType.UpdatedContent">
+      <summary>Method can add new elements to the collection.</summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AssertionMethodAttribute">
+      <summary>
+            Indicates that the marked method is assertion method, i.e. it halts control flow if
+            one of the conditions is satisfied. To set the condition, mark one of the parameters with 
+            <see cref="T:JetBrains.Annotations.AssertionConditionAttribute" /> attribute.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AssertionConditionAttribute">
+      <summary>
+            Indicates the condition parameter of the assertion method. The method itself should be
+            marked by <see cref="T:JetBrains.Annotations.AssertionMethodAttribute" /> attribute. The mandatory argument of
+            the attribute is the assertion type.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.AssertionConditionType">
+      <summary>
+            Specifies assertion type. If the assertion method argument satisfies the condition,
+            then the execution continues. Otherwise, execution is assumed to be halted.
+            </summary>
+    </member>
+    <member name="F:JetBrains.Annotations.AssertionConditionType.IS_TRUE">
+      <summary>Marked parameter should be evaluated to true.</summary>
+    </member>
+    <member name="F:JetBrains.Annotations.AssertionConditionType.IS_FALSE">
+      <summary>Marked parameter should be evaluated to false.</summary>
+    </member>
+    <member name="F:JetBrains.Annotations.AssertionConditionType.IS_NULL">
+      <summary>Marked parameter should be evaluated to null value.</summary>
+    </member>
+    <member name="F:JetBrains.Annotations.AssertionConditionType.IS_NOT_NULL">
+      <summary>Marked parameter should be evaluated to not null value.</summary>
+    </member>
+    <member name="T:JetBrains.Annotations.TerminatesProgramAttribute">
+      <summary>
+            Indicates that the marked method unconditionally terminates control flow execution.
+            For example, it could unconditionally throw exception.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.LinqTunnelAttribute">
+      <summary>
+            Indicates that method is pure LINQ method, with postponed enumeration (like Enumerable.Select,
+            .Where). This annotation allows inference of [InstantHandle] annotation for parameters
+            of delegate type by analyzing LINQ method chains.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.NoEnumerationAttribute">
+      <summary>
+            Indicates that IEnumerable, passed as parameter, is not enumerated.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.RegexPatternAttribute">
+      <summary>
+            Indicates that parameter is regular expression pattern.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.XamlItemsControlAttribute">
+      <summary>
+            XAML attribute. Indicates the type that has <c>ItemsSource</c> property and should be treated
+            as <c>ItemsControl</c>-derived type, to enable inner items <c>DataContext</c> type resolve.
+            </summary>
+    </member>
+    <member name="T:JetBrains.Annotations.XamlItemBindingOfItemsControlAttribute">
+      <summary>
+            XAML attribute. Indicates the property of some <c>BindingBase</c>-derived type, that
+            is used to bind some item of <c>ItemsControl</c>-derived type. This annotation will
+            enable the <c>DataContext</c> type resolve for XAML bindings for such properties.
+            </summary>
+      <remarks>
+            Property should have the tree ancestor of the <c>ItemsControl</c> type or
+            marked with the <see cref="T:JetBrains.Annotations.XamlItemsControlAttribute" /> attribute.
+            </remarks>
+    </member>
+    <member name="T:JetBrains.Annotations.NoReorder">
+      <summary>
+            Prevents the Member Reordering feature from tossing members of the marked class.
+            </summary>
+      <remarks>
+            The attribute must be mentioned in your member reordering patterns
+            </remarks>
+    </member>
+    <member name="M:LibroLib.Caching.IDiskCache.IsCached(System.String)">
+      <summary>
+            Determines whether the specified file exists in the cache directory structure.
+            </summary>
+      <param name="localCachePath">Relative path to the file to be checked.</param>
+      <returns>
+        <c>true</c> if file exists; <c>false</c> otherwise</returns>
+      <requires csharp="localCachePath != null" vb="localCachePath &lt;&gt; Nothing">localCachePath != null</requires>
+    </member>
+    <member name="T:LibroLib.DataStructures.LruCaching.ILruCache`2">
+      <summary>
+            A least-recently-used cache.
+            </summary>
+      <typeparam name="TKey">Type to be used as a cache key. Make sure the <see cref="!:TKey" /> 
+            has an optimal <see cref="M:System.Object.GetHashCode" /> method implementation.</typeparam>
+      <typeparam name="TValue">Type to be used as a value to be cached.</typeparam>
+    </member>
+    <member name="M:LibroLib.DataStructures.LruCaching.ILruCache`2.Delete(`0)">
+      <summary>
+            Deletes the value from the cache without synchronizing it with the underlying storage.
+            </summary>
+      <param name="key">The key of the value to delete from the cache.</param>
+      <returns>
+        <c>true</c> if the value was actually found in the cache; <c>false</c> otherwise.</returns>
+      <requires csharp="!ReferenceEquals((object)key, null)" vb="Not ReferenceEquals(((Object)key), Nothing)">!object.ReferenceEquals((object)key, null)</requires>
+    </member>
+    <member name="T:LibroLib.DataStructures.LruCaching.LruCache`2">
+      <summary>
+            Implementation of the least-recently-used cache algorithm.
+            </summary>
+      <typeparam name="TKey">Type to be used as a cache key. Make sure the <see cref="!:TKey" /> 
+            has an optimal <see cref="M:System.Object.GetHashCode" /> method implementation.</typeparam>
+      <typeparam name="TValue">Type to be used as a value to be cached.</typeparam>
+    </member>
+    <member name="T:LibroLib.DataStructures.MultiDictionary`2">
+      <summary>
+            Implementation of a dictionary that allows storing of multiple values for the same key.
+            Duplicate values are allowed.
+            </summary>
+      <remarks>If you need a multi-dictionary that merges duplicate values, use <see cref="T:LibroLib.DataStructures.MultiSet`2" />
+            class.</remarks>
+      <typeparam name="TKey">Key type. Make sure it has properly implemented equality and hash methods.</typeparam>
+      <typeparam name="TValue">Value type</typeparam>
+    </member>
+    <member name="T:LibroLib.DataStructures.MultiSet`2">
+      <summary>
+            Implementation of a dictionary that allows storing of multiple values for the same key.
+            Adding duplicate values is allowed, but they are merged into a single value.
+            </summary>
+      <remarks>If you need a multi-dictionary that retains duplicate values, use <see cref="T:LibroLib.DataStructures.MultiDictionary`2" />
+            class.</remarks>
+      <typeparam name="TKey">Key type. Make sure it has properly implemented equality and hash methods.</typeparam>
+      <typeparam name="TValue">Value type. Make sure it has properly implemented equality and hash methods.</typeparam>
+    </member>
+    <member name="T:LibroLib.FileSystem.IFileSystem">
+      <summary>
+            An interface to the physical file system.
+            </summary>
+    </member>
+    <member name="M:LibroLib.Text.FormattingUtils.FormatByteSizeToString(System.Int64,System.Globalization.CultureInfo)">
+      <summary>
+            Formats a size in bytes into string using the optimal human readable format.
+            </summary>
+      <param name="byteSize">
+            Size in bytes.
+            </param>
+      <param name="culture">
+            The culture to use for formatting.
+            </param>
+      <returns>
+            Formatted size in bytes.
+            </returns>
+      <requires csharp="byteSize != long.MinValue" vb="byteSize &lt;&gt; long.MinValue">byteSize != long.MinValue</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.Text.FormattingUtils.FormatByteSizeRoundedToString(System.Int64,System.Globalization.CultureInfo)">
+      <summary>
+            Formats a size in bytes into string using the optimal human readable format.
+            </summary>
+      <param name="byteSize">Size in bytes.</param>
+      <param name="culture">
+            The culture to use for formatting.
+            </param>
+      <returns>Formatted size in bytes.</returns>
+      <requires csharp="byteSize != long.MinValue" vb="byteSize &lt;&gt; long.MinValue">byteSize != long.MinValue</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.DataStructures.MultiSet`2.Add(`0,`1)">
+      <requires csharp="!ReferenceEquals((object)key, null)" vb="Not ReferenceEquals(((Object)key), Nothing)">!object.ReferenceEquals((object)key, null)</requires>
+    </member>
+    <member name="P:LibroLib.DataStructures.MultiSet`2.Item(`0)">
+      <getter>
+        <requires csharp="!ReferenceEquals((object)key, null)" vb="Not ReferenceEquals(((Object)key), Nothing)">!object.ReferenceEquals((object)key, null)</requires>
+      </getter>
+    </member>
+    <member name="M:LibroLib.DataStructures.LruCaching.ILruCache`2.Add(`0,`1)">
+      <requires csharp="!ReferenceEquals((object)key, null)" vb="Not ReferenceEquals(((Object)key), Nothing)">!object.ReferenceEquals((object)key, null)</requires>
+    </member>
+    <member name="M:LibroLib.DataStructures.LruCaching.ILruCache`2.Get(`0)">
+      <requires csharp="!ReferenceEquals((object)key, null)" vb="Not ReferenceEquals(((Object)key), Nothing)">!object.ReferenceEquals((object)key, null)</requires>
+    </member>
+    <member name="M:LibroLib.DataStructures.LruCaching.LruCache`2.Add(`0,`1)">
+      <requires inheritedFrom="M:LibroLib.DataStructures.LruCaching.ILruCache`2.Add(`0,`1)" inheritedFromTypeName="ILruCache" csharp="!ReferenceEquals((object)key, null)" vb="Not ReferenceEquals(((Object)key), Nothing)">!object.ReferenceEquals((object)key, null)</requires>
+    </member>
+    <member name="M:LibroLib.DataStructures.LruCaching.LruCache`2.Get(`0)">
+      <requires inheritedFrom="M:LibroLib.DataStructures.LruCaching.ILruCache`2.Get(`0)" inheritedFromTypeName="ILruCache" csharp="!ReferenceEquals((object)key, null)" vb="Not ReferenceEquals(((Object)key), Nothing)">!object.ReferenceEquals((object)key, null)</requires>
+    </member>
+    <member name="M:LibroLib.DataStructures.LruCaching.LruCache`2.Delete(`0)">
+      <requires inheritedFrom="M:LibroLib.DataStructures.LruCaching.ILruCache`2.Delete(`0)" inheritedFromTypeName="ILruCache" csharp="!ReferenceEquals((object)key, null)" vb="Not ReferenceEquals(((Object)key), Nothing)">!object.ReferenceEquals((object)key, null)</requires>
+    </member>
+    <member name="M:LibroLib.DataStructures.LruCaching.LruCache`2.IsCached(`0)">
+      <requires csharp="!ReferenceEquals((object)key, null)" vb="Not ReferenceEquals(((Object)key), Nothing)">!object.ReferenceEquals((object)key, null)</requires>
+    </member>
+    <member name="M:LibroLib.DataStructures.LruCaching.LruCache`2.SaveNewItemToCache(`0,`1)">
+      <requires csharp="!ReferenceEquals((object)key, null)" vb="Not ReferenceEquals(((Object)key), Nothing)">!object.ReferenceEquals((object)key, null)</requires>
+    </member>
+    <member name="T:LibroLib.DataStructures.LruCaching.LruCache`2.CachedItem`2">
+      <invariant>!ReferenceEquals (key, null)</invariant>
+    </member>
+    <member name="M:LibroLib.DataStructures.LruCaching.LruCache`2.CachedItem`2.#ctor(`0,`1,System.Boolean)">
+      <requires csharp="!ReferenceEquals((object)key, null)" vb="Not ReferenceEquals(((Object)key), Nothing)">!object.ReferenceEquals((object)key, null)</requires>
+    </member>
+    <member name="P:LibroLib.DataStructures.LruCaching.LruCache`2.CachedItem`2.Key">
+      <getter>
+        <ensures csharp="!ReferenceEquals((object)result, null)" vb="Not ReferenceEquals(((Object)result), Nothing)">!object.ReferenceEquals((object)result, null)</ensures>
+      </getter>
+    </member>
+    <member name="M:LibroLib.DataStructures.MultiDictionary`2.Add(`0,`1)">
+      <requires csharp="!ReferenceEquals((object)key, null)" vb="Not ReferenceEquals(((Object)key), Nothing)">!object.ReferenceEquals((object)key, null)</requires>
+    </member>
+    <member name="M:LibroLib.DataStructures.MultiDictionary`2.ClearValues(`0)">
+      <requires csharp="!ReferenceEquals((object)key, null)" vb="Not ReferenceEquals(((Object)key), Nothing)">!object.ReferenceEquals((object)key, null)</requires>
+    </member>
+    <member name="M:LibroLib.DataStructures.MultiDictionary`2.ContainsKey(`0)">
+      <requires csharp="!ReferenceEquals((object)key, null)" vb="Not ReferenceEquals(((Object)key), Nothing)">!object.ReferenceEquals((object)key, null)</requires>
+    </member>
+    <member name="M:LibroLib.DataStructures.MultiDictionary`2.TryGetValues(`0,System.Collections.Generic.IList{`1}@)">
+      <requires csharp="!ReferenceEquals((object)key, null)" vb="Not ReferenceEquals(((Object)key), Nothing)">!object.ReferenceEquals((object)key, null)</requires>
+    </member>
+    <member name="M:LibroLib.DataStructures.MultiDictionary`2.GetEnumerator">
+      <ensures inheritedFrom="M:System.Collections.Generic.IEnumerable`1.GetEnumerator" inheritedFromTypeName="IEnumerable" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      <ensures inheritedFrom="M:System.Collections.Generic.IEnumerable`1.GetEnumerator" inheritedFromTypeName="IEnumerable" csharp="result.get_Model == this.get_Model" vb="result.get_Model = Me.get_Model">result.get_Model == this.get_Model</ensures>
+    </member>
+    <member name="M:LibroLib.DataStructures.MultiDictionary`2.System#Collections#IEnumerable#GetEnumerator">
+      <ensures inheritedFrom="M:System.Collections.IEnumerable.GetEnumerator" inheritedFromTypeName="IEnumerable" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      <ensures inheritedFrom="M:System.Collections.IEnumerable.GetEnumerator" inheritedFromTypeName="IEnumerable" csharp="result.get_Model == this.get_Model" vb="result.get_Model = Me.get_Model">result.get_Model == this.get_Model</ensures>
+      <ensures inheritedFrom="M:System.Collections.IEnumerable.GetEnumerator" inheritedFromTypeName="IEnumerable" csharp="result.get_CurrentIndex == -1" vb="result.get_CurrentIndex = -1">result.get_CurrentIndex == -1</ensures>
+    </member>
+    <member name="P:LibroLib.DataStructures.MultiDictionary`2.Item(`0)">
+      <getter>
+        <requires csharp="!ReferenceEquals((object)key, null)" vb="Not ReferenceEquals(((Object)key), Nothing)">!object.ReferenceEquals((object)key, null)</requires>
+      </getter>
+    </member>
+    <member name="P:LibroLib.FileSystem.WindowsDirectoryInformation.FullName">
+      <getter>
+        <ensures inheritedFrom="M:LibroLib.FileSystem.IFileEntryInformation.get_FullName" inheritedFromTypeName="IFileEntryInformation" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="M:LibroLib.FileSystem.IApplicationInfo.GetAppDirectoryPath(System.String)">
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="P:LibroLib.FileSystem.IApplicationInfo.AppVersion">
+      <getter>
+        <ensures csharp="result != (System.Version)null" vb="result &lt;&gt; ((System.Version)Nothing) ">result != (System.Version)null</ensures>
+      </getter>
+    </member>
+    <member name="P:LibroLib.FileSystem.IApplicationInfo.AppVersionString">
+      <getter>
+        <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.CopyFile(System.String,System.String)">
+      <requires csharp="sourceFileName != null" vb="sourceFileName &lt;&gt; Nothing">sourceFileName != null</requires>
+      <requires csharp="destinationFileName != null" vb="destinationFileName &lt;&gt; Nothing">destinationFileName != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.CreateDirectory(System.String,System.Boolean)">
+      <requires csharp="dirPath != null" vb="dirPath &lt;&gt; Nothing">dirPath != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.DeleteDirectory(System.String)">
+      <requires csharp="dirPath != null" vb="dirPath &lt;&gt; Nothing">dirPath != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.DeleteFile(System.String,System.Boolean)">
+      <requires csharp="path != null" vb="path &lt;&gt; Nothing">path != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.DeserializeObjectFromXmlFile(System.String,System.Type,System.String)">
+      <requires csharp="filePath != null" vb="filePath &lt;&gt; Nothing">filePath != null</requires>
+      <requires csharp="objectType != (System.Type)null" vb="objectType &lt;&gt; ((System.Type)Nothing) ">objectType != (System.Type)null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.DeserializeObjectFromXmlFile(System.String,System.Type,System.String,System.String)">
+      <requires csharp="filePath != null" vb="filePath &lt;&gt; Nothing">filePath != null</requires>
+      <requires csharp="objectType != (System.Type)null" vb="objectType &lt;&gt; ((System.Type)Nothing) ">objectType != (System.Type)null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.DoesDirectoryExist(System.String)">
+      <requires csharp="path != null" vb="path &lt;&gt; Nothing">path != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.DoesFileExist(System.String)">
+      <requires csharp="path != null" vb="path &lt;&gt; Nothing">path != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.EnsureDirectoryExists(System.String)">
+      <requires csharp="directory != null" vb="directory &lt;&gt; Nothing">directory != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.GetDirectoryInformation(System.String)">
+      <requires csharp="dirPath != null" vb="dirPath &lt;&gt; Nothing">dirPath != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.GetDirectoryFiles(System.String)">
+      <requires csharp="dirPath != null" vb="dirPath &lt;&gt; Nothing">dirPath != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      <ensures csharp="for all x in result x != null" vb="for all x in result x &lt;&gt; Nothing">for all x in result x != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.GetDirectoryFiles(System.String,System.String)">
+      <requires csharp="dirPath != null" vb="dirPath &lt;&gt; Nothing">dirPath != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      <ensures csharp="for all x in result x != null" vb="for all x in result x &lt;&gt; Nothing">for all x in result x != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.GetDirectorySubdirectories(System.String)">
+      <requires csharp="dirPath != null" vb="dirPath &lt;&gt; Nothing">dirPath != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      <ensures csharp="for all x in result x != null" vb="for all x in result x &lt;&gt; Nothing">for all x in result x != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.GetFileInformation(System.String)">
+      <requires csharp="filePath != null" vb="filePath &lt;&gt; Nothing">filePath != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.MoveFile(System.String,System.String)">
+      <requires csharp="sourceFileName != null" vb="sourceFileName &lt;&gt; Nothing">sourceFileName != null</requires>
+      <requires csharp="destinationFileName != null" vb="destinationFileName &lt;&gt; Nothing">destinationFileName != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.OpenFile(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,System.Int32,System.IO.FileOptions)">
+      <requires csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.OpenFileToRead(System.String)">
+      <requires csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.OpenFileToRead(System.String,System.IO.FileOptions)">
+      <requires csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.OpenFileToWrite(System.String)">
+      <requires csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.OpenFileToWrite(System.String,System.IO.FileOptions)">
+      <requires csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.ReadFileAsBytes(System.String)">
+      <requires csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.ReadFileAsString(System.String)">
+      <requires csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.ReadFileAsXmlDocument(System.String)">
+      <requires csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.ReadFileAsStringLines(System.String)">
+      <requires csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.SerializeObjectIntoXmlFile(System.String,System.Object,System.String)">
+      <requires csharp="filePath != null" vb="filePath &lt;&gt; Nothing">filePath != null</requires>
+      <requires csharp="obj != null" vb="obj &lt;&gt; Nothing">obj != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.WriteFile(System.String,System.Byte[])">
+      <requires csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <requires csharp="data != null" vb="data &lt;&gt; Nothing">data != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.WriteFile(System.String,System.String,System.Text.Encoding)">
+      <requires csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <requires csharp="contents != null" vb="contents &lt;&gt; Nothing">contents != null</requires>
+      <requires csharp="encoding != null" vb="encoding &lt;&gt; Nothing">encoding != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.IFileSystem.WriteXmlDocument(System.String,System.Xml.XmlDocument)">
+      <requires csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <requires csharp="xmlDoc != null" vb="xmlDoc &lt;&gt; Nothing">xmlDoc != null</requires>
+    </member>
+    <member name="P:LibroLib.FileSystem.IFileEntryInformation.FullName">
+      <getter>
+        <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="M:LibroLib.FileSystem.TemporaryFileStorage.DeleteOldStuffFrom(System.String,System.TimeSpan)">
+      <requires csharp="directoryName != null" vb="directoryName &lt;&gt; Nothing">directoryName != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.TemporaryFileStorage.IsFileEntryTooOld(LibroLib.FileSystem.IFileEntryInformation,System.TimeSpan)">
+      <requires csharp="fileEntry != null" vb="fileEntry &lt;&gt; Nothing">fileEntry != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.PathBuilder.CombineWith(LibroLib.FileSystem.PathBuilder)">
+      <requires csharp="path != null" vb="path &lt;&gt; Nothing">path != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.PathBuilder.IsBasePathOf(LibroLib.FileSystem.PathBuilder,System.Boolean)">
+      <requires csharp="other != null" vb="other &lt;&gt; Nothing">other != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.PathBuilder.DebasePath(LibroLib.FileSystem.PathBuilder,System.Boolean)">
+      <requires csharp="path != null" vb="path &lt;&gt; Nothing">path != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.PathBuilder.ToString">
+      <ensures inheritedFrom="M:System.Object.ToString" inheritedFromTypeName="Object" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.PathBuilder.ToUnixPath">
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.PathBuilder.ToStringInternal(System.Char)">
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.PathBuilder.#ctor(LibroLib.FileSystem.PathBuilder)">
+      <requires csharp="copyFrom != null" vb="copyFrom &lt;&gt; Nothing">copyFrom != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.FileSet.#ctor(System.String,System.Collections.Generic.IEnumerable{System.String})">
+      <requires csharp="files != null" vb="files &lt;&gt; Nothing">files != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.FileSet.#ctor(System.Collections.Generic.IEnumerable{System.String})">
+      <requires csharp="files != null" vb="files &lt;&gt; Nothing">files != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.FileSet.SetFiles(System.String,System.Collections.Generic.IEnumerable{System.String})">
+      <requires csharp="fileNames != null" vb="fileNames &lt;&gt; Nothing">fileNames != null</requires>
+    </member>
+    <member name="P:LibroLib.FileSystem.WindowsFileInformation.FullName">
+      <getter>
+        <ensures inheritedFrom="M:LibroLib.FileSystem.IFileEntryInformation.get_FullName" inheritedFromTypeName="IFileEntryInformation" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.CopyFile(System.String,System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.CopyFile(System.String,System.String)" inheritedFromTypeName="IFileSystem" csharp="sourceFileName != null" vb="sourceFileName &lt;&gt; Nothing">sourceFileName != null</requires>
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.CopyFile(System.String,System.String)" inheritedFromTypeName="IFileSystem" csharp="destinationFileName != null" vb="destinationFileName &lt;&gt; Nothing">destinationFileName != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.CreateDirectory(System.String,System.Boolean)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.CreateDirectory(System.String,System.Boolean)" inheritedFromTypeName="IFileSystem" csharp="dirPath != null" vb="dirPath &lt;&gt; Nothing">dirPath != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.DeleteDirectory(System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.DeleteDirectory(System.String)" inheritedFromTypeName="IFileSystem" csharp="dirPath != null" vb="dirPath &lt;&gt; Nothing">dirPath != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.GetDirectoryFiles(System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.GetDirectoryFiles(System.String)" inheritedFromTypeName="IFileSystem" csharp="dirPath != null" vb="dirPath &lt;&gt; Nothing">dirPath != null</requires>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.GetDirectoryFiles(System.String)" inheritedFromTypeName="IFileSystem" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.GetDirectoryFiles(System.String)" inheritedFromTypeName="IFileSystem" csharp="for all x in result x != null" vb="for all x in result x &lt;&gt; Nothing">for all x in result x != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.GetDirectoryFiles(System.String,System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.GetDirectoryFiles(System.String,System.String)" inheritedFromTypeName="IFileSystem" csharp="dirPath != null" vb="dirPath &lt;&gt; Nothing">dirPath != null</requires>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.GetDirectoryFiles(System.String,System.String)" inheritedFromTypeName="IFileSystem" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.GetDirectoryFiles(System.String,System.String)" inheritedFromTypeName="IFileSystem" csharp="for all x in result x != null" vb="for all x in result x &lt;&gt; Nothing">for all x in result x != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.GetDirectorySubdirectories(System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.GetDirectorySubdirectories(System.String)" inheritedFromTypeName="IFileSystem" csharp="dirPath != null" vb="dirPath &lt;&gt; Nothing">dirPath != null</requires>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.GetDirectorySubdirectories(System.String)" inheritedFromTypeName="IFileSystem" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.GetDirectorySubdirectories(System.String)" inheritedFromTypeName="IFileSystem" csharp="for all x in result x != null" vb="for all x in result x &lt;&gt; Nothing">for all x in result x != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.GetFileInformation(System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.GetFileInformation(System.String)" inheritedFromTypeName="IFileSystem" csharp="filePath != null" vb="filePath &lt;&gt; Nothing">filePath != null</requires>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.GetFileInformation(System.String)" inheritedFromTypeName="IFileSystem" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.EnsureDirectoryExists(System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.EnsureDirectoryExists(System.String)" inheritedFromTypeName="IFileSystem" csharp="directory != null" vb="directory &lt;&gt; Nothing">directory != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.GetDirectoryInformation(System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.GetDirectoryInformation(System.String)" inheritedFromTypeName="IFileSystem" csharp="dirPath != null" vb="dirPath &lt;&gt; Nothing">dirPath != null</requires>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.GetDirectoryInformation(System.String)" inheritedFromTypeName="IFileSystem" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.DoesFileExist(System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.DoesFileExist(System.String)" inheritedFromTypeName="IFileSystem" csharp="path != null" vb="path &lt;&gt; Nothing">path != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.DoesDirectoryExist(System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.DoesDirectoryExist(System.String)" inheritedFromTypeName="IFileSystem" csharp="path != null" vb="path &lt;&gt; Nothing">path != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.DeleteFile(System.String,System.Boolean)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.DeleteFile(System.String,System.Boolean)" inheritedFromTypeName="IFileSystem" csharp="path != null" vb="path &lt;&gt; Nothing">path != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.DeserializeObjectFromXmlFile(System.String,System.Type,System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.DeserializeObjectFromXmlFile(System.String,System.Type,System.String)" inheritedFromTypeName="IFileSystem" csharp="filePath != null" vb="filePath &lt;&gt; Nothing">filePath != null</requires>
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.DeserializeObjectFromXmlFile(System.String,System.Type,System.String)" inheritedFromTypeName="IFileSystem" csharp="objectType != (System.Type)null" vb="objectType &lt;&gt; ((System.Type)Nothing) ">objectType != (System.Type)null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.DeserializeObjectFromXmlFile(System.String,System.Type,System.String,System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.DeserializeObjectFromXmlFile(System.String,System.Type,System.String,System.String)" inheritedFromTypeName="IFileSystem" csharp="filePath != null" vb="filePath &lt;&gt; Nothing">filePath != null</requires>
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.DeserializeObjectFromXmlFile(System.String,System.Type,System.String,System.String)" inheritedFromTypeName="IFileSystem" csharp="objectType != (System.Type)null" vb="objectType &lt;&gt; ((System.Type)Nothing) ">objectType != (System.Type)null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.SerializeObjectIntoXmlFile(System.String,System.Object,System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.SerializeObjectIntoXmlFile(System.String,System.Object,System.String)" inheritedFromTypeName="IFileSystem" csharp="filePath != null" vb="filePath &lt;&gt; Nothing">filePath != null</requires>
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.SerializeObjectIntoXmlFile(System.String,System.Object,System.String)" inheritedFromTypeName="IFileSystem" csharp="obj != null" vb="obj &lt;&gt; Nothing">obj != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.WriteFile(System.String,System.Byte[])">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.WriteFile(System.String,System.Byte[])" inheritedFromTypeName="IFileSystem" csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.WriteFile(System.String,System.Byte[])" inheritedFromTypeName="IFileSystem" csharp="data != null" vb="data &lt;&gt; Nothing">data != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.WriteFile(System.String,System.String,System.Text.Encoding)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.WriteFile(System.String,System.String,System.Text.Encoding)" inheritedFromTypeName="IFileSystem" csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.WriteFile(System.String,System.String,System.Text.Encoding)" inheritedFromTypeName="IFileSystem" csharp="contents != null" vb="contents &lt;&gt; Nothing">contents != null</requires>
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.WriteFile(System.String,System.String,System.Text.Encoding)" inheritedFromTypeName="IFileSystem" csharp="encoding != null" vb="encoding &lt;&gt; Nothing">encoding != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.WriteXmlDocument(System.String,System.Xml.XmlDocument)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.WriteXmlDocument(System.String,System.Xml.XmlDocument)" inheritedFromTypeName="IFileSystem" csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.WriteXmlDocument(System.String,System.Xml.XmlDocument)" inheritedFromTypeName="IFileSystem" csharp="xmlDoc != null" vb="xmlDoc &lt;&gt; Nothing">xmlDoc != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.MoveFile(System.String,System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.MoveFile(System.String,System.String)" inheritedFromTypeName="IFileSystem" csharp="sourceFileName != null" vb="sourceFileName &lt;&gt; Nothing">sourceFileName != null</requires>
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.MoveFile(System.String,System.String)" inheritedFromTypeName="IFileSystem" csharp="destinationFileName != null" vb="destinationFileName &lt;&gt; Nothing">destinationFileName != null</requires>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.OpenFile(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,System.Int32,System.IO.FileOptions)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.OpenFile(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,System.Int32,System.IO.FileOptions)" inheritedFromTypeName="IFileSystem" csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.OpenFile(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,System.Int32,System.IO.FileOptions)" inheritedFromTypeName="IFileSystem" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.OpenFileToRead(System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.OpenFileToRead(System.String)" inheritedFromTypeName="IFileSystem" csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.OpenFileToRead(System.String)" inheritedFromTypeName="IFileSystem" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.OpenFileToRead(System.String,System.IO.FileOptions)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.OpenFileToRead(System.String,System.IO.FileOptions)" inheritedFromTypeName="IFileSystem" csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.OpenFileToRead(System.String,System.IO.FileOptions)" inheritedFromTypeName="IFileSystem" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.OpenFileToWrite(System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.OpenFileToWrite(System.String)" inheritedFromTypeName="IFileSystem" csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.OpenFileToWrite(System.String)" inheritedFromTypeName="IFileSystem" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.OpenFileToWrite(System.String,System.IO.FileOptions)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.OpenFileToWrite(System.String,System.IO.FileOptions)" inheritedFromTypeName="IFileSystem" csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.OpenFileToWrite(System.String,System.IO.FileOptions)" inheritedFromTypeName="IFileSystem" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.ReadFileAsBytes(System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.ReadFileAsBytes(System.String)" inheritedFromTypeName="IFileSystem" csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.ReadFileAsBytes(System.String)" inheritedFromTypeName="IFileSystem" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.ReadFileAsString(System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.ReadFileAsString(System.String)" inheritedFromTypeName="IFileSystem" csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.ReadFileAsString(System.String)" inheritedFromTypeName="IFileSystem" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.ReadFileAsXmlDocument(System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.ReadFileAsXmlDocument(System.String)" inheritedFromTypeName="IFileSystem" csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.ReadFileAsXmlDocument(System.String)" inheritedFromTypeName="IFileSystem" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.WindowsFileSystem.ReadFileAsStringLines(System.String)">
+      <requires inheritedFrom="M:LibroLib.FileSystem.IFileSystem.ReadFileAsStringLines(System.String)" inheritedFromTypeName="IFileSystem" csharp="fileName != null" vb="fileName &lt;&gt; Nothing">fileName != null</requires>
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IFileSystem.ReadFileAsStringLines(System.String)" inheritedFromTypeName="IFileSystem" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.FileSystem.ApplicationInfo.GetAppDirectoryPath(System.String)">
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IApplicationInfo.GetAppDirectoryPath(System.String)" inheritedFromTypeName="IApplicationInfo" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="P:LibroLib.FileSystem.ApplicationInfo.AppRootDirectory">
+      <getter>
+        <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="P:LibroLib.FileSystem.ApplicationInfo.AppVersion">
+      <getter>
+        <ensures inheritedFrom="M:LibroLib.FileSystem.IApplicationInfo.get_AppVersion" inheritedFromTypeName="IApplicationInfo" csharp="result != (System.Version)null" vb="result &lt;&gt; ((System.Version)Nothing) ">result != (System.Version)null</ensures>
+      </getter>
+    </member>
+    <member name="P:LibroLib.FileSystem.ApplicationInfo.AppVersionString">
+      <getter>
+        <ensures inheritedFrom="M:LibroLib.FileSystem.IApplicationInfo.get_AppVersionString" inheritedFromTypeName="IApplicationInfo" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="M:LibroLib.FileSystem.DummyApplicationInfo.GetAppDirectoryPath(System.String)">
+      <ensures inheritedFrom="M:LibroLib.FileSystem.IApplicationInfo.GetAppDirectoryPath(System.String)" inheritedFromTypeName="IApplicationInfo" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="P:LibroLib.FileSystem.DummyApplicationInfo.AppVersion">
+      <getter>
+        <ensures inheritedFrom="M:LibroLib.FileSystem.IApplicationInfo.get_AppVersion" inheritedFromTypeName="IApplicationInfo" csharp="result != (System.Version)null" vb="result &lt;&gt; ((System.Version)Nothing) ">result != (System.Version)null</ensures>
+      </getter>
+    </member>
+    <member name="P:LibroLib.FileSystem.DummyApplicationInfo.AppVersionString">
+      <getter>
+        <ensures inheritedFrom="M:LibroLib.FileSystem.IApplicationInfo.get_AppVersionString" inheritedFromTypeName="IApplicationInfo" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="M:LibroLib.Threading.ThreadPool.CreateThread(System.Action{LibroLib.Threading.IThread})">
+      <requires inheritedFrom="M:LibroLib.Threading.IThreadPool.CreateThread(System.Action{LibroLib.Threading.IThread})" inheritedFromTypeName="IThreadPool" csharp="threadAction != null" vb="threadAction &lt;&gt; Nothing">threadAction != null</requires>
+      <ensures inheritedFrom="M:LibroLib.Threading.IThreadPool.CreateThread(System.Action{LibroLib.Threading.IThread})" inheritedFromTypeName="IThreadPool" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.Threading.ThreadPool.StopAllThreads(LibroLib.Threading.ThreadPoolStopSettings)">
+      <requires inheritedFrom="M:LibroLib.Threading.IThreadPool.StopAllThreads(LibroLib.Threading.ThreadPoolStopSettings)" inheritedFromTypeName="IThreadPool" csharp="settings != null" vb="settings &lt;&gt; Nothing">settings != null</requires>
+    </member>
+    <member name="M:LibroLib.Threading.Synchronizer.AssignWaitHandles(LibroLib.Threading.IWaitHandle[])">
+      <requires inheritedFrom="M:LibroLib.Threading.ISynchronizer.AssignWaitHandles(LibroLib.Threading.IWaitHandle[])" inheritedFromTypeName="ISynchronizer" csharp="handles != null" vb="handles &lt;&gt; Nothing">handles != null</requires>
+      <requires inheritedFrom="M:LibroLib.Threading.ISynchronizer.AssignWaitHandles(LibroLib.Threading.IWaitHandle[])" inheritedFromTypeName="ISynchronizer" csharp="for all x in handles x != null" vb="for all x in handles x &lt;&gt; Nothing">for all x in handles x != null</requires>
+    </member>
+    <member name="M:LibroLib.Threading.IThreadPool.CreateThread(System.Action{LibroLib.Threading.IThread})">
+      <requires csharp="threadAction != null" vb="threadAction &lt;&gt; Nothing">threadAction != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.Threading.IThreadPool.StopAllThreads(LibroLib.Threading.ThreadPoolStopSettings)">
+      <requires csharp="settings != null" vb="settings &lt;&gt; Nothing">settings != null</requires>
+    </member>
+    <member name="M:LibroLib.Threading.ThreadWrapper.#ctor(LibroLib.Threading.IThreadPool,LibroLib.Threading.ISyncObjectsFactory,System.Action{LibroLib.Threading.IThread})">
+      <requires csharp="syncObjectsFactory != null" vb="syncObjectsFactory &lt;&gt; Nothing">syncObjectsFactory != null</requires>
+    </member>
+    <member name="M:LibroLib.Threading.ISynchronizer.AssignWaitHandles(LibroLib.Threading.IWaitHandle[])">
+      <requires csharp="handles != null" vb="handles &lt;&gt; Nothing">handles != null</requires>
+      <requires csharp="for all x in handles x != null" vb="for all x in handles x &lt;&gt; Nothing">for all x in handles x != null</requires>
+    </member>
+    <member name="M:LibroLib.Text.FormattingUtils.FileSortableFormat(System.DateTime)">
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.StringEx.AppendList(System.Text.StringBuilder,System.Collections.Generic.IEnumerable{System.String},System.String)">
+      <requires csharp="s != null" vb="s &lt;&gt; Nothing">s != null</requires>
+      <requires csharp="items != null" vb="items &lt;&gt; Nothing">items != null</requires>
+    </member>
+    <member name="M:LibroLib.StringEx.Concat``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.String},System.String)">
+      <requires csharp="items != null" vb="items &lt;&gt; Nothing">items != null</requires>
+      <requires csharp="formatterFunc != null" vb="formatterFunc &lt;&gt; Nothing">formatterFunc != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.StringEx.Concat``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.String},System.String,System.Int32,System.Int32)">
+      <requires csharp="items != null" vb="items &lt;&gt; Nothing">items != null</requires>
+      <requires csharp="formatterFunc != null" vb="formatterFunc &lt;&gt; Nothing">formatterFunc != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.StringEx.CropEnd(System.String,System.Int32)">
+      <requires csharp="value != null" vb="value &lt;&gt; Nothing">value != null</requires>
+      <requires csharp="length &gt;= 0" vb="length &gt;= 0">length &gt;= 0</requires>
+      <requires csharp="value.Length - length &gt;= 0" vb="value.Length - length &gt;= 0">value.Length - length &gt;= 0</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.StringEx.ExtractUpTo(System.String,System.Char)">
+      <requires csharp="value != null" vb="value &lt;&gt; Nothing">value != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.StringEx.ExtractUpTo(System.String,System.Predicate{System.Char},System.Int32@)">
+      <requires csharp="value != null" vb="value &lt;&gt; Nothing">value != null</requires>
+      <requires csharp="charPredicate != null" vb="charPredicate &lt;&gt; Nothing">charPredicate != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.StringEx.Fmt(System.String,System.Object[])">
+      <requires csharp="format != null" vb="format &lt;&gt; Nothing">format != null</requires>
+      <requires csharp="args != null" vb="args &lt;&gt; Nothing">args != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.StringEx.HasWhiteSpace(System.String)">
+      <requires csharp="s != null" vb="s &lt;&gt; Nothing">s != null</requires>
+    </member>
+    <member name="M:LibroLib.StringEx.JoinLines(System.Collections.Generic.IEnumerable{System.String},System.Int32,System.Int32)">
+      <requires csharp="lines != null" vb="lines &lt;&gt; Nothing">lines != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.StringEx.SplitIntoLines(System.String)">
+      <requires csharp="value != null" vb="value &lt;&gt; Nothing">value != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.StringEx.SplitIntoWords(System.String)">
+      <requires csharp="value != null" vb="value &lt;&gt; Nothing">value != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.StringEx.ToUnderscoreName(System.String,System.Globalization.CultureInfo)">
+      <requires csharp="name != null" vb="name &lt;&gt; Nothing">name != null</requires>
+      <requires csharp="culture != null" vb="culture &lt;&gt; Nothing">culture != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.StringEx.TrimEx(System.String,System.Int32@,System.Int32@)">
+      <requires csharp="value != null" vb="value &lt;&gt; Nothing">value != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.StringEx.WildcardsToRegex(System.String)">
+      <requires csharp="pattern != null" vb="pattern &lt;&gt; Nothing">pattern != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.IConsoleCommand.ParseArgs(LibroLib.ConsoleShells.IConsoleEnvironment,System.Collections.Generic.IList{System.String})">
+      <requires csharp="consoleEnvironment != null" vb="consoleEnvironment &lt;&gt; Nothing">consoleEnvironment != null</requires>
+      <requires csharp="args != null" vb="args &lt;&gt; Nothing">args != null</requires>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.IConsoleCommand.Execute(LibroLib.ConsoleShells.IConsoleEnvironment)">
+      <requires csharp="env != null" vb="env &lt;&gt; Nothing">env != null</requires>
+    </member>
+    <member name="P:LibroLib.ConsoleShells.IConsoleCommand.CommandId">
+      <getter>
+        <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.ConsoleShell.#ctor(System.String)">
+      <requires csharp="commandExeName != null" vb="commandExeName &lt;&gt; Nothing">commandExeName != null</requires>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.ConsoleShell.ListCommands">
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.ConsoleShell.ParseCommandLine(System.String[])">
+      <requires csharp="args != null" vb="args &lt;&gt; Nothing">args != null</requires>
+      <requires csharp="args.Length &lt; 1 || !ReferenceEquals(args[0], null)" vb="args.Length &lt; 1 OrElse Not ReferenceEquals(args(0), Nothing)">args.Length &lt; 1 || !object.ReferenceEquals(args[0], null)</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.ConsoleShell.RegisterCommand(LibroLib.ConsoleShells.IConsoleCommand)">
+      <requires csharp="cmd != null" vb="cmd &lt;&gt; Nothing">cmd != null</requires>
+    </member>
+    <member name="P:LibroLib.ConsoleShells.ConsoleShell.OutWriter">
+      <getter>
+        <ensures inheritedFrom="M:LibroLib.ConsoleShells.IConsoleEnvironment.get_OutWriter" inheritedFromTypeName="IConsoleEnvironment" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="P:LibroLib.ConsoleShells.ConsoleShell.ErrWriter">
+      <getter>
+        <ensures inheritedFrom="M:LibroLib.ConsoleShells.IConsoleEnvironment.get_ErrWriter" inheritedFromTypeName="IConsoleEnvironment" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.ParseArgs(LibroLib.ConsoleShells.IConsoleEnvironment,System.Collections.Generic.IList{System.String})">
+      <requires inheritedFrom="M:LibroLib.ConsoleShells.IConsoleCommand.ParseArgs(LibroLib.ConsoleShells.IConsoleEnvironment,System.Collections.Generic.IList{System.String})" inheritedFromTypeName="IConsoleCommand" csharp="consoleEnvironment != null" vb="consoleEnvironment &lt;&gt; Nothing">consoleEnvironment != null</requires>
+      <requires inheritedFrom="M:LibroLib.ConsoleShells.IConsoleCommand.ParseArgs(LibroLib.ConsoleShells.IConsoleEnvironment,System.Collections.Generic.IList{System.String})" inheritedFromTypeName="IConsoleCommand" csharp="args != null" vb="args &lt;&gt; Nothing">args != null</requires>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.Execute(LibroLib.ConsoleShells.IConsoleEnvironment)">
+      <requires inheritedFrom="M:LibroLib.ConsoleShells.IConsoleCommand.Execute(LibroLib.ConsoleShells.IConsoleEnvironment)" inheritedFromTypeName="IConsoleCommand" csharp="env != null" vb="env &lt;&gt; Nothing">env != null</requires>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.AddArg(System.String,System.String)">
+      <requires csharp="argName != null" vb="argName &lt;&gt; Nothing">argName != null</requires>
+      <requires csharp="description != null" vb="description &lt;&gt; Nothing">description != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.AddSetting(System.String,System.String)">
+      <requires csharp="argName != null" vb="argName &lt;&gt; Nothing">argName != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.AddSwitch(System.String,System.String,System.Action{System.Boolean,LibroLib.ConsoleShells.StandardConsoleCommandBase.CommandLineParsingContext})">
+      <requires csharp="argName != null" vb="argName &lt;&gt; Nothing">argName != null</requires>
+      <requires csharp="valueAction != null" vb="valueAction &lt;&gt; Nothing">valueAction != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.ParsePositionalArg(LibroLib.ConsoleShells.IConsoleEnvironment,System.Int32,System.String)">
+      <requires csharp="consoleEnvironment != null" vb="consoleEnvironment &lt;&gt; Nothing">consoleEnvironment != null</requires>
+      <requires csharp="positionalArgsCovered &gt;= 0" vb="positionalArgsCovered &gt;= 0">positionalArgsCovered &gt;= 0</requires>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.ParseNonPositionalArg(LibroLib.ConsoleShells.IConsoleEnvironment,System.String)">
+      <requires csharp="consoleEnvironment != null" vb="consoleEnvironment &lt;&gt; Nothing">consoleEnvironment != null</requires>
+      <requires csharp="arg != null" vb="arg &lt;&gt; Nothing">arg != null</requires>
+      <requires csharp="1 &lt;= arg.Length" vb="1 &lt;= arg.Length">1 &lt;= arg.Length</requires>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.ParseSettingArg(LibroLib.ConsoleShells.IConsoleEnvironment,System.String,System.Int32,LibroLib.ConsoleShells.StandardConsoleCommandBase.ArgInfo)">
+      <requires csharp="consoleEnvironment != null" vb="consoleEnvironment &lt;&gt; Nothing">consoleEnvironment != null</requires>
+      <requires csharp="arg != null" vb="arg &lt;&gt; Nothing">arg != null</requires>
+      <requires csharp="settingArg != null" vb="settingArg &lt;&gt; Nothing">settingArg != null</requires>
+      <requires csharp="valueIndex == -1 || 0 &lt;= valueIndex + 1" vb="valueIndex = -1 OrElse 0 &lt;= valueIndex + 1">valueIndex == -1 || 0 &lt;= valueIndex + 1</requires>
+      <requires csharp="valueIndex == -1 || valueIndex + 1 &lt;= arg.Length" vb="valueIndex = -1 OrElse valueIndex + 1 &lt;= arg.Length">valueIndex == -1 || valueIndex + 1 &lt;= arg.Length</requires>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.ParseSwitchArg(LibroLib.ConsoleShells.IConsoleEnvironment,System.String,System.Int32,LibroLib.ConsoleShells.StandardConsoleCommandBase.ArgInfo)">
+      <requires csharp="consoleEnvironment != null" vb="consoleEnvironment &lt;&gt; Nothing">consoleEnvironment != null</requires>
+      <requires csharp="arg != null" vb="arg &lt;&gt; Nothing">arg != null</requires>
+      <requires csharp="switchArg != null" vb="switchArg &lt;&gt; Nothing">switchArg != null</requires>
+      <requires csharp="valueIndex &lt; 0 || valueIndex + 1 &lt;= arg.Length" vb="valueIndex &lt; 0 OrElse valueIndex + 1 &lt;= arg.Length">valueIndex &lt; 0 || valueIndex + 1 &lt;= arg.Length</requires>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.PositionalArgBuilder.#ctor(LibroLib.ConsoleShells.StandardConsoleCommandBase,System.String,System.String)">
+      <requires csharp="command != null" vb="command &lt;&gt; Nothing">command != null</requires>
+      <requires csharp="argName != null" vb="argName &lt;&gt; Nothing">argName != null</requires>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.PositionalArgBuilder.IsOptional">
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.PositionalArgBuilder.IntValue(System.Action{System.Int32,LibroLib.ConsoleShells.StandardConsoleCommandBase.CommandLineParsingContext})">
+      <requires csharp="valueAction != null" vb="valueAction &lt;&gt; Nothing">valueAction != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.PositionalArgBuilder.Value(System.Action{System.String,LibroLib.ConsoleShells.StandardConsoleCommandBase.CommandLineParsingContext})">
+      <requires csharp="valueAction != null" vb="valueAction &lt;&gt; Nothing">valueAction != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.SettingArgBuilder.#ctor(LibroLib.ConsoleShells.StandardConsoleCommandBase,System.String,System.String)">
+      <requires csharp="command != null" vb="command &lt;&gt; Nothing">command != null</requires>
+      <requires csharp="argName != null" vb="argName &lt;&gt; Nothing">argName != null</requires>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.SettingArgBuilder.Alias(System.String)">
+      <requires csharp="alias != null" vb="alias &lt;&gt; Nothing">alias != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.SettingArgBuilder.IntValue(System.Action{System.Int32,LibroLib.ConsoleShells.StandardConsoleCommandBase.CommandLineParsingContext})">
+      <requires csharp="valueAction != null" vb="valueAction &lt;&gt; Nothing">valueAction != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.SettingArgBuilder.Value(System.Action{System.String,LibroLib.ConsoleShells.StandardConsoleCommandBase.CommandLineParsingContext})">
+      <requires csharp="valueAction != null" vb="valueAction &lt;&gt; Nothing">valueAction != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.SwitchArgBuilder.#ctor(LibroLib.ConsoleShells.StandardConsoleCommandBase,System.String,System.String,System.Action{System.Boolean,LibroLib.ConsoleShells.StandardConsoleCommandBase.CommandLineParsingContext})">
+      <requires csharp="command != null" vb="command &lt;&gt; Nothing">command != null</requires>
+      <requires csharp="argName != null" vb="argName &lt;&gt; Nothing">argName != null</requires>
+      <requires csharp="valueAction != null" vb="valueAction &lt;&gt; Nothing">valueAction != null</requires>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.SwitchArgBuilder.Alias(System.String)">
+      <requires csharp="alias != null" vb="alias &lt;&gt; Nothing">alias != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.CommandLineParsingContext.#ctor(LibroLib.ConsoleShells.IConsoleEnvironment)">
+      <requires csharp="env != null" vb="env &lt;&gt; Nothing">env != null</requires>
+    </member>
+    <member name="P:LibroLib.ConsoleShells.StandardConsoleCommandBase.CommandLineParsingContext.OutWriter">
+      <getter>
+        <ensures inheritedFrom="M:LibroLib.ConsoleShells.IConsoleEnvironment.get_OutWriter" inheritedFromTypeName="IConsoleEnvironment" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="P:LibroLib.ConsoleShells.StandardConsoleCommandBase.CommandLineParsingContext.ErrWriter">
+      <getter>
+        <ensures inheritedFrom="M:LibroLib.ConsoleShells.IConsoleEnvironment.get_ErrWriter" inheritedFromTypeName="IConsoleEnvironment" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.StandardConsoleCommandBase.ArgInfo.#ctor(System.String,System.String)">
+      <requires csharp="argName != null" vb="argName &lt;&gt; Nothing">argName != null</requires>
+    </member>
+    <member name="P:LibroLib.ConsoleShells.StandardConsoleCommandBase.CommandId">
+      <getter>
+        <ensures inheritedFrom="M:LibroLib.ConsoleShells.IConsoleCommand.get_CommandId" inheritedFromTypeName="IConsoleCommand" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.ConsoleShellResult.#ctor(LibroLib.ConsoleShells.IConsoleCommand)">
+      <requires csharp="command != null" vb="command &lt;&gt; Nothing">command != null</requires>
+    </member>
+    <member name="P:LibroLib.ConsoleShells.ConsoleShellResult.CommandsToExecute">
+      <getter>
+        <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.HelpConsoleCommand.ParseArgs(LibroLib.ConsoleShells.IConsoleEnvironment,System.Collections.Generic.IList{System.String})">
+      <requires inheritedFrom="M:LibroLib.ConsoleShells.IConsoleCommand.ParseArgs(LibroLib.ConsoleShells.IConsoleEnvironment,System.Collections.Generic.IList{System.String})" inheritedFromTypeName="IConsoleCommand" csharp="consoleEnvironment != null" vb="consoleEnvironment &lt;&gt; Nothing">consoleEnvironment != null</requires>
+      <requires inheritedFrom="M:LibroLib.ConsoleShells.IConsoleCommand.ParseArgs(LibroLib.ConsoleShells.IConsoleEnvironment,System.Collections.Generic.IList{System.String})" inheritedFromTypeName="IConsoleCommand" csharp="args != null" vb="args &lt;&gt; Nothing">args != null</requires>
+    </member>
+    <member name="M:LibroLib.ConsoleShells.HelpConsoleCommand.Execute(LibroLib.ConsoleShells.IConsoleEnvironment)">
+      <requires inheritedFrom="M:LibroLib.ConsoleShells.IConsoleCommand.Execute(LibroLib.ConsoleShells.IConsoleEnvironment)" inheritedFromTypeName="IConsoleCommand" csharp="env != null" vb="env &lt;&gt; Nothing">env != null</requires>
+    </member>
+    <member name="P:LibroLib.ConsoleShells.HelpConsoleCommand.CommandId">
+      <getter>
+        <ensures inheritedFrom="M:LibroLib.ConsoleShells.IConsoleCommand.get_CommandId" inheritedFromTypeName="IConsoleCommand" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="P:LibroLib.ConsoleShells.IConsoleEnvironment.OutWriter">
+      <getter>
+        <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="P:LibroLib.ConsoleShells.IConsoleEnvironment.ErrWriter">
+      <getter>
+        <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+      </getter>
+    </member>
+    <member name="M:LibroLib.Caching.IDiskCache.ClearCacheDirectory(System.String)">
+      <requires csharp="localCacheDirectoryPath != null" vb="localCacheDirectoryPath &lt;&gt; Nothing">localCacheDirectoryPath != null</requires>
+    </member>
+    <member name="M:LibroLib.Caching.IDiskCache.DeleteCacheFile(System.String)">
+      <requires csharp="localCacheFileName != null" vb="localCacheFileName &lt;&gt; Nothing">localCacheFileName != null</requires>
+    </member>
+    <member name="M:LibroLib.Caching.IDiskCache.EnsureDirectoryPathExists(System.String,System.Boolean)">
+      <requires csharp="localCacheFileName != null" vb="localCacheFileName &lt;&gt; Nothing">localCacheFileName != null</requires>
+    </member>
+    <member name="M:LibroLib.Caching.IDiskCache.GetFullFilePath(System.String)">
+      <requires csharp="localCachePath != null" vb="localCachePath &lt;&gt; Nothing">localCachePath != null</requires>
+      <ensures csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.Caching.IDiskCache.Load(System.String)">
+      <requires csharp="localCachePath != null" vb="localCachePath &lt;&gt; Nothing">localCachePath != null</requires>
+    </member>
+    <member name="M:LibroLib.Caching.IDiskCache.Save(System.String,System.Byte[])">
+      <requires csharp="localCachePath != null" vb="localCachePath &lt;&gt; Nothing">localCachePath != null</requires>
+    </member>
+    <member name="M:LibroLib.Caching.DefaultDiskCache.#ctor(LibroLib.FileSystem.IFileSystem,LibroLib.FileSystem.IApplicationInfo)">
+      <requires csharp="fileSystem != null" vb="fileSystem &lt;&gt; Nothing">fileSystem != null</requires>
+      <requires csharp="applicationInfo != null" vb="applicationInfo &lt;&gt; Nothing">applicationInfo != null</requires>
+    </member>
+    <member name="M:LibroLib.Caching.DefaultDiskCache.GetFullFilePath(System.String)">
+      <requires inheritedFrom="M:LibroLib.Caching.IDiskCache.GetFullFilePath(System.String)" inheritedFromTypeName="IDiskCache" csharp="localCachePath != null" vb="localCachePath &lt;&gt; Nothing">localCachePath != null</requires>
+      <ensures inheritedFrom="M:LibroLib.Caching.IDiskCache.GetFullFilePath(System.String)" inheritedFromTypeName="IDiskCache" csharp="result != null" vb="result &lt;&gt; Nothing">result != null</ensures>
+    </member>
+    <member name="M:LibroLib.Caching.DefaultDiskCache.ClearCacheDirectory(System.String)">
+      <requires inheritedFrom="M:LibroLib.Caching.IDiskCache.ClearCacheDirectory(System.String)" inheritedFromTypeName="IDiskCache" csharp="localCacheDirectoryPath != null" vb="localCacheDirectoryPath &lt;&gt; Nothing">localCacheDirectoryPath != null</requires>
+    </member>
+    <member name="M:LibroLib.Caching.DefaultDiskCache.DeleteCacheFile(System.String)">
+      <requires inheritedFrom="M:LibroLib.Caching.IDiskCache.DeleteCacheFile(System.String)" inheritedFromTypeName="IDiskCache" csharp="localCacheFileName != null" vb="localCacheFileName &lt;&gt; Nothing">localCacheFileName != null</requires>
+    </member>
+    <member name="M:LibroLib.Caching.DefaultDiskCache.EnsureDirectoryPathExists(System.String,System.Boolean)">
+      <requires inheritedFrom="M:LibroLib.Caching.IDiskCache.EnsureDirectoryPathExists(System.String,System.Boolean)" inheritedFromTypeName="IDiskCache" csharp="localCacheFileName != null" vb="localCacheFileName &lt;&gt; Nothing">localCacheFileName != null</requires>
+    </member>
+    <member name="M:LibroLib.Caching.DefaultDiskCache.IsCached(System.String)">
+      <requires inheritedFrom="M:LibroLib.Caching.IDiskCache.IsCached(System.String)" inheritedFromTypeName="IDiskCache" csharp="localCachePath != null" vb="localCachePath &lt;&gt; Nothing">localCachePath != null</requires>
+    </member>
+    <member name="M:LibroLib.Caching.DefaultDiskCache.Load(System.String)">
+      <requires inheritedFrom="M:LibroLib.Caching.IDiskCache.Load(System.String)" inheritedFromTypeName="IDiskCache" csharp="localCachePath != null" vb="localCachePath &lt;&gt; Nothing">localCachePath != null</requires>
+    </member>
+    <member name="M:LibroLib.Caching.DefaultDiskCache.Save(System.String,System.Byte[])">
+      <requires inheritedFrom="M:LibroLib.Caching.IDiskCache.Save(System.String,System.Byte[])" inheritedFromTypeName="IDiskCache" csharp="localCachePath != null" vb="localCachePath &lt;&gt; Nothing">localCachePath != null</requires>
+    </member>
+  </members>
+</doc>
