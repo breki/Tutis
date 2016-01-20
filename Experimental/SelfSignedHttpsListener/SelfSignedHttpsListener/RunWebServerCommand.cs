@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
+using System.IO;
 using System.Net;
 using System.Security.Principal;
 using System.Threading;
@@ -52,7 +53,7 @@ namespace SelfSignedHttpsListener
             listener.BeginGetContext (WebRequestCallback, listener);
         }
 
-        private void WaitForUserClosing ()
+        private static void WaitForUserClosing ()
         {
             Console.CancelKeyPress += SignalServerToStop;
 
@@ -81,15 +82,17 @@ namespace SelfSignedHttpsListener
 
             HttpListenerContext context = listener.EndGetContext (result);
 
-            Console.Out.WriteLine ("Received request...");
-
-            do
+            Stream stream = context.Response.OutputStream;
+            using (StreamWriter writer = new StreamWriter(stream)) do
             {
                 try
                 {
+                    Output (writer, "Received request...");
+
                     listener.BeginGetContext (WebRequestCallback, listener);
                     if (context.User == null)
                     {
+                        Output (writer, "context.User == null");
                         Console.Out.WriteLine ("context.User == null");
                         break;
                     }
@@ -97,22 +100,26 @@ namespace SelfSignedHttpsListener
                     WindowsPrincipal windowsPrincipal = context.User as WindowsPrincipal;
                     if (windowsPrincipal == null)
                     {
-                        Console.Out.WriteLine ("windowsPrincipal == null");
+                        Output (writer, "windowsPrincipal == null");
                         break;
                     }
 
                     WindowsIdentity windowsIdentity = windowsPrincipal.Identity as WindowsIdentity;
                     if (windowsIdentity == null)
                     {
-                        Console.Out.WriteLine ("windowsIdentity == null");
+                        Output (writer, "windowsIdentity == null");
                         break;
                     }
 
-                    Console.Out.WriteLine ("IsAuthenticated: {0}", windowsPrincipal.Identity.IsAuthenticated);
+                    Output (writer, "IsAuthenticated: {0}", windowsPrincipal.Identity.IsAuthenticated);
 
-                    OutputHeaders ("Request headers:", context.Request.Headers);
-                    OutputUsersGroups (windowsIdentity);
-                    Console.Out.WriteLine ("--------------------");
+                    Output (writer, string.Empty);
+                    Output (writer, "REQUEST HEADERS:");
+                    Output (writer, "{0}", context.Request.Headers);
+
+                    OutputUsersGroups (writer, windowsIdentity);
+                    
+                    Output (writer, "--------------------");
 
                     context.Response.StatusCode = (int)HttpStatusCode.OK;
                 }
@@ -127,15 +134,10 @@ namespace SelfSignedHttpsListener
             context.Response.Close ();
         }
 
-        private static void OutputHeaders (string prefixText, NameValueCollection headers)
+        private static void OutputUsersGroups (TextWriter writer, WindowsIdentity windowsIdentity)
         {
-            string headersText = headers.AllKeys.Concat (key => "{0}={1}".Fmt (key, headers.GetValues (key).Concat (x => x, ", ")), "|");
-            Console.WriteLine ("{0}: {1}".Fmt (prefixText, headersText));
-        }
-
-        private static void OutputUsersGroups (WindowsIdentity windowsIdentity)
-        {
-            Console.Out.WriteLine ("User's groups:");
+            Output (writer, string.Empty);
+            Output (writer, "USER'S GROUPS:");
 
             List<KeyValuePair<string, string>> groupsSorted = new List<KeyValuePair<string, string>> ();
 
@@ -153,7 +155,19 @@ namespace SelfSignedHttpsListener
             groupsSorted.Sort ((a, b) => string.Compare (a.Value, b.Value, StringComparison.Ordinal));
 
             foreach (KeyValuePair<string, string> group in groupsSorted)
-                Console.Out.WriteLine ("{0} ({1})", group.Value, group.Key);
+                Output (writer, "{0} ({1})", @group.Value, @group.Key);
+        }
+
+        private static void Output(TextWriter writer, string line)
+        {
+            Console.Out.WriteLine(line);
+            writer.WriteLine(line);
+        }
+
+        private static void Output(TextWriter writer, string lineFormat, params object[] args)
+        {
+            string line = string.Format(CultureInfo.InvariantCulture, lineFormat, args);
+            Output(writer, line);
         }
 
         private static void SignalServerToStop (object sender, ConsoleCancelEventArgs e)
