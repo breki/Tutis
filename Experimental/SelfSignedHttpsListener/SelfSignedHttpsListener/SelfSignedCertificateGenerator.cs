@@ -4,6 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Prng;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Pkcs;
@@ -27,34 +28,53 @@ namespace SelfSignedHttpsListener
             set { signatureAlgorithm = value; }
         }
 
-        public X509Certificate2 GenerateCertificate()
+        public X509Certificate2 GenerateCertificate(string friendlyName)
         {
             X509V3CertificateGenerator certificateGenerator = new X509V3CertificateGenerator ();
+            //certificateGenerator.AddExtension(X509Extensions.BasicConstraints, true, new BasicConstraints(false));
+            //certificateGenerator.AddExtension(X509Extensions.KeyUsage, true, new KeyUsage(KeyUsage.DigitalSignature | KeyUsage.KeyEncipherment));
+            //certificateGenerator.AddExtension(X509Extensions.ExtendedKeyUsage, true, new ExtendedKeyUsage(KeyPurposeID.IdKPServerAuth));
+            //certificateGenerator.AddExtension(X509Extensions.SubjectAlternativeName.Id, false, new GeneralNames(new GeneralName(GeneralName.Rfc822Name, "test@test.com")));
+
+            //Asn1Encodable[] subjectAlternativeNames = new Asn1Encodable[1];
+            //// first subject alternative name is the same as the subject
+            //subjectAlternativeNames[0] = new GeneralName (new X509Name ("CN=localhost"));
+            //DerSequence subjectAlternativeNamesExtension = new DerSequence (subjectAlternativeNames);
+            //certificateGenerator.AddExtension (X509Extensions.SubjectAlternativeName.Id, false, subjectAlternativeNamesExtension);
 
             IRandomGenerator randomGenerator = new CryptoApiRandomGenerator ();
             SecureRandom random = new SecureRandom (randomGenerator);
 
-            GenerateCertSerialNumber (certificateGenerator, random);
+            BigInteger serialNumber = GenerateCertSerialNumber (certificateGenerator, random);
             SetSignatureAlgorithm (certificateGenerator);
-            SetCertificateSubjectDn (certificateGenerator);
+            X509Name subjectDn;
+            SetCertificateSubjectDn (certificateGenerator, out subjectDn);
             SetCertificateDates (certificateGenerator);
 
             AsymmetricCipherKeyPair subjectKeyPair = GenerateKeyPair (random);
 
             certificateGenerator.SetPublicKey (subjectKeyPair.Public);
 
-            AsymmetricCipherKeyPair issuerKeyPair = subjectKeyPair;
-            Org.BouncyCastle.X509.X509Certificate certificate = certificateGenerator.Generate (issuerKeyPair.Private, random);
+            //certificateGenerator.AddExtension (X509Extensions.SubjectKeyIdentifier, false, new SubjectKeyIdentifier(subjectKeyPair.Public.));
 
+            AsymmetricCipherKeyPair issuerKeyPair = subjectKeyPair;
+            SetAuthorityKeyIdentifier (certificateGenerator, subjectDn, issuerKeyPair, serialNumber);
+
+            Org.BouncyCastle.X509.X509Certificate certificate = certificateGenerator.Generate (issuerKeyPair.Private, random);
+            
             //X509Certificate convertedCertificate = ConvertToX509Certificate2 (certificate, issuerKeyPair.Private, random);
             X509Certificate2 convertedCertificate = ConvertToX509Certificate2(certificate);
+            convertedCertificate.FriendlyName = friendlyName;
+
+            convertedCertificate.PrivateKey = DotNetUtilities.ToRSA (subjectKeyPair.Private as RsaPrivateCrtKeyParameters); 
             return convertedCertificate;
         }
 
-        private static void GenerateCertSerialNumber (X509V3CertificateGenerator certificateGenerator, SecureRandom random)
+        private static BigInteger GenerateCertSerialNumber (X509V3CertificateGenerator certificateGenerator, SecureRandom random)
         {
             BigInteger serialNumber = BigIntegers.CreateRandomInRange (BigInteger.One, BigInteger.ValueOf (long.MaxValue), random);
             certificateGenerator.SetSerialNumber (serialNumber);
+            return serialNumber;
         }
 
         private void SetSignatureAlgorithm (X509V3CertificateGenerator certificateGenerator)
@@ -62,9 +82,9 @@ namespace SelfSignedHttpsListener
             certificateGenerator.SetSignatureAlgorithm (signatureAlgorithm);
         }
 
-        private static void SetCertificateSubjectDn (X509V3CertificateGenerator certificateGenerator)
+        private static void SetCertificateSubjectDn (X509V3CertificateGenerator certificateGenerator, out X509Name subjectDn)
         {
-            X509Name subjectDn = new X509Name ("CN=localhost");
+            subjectDn = new X509Name ("CN=localhost");
             X509Name issuerDn = subjectDn;
             certificateGenerator.SetIssuerDN (issuerDn);
             certificateGenerator.SetSubjectDN (subjectDn);
@@ -77,6 +97,22 @@ namespace SelfSignedHttpsListener
 
             certificateGenerator.SetNotBefore (notBefore);
             certificateGenerator.SetNotAfter (notAfter);
+        }
+
+        private static void SetAuthorityKeyIdentifier(
+            X509V3CertificateGenerator certificateGenerator, 
+            X509Name issuerDn,
+            AsymmetricCipherKeyPair issuerKeyPair,
+            BigInteger serialNumber)
+        {
+            // Self-signed, so it's all the same.
+            BigInteger issuerSerialNumber = serialNumber;
+
+            AuthorityKeyIdentifier authorityKeyIdentifier = new AuthorityKeyIdentifier(
+                SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(issuerKeyPair.Public),
+                new GeneralNames(new GeneralName(issuerDn)),
+                issuerSerialNumber);
+            certificateGenerator.AddExtension(X509Extensions.AuthorityKeyIdentifier.Id, false, authorityKeyIdentifier);
         }
 
         private static AsymmetricCipherKeyPair GenerateKeyPair (SecureRandom random)
@@ -123,7 +159,7 @@ namespace SelfSignedHttpsListener
             return new X509Certificate2(DotNetUtilities.ToX509Certificate(certificate));
         }
 
-        private string signatureAlgorithm = "SHA256WithRSA";
+        private string signatureAlgorithm = "SHA512WithRSA";
         private DateTime certificateExpiryTime = DateTime.Now.AddYears(1);
     }
 }

@@ -9,7 +9,7 @@ namespace SelfSignedHttpsListener.Tests
         public void SelfSignedCertificateGeneratorTest()
         {
             SelfSignedCertificateGenerator generator = new SelfSignedCertificateGenerator();
-            X509Certificate2 cert = generator.GenerateCertificate();
+            X509Certificate2 cert = generator.GenerateCertificate ("SelfSignedHttpsListener certificate");
             Assert.IsNotNull(cert);
         }
 
@@ -17,7 +17,7 @@ namespace SelfSignedHttpsListener.Tests
         public void InstallCertificateInStore()
         {
             SelfSignedCertificateGenerator generator = new SelfSignedCertificateGenerator ();
-            X509Certificate2 cert = generator.GenerateCertificate ();
+            X509Certificate2 cert = generator.GenerateCertificate ("SelfSignedHttpsListener certificate");
     
             CertificateStoreInstaller installer = new CertificateStoreInstaller();
             installer.InstallCertificate(cert);
@@ -27,7 +27,7 @@ namespace SelfSignedHttpsListener.Tests
         public void BindCertificateToPort()
         {
             SelfSignedCertificateGenerator generator = new SelfSignedCertificateGenerator ();
-            X509Certificate2 cert = generator.GenerateCertificate ();
+            X509Certificate2 cert = generator.GenerateCertificate ("SelfSignedHttpsListener certificate");
 
             CertificateStoreInstaller installer = new CertificateStoreInstaller ();
             installer.InstallCertificate (cert);

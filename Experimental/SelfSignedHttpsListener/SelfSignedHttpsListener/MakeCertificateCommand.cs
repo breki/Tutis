@@ -28,16 +28,27 @@ namespace SelfSignedHttpsListener
 
         public override int Execute(IConsoleEnvironment env)
         {
-            Console.Out.WriteLine("Generating self-signed certificate for localhost...");
-            SelfSignedCertificateGenerator generator = new SelfSignedCertificateGenerator ();
-            X509Certificate2 cert = generator.GenerateCertificate ();
-            Console.Out.WriteLine ("Generated self-signed certificate for localhost, certificate hash (thumbprint) is {0}", cert.GetCertHashString());
+            try
+            {
+                Console.Out.WriteLine("Generating self-signed certificate for localhost...");
+                SelfSignedCertificateGenerator generator = new SelfSignedCertificateGenerator ();
+                X509Certificate2 cert = generator.GenerateCertificate ("SelfSignedHttpsListener certificate");
+                Console.Out.WriteLine ("Generated self-signed certificate for localhost, certificate hash (thumbprint) is {0}", cert.GetCertHashString());
 
-            Console.Out.WriteLine ("Installing the certificate into local machine Personal store...");
-            CertificateStoreInstaller installer = new CertificateStoreInstaller ();
-            installer.InstallCertificate (cert);
+                Console.Out.WriteLine ("Installing the certificate into local machine Personal store...");
+                CertificateStoreInstaller installer = new CertificateStoreInstaller ();
+                installer.InstallCertificate (cert);
 
-            Console.Out.WriteLine ("DONE!");
+                Console.Out.WriteLine("Binding the certificate to port {0}...", port);
+                CertificateBinder binder = new CertificateBinder ();
+                binder.BindCertificate (cert, RunWebServerCommand.DefaultPort);
+
+                Console.Out.WriteLine ("DONE!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
 
             return 0;
         }
