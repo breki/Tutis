@@ -3,7 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 using LibroLib;
 using LibroLib.ConsoleShells;
 
-namespace SelfSignedHttpsListener
+namespace SelfSignedHttpsListener.Commands
 {
     // http://stackoverflow.com/questions/11403333/httplistener-with-https-support
     // http://stackoverflow.com/questions/4004/how-do-i-add-ssl-to-a-net-application-that-uses-httplistener-it-will-not-be

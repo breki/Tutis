@@ -1,5 +1,6 @@
 ﻿using LibroLib.ConsoleShells;
 using NUnit.Framework;
+using SelfSignedHttpsListener.Commands;
 
 namespace SelfSignedHttpsListener.Tests
 {

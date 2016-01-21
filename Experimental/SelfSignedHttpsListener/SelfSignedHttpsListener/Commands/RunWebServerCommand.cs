@@ -8,7 +8,7 @@ using System.Threading;
 using LibroLib;
 using LibroLib.ConsoleShells;
 
-namespace SelfSignedHttpsListener
+namespace SelfSignedHttpsListener.Commands
 {
     public class RunWebServerCommand : StandardConsoleCommandBase
     {

@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography.X509Certificates;
 using NUnit.Framework;
+using SelfSignedHttpsListener.Commands;
 
 namespace SelfSignedHttpsListener.Tests
 {

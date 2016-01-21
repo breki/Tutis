@@ -143,7 +143,6 @@ namespace SelfSignedHttpsListener
                 GCHandle handleHash = GCHandle.Alloc (hash, GCHandleType.Pinned);
                 configSslParam.AppId = Guid.NewGuid ();
                 configSslParam.DefaultCertCheckMode = 0;
-                //configSslParam.DefaultFlags = HTTP_SERVICE_CONFIG_SSL_FLAG_NEGOTIATE_CLIENT_CERT;
                 configSslParam.DefaultFlags = 0;
                 configSslParam.DefaultRevocationFreshnessTime = 0;
                 configSslParam.DefaultRevocationUrlRetrievalTimeout = 0;
