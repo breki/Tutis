@@ -31,16 +31,6 @@ namespace SelfSignedHttpsListener
         public X509Certificate2 GenerateCertificate(string friendlyName)
         {
             X509V3CertificateGenerator certificateGenerator = new X509V3CertificateGenerator ();
-            //certificateGenerator.AddExtension(X509Extensions.BasicConstraints, true, new BasicConstraints(false));
-            //certificateGenerator.AddExtension(X509Extensions.KeyUsage, true, new KeyUsage(KeyUsage.DigitalSignature | KeyUsage.KeyEncipherment));
-            //certificateGenerator.AddExtension(X509Extensions.ExtendedKeyUsage, true, new ExtendedKeyUsage(KeyPurposeID.IdKPServerAuth));
-            //certificateGenerator.AddExtension(X509Extensions.SubjectAlternativeName.Id, false, new GeneralNames(new GeneralName(GeneralName.Rfc822Name, "test@test.com")));
-
-            //Asn1Encodable[] subjectAlternativeNames = new Asn1Encodable[1];
-            //// first subject alternative name is the same as the subject
-            //subjectAlternativeNames[0] = new GeneralName (new X509Name ("CN=localhost"));
-            //DerSequence subjectAlternativeNamesExtension = new DerSequence (subjectAlternativeNames);
-            //certificateGenerator.AddExtension (X509Extensions.SubjectAlternativeName.Id, false, subjectAlternativeNamesExtension);
 
             IRandomGenerator randomGenerator = new CryptoApiRandomGenerator ();
             SecureRandom random = new SecureRandom (randomGenerator);
@@ -54,8 +44,6 @@ namespace SelfSignedHttpsListener
             AsymmetricCipherKeyPair subjectKeyPair = GenerateKeyPair (random);
 
             certificateGenerator.SetPublicKey (subjectKeyPair.Public);
-
-            //certificateGenerator.AddExtension (X509Extensions.SubjectKeyIdentifier, false, new SubjectKeyIdentifier(subjectKeyPair.Public.));
 
             AsymmetricCipherKeyPair issuerKeyPair = subjectKeyPair;
             SetAuthorityKeyIdentifier (certificateGenerator, subjectDn, issuerKeyPair, serialNumber);
@@ -134,8 +122,7 @@ namespace SelfSignedHttpsListener
         {
             Pkcs12Store store = new Pkcs12Store ();
 
-            //string friendlyName = certificate.SubjectDN.ToString ();
-            string friendlyName = "xyz";
+            string friendlyName = certificate.SubjectDN.ToString ();
             X509CertificateEntry certificateEntry = new X509CertificateEntry (certificate);
             store.SetCertificateEntry (friendlyName, certificateEntry);
             store.SetKeyEntry (friendlyName, new AsymmetricKeyEntry (privateKey), new[] { certificateEntry });
