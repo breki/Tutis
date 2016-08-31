@@ -2,7 +2,6 @@ namespace SrtmPlaying.Png
 {
     public class PngWriterSettings
     {
-        public bool UseDotNetZip { get; set; }
         public int CompressionLevel
         {
             get { return compressionLevel; }

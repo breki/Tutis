@@ -2,12 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using ICSharpCode.SharpZipLib.Zip.Compression;
-using Ionic.Zlib;
 using LibroLib.FileSystem;
 using SrtmPlaying.BinaryProcessing;
-using CompressionLevel = Ionic.Zlib.CompressionLevel;
-using CompressionMode = Ionic.Zlib.CompressionMode;
 
 namespace SrtmPlaying.Png
 {
@@ -147,12 +143,7 @@ namespace SrtmPlaying.Png
             using (BinaryWriteBlock uncompressedBlock = new BinaryWriteBlock (uncompressedDataSize))
             {
                 FilterImageData (bitmap, uncompressedBlock, pngInfo, x, y, width, height);
-                byte[] finalChunkData;
-
-                if (settings.UseDotNetZip)
-                    finalChunkData = CompressImageDataUsingDotNetZip(uncompressedBlock);
-                else
-                    finalChunkData = CompressImageDataUsingSharpZipLib(settings, uncompressedBlock);
+                byte[] finalChunkData = CompressImageDataChunk(settings, uncompressedBlock);
 
                 WriteChunk (writer, finalChunkData);
             }
@@ -259,7 +250,9 @@ namespace SrtmPlaying.Png
             }
         }
 
-        private static byte[] CompressImageDataUsingDotNetZip (BinaryWriteBlock uncompressedBlock)
+        private static byte[] CompressImageDataChunk (
+            PngWriterSettings settings, 
+            BinaryWriteBlock uncompressedBlock)
         {
             byte[] finalChunkData;
             byte[] uncompressedData = uncompressedBlock.ToArray ();
@@ -271,46 +264,15 @@ namespace SrtmPlaying.Png
                 compressedStream.WriteByte ((byte)'A');
                 compressedStream.WriteByte ((byte)'T');
 
-                using (ZlibStream deflateStream 
-                    = new ZlibStream(compressedStream, CompressionMode.Compress, CompressionLevel.BestCompression))
+                System.IO.Compression.CompressionLevel compressionLevel = System.IO.Compression.CompressionLevel.Optimal;
+
+                using (System.IO.Compression.DeflateStream deflateStream = new System.IO.Compression.DeflateStream(
+                    compressedStream, compressionLevel, false))
                 {
-                    //deflateStream.BufferSize = 10*1024*1024;
-                    deflateStream.FlushMode = FlushType.None;
                     deflateStream.Write(uncompressedData, 0, uncompressedData.Length);
                     deflateStream.Flush();
+                    finalChunkData = compressedStream.ToArray();
                 }
-
-                finalChunkData = compressedStream.ToArray ();
-            }
-
-            return finalChunkData;
-        }
-
-        private static byte[] CompressImageDataUsingSharpZipLib (PngWriterSettings settings, BinaryWriteBlock uncompressedBlock)
-        {
-            byte[] finalChunkData;
-            byte[] uncompressedData = uncompressedBlock.ToArray ();
-
-            using (MemoryStream compressedStream = new MemoryStream (uncompressedData.Length / 2))
-            {
-                compressedStream.WriteByte ((byte)'I');
-                compressedStream.WriteByte ((byte)'D');
-                compressedStream.WriteByte ((byte)'A');
-                compressedStream.WriteByte ((byte)'T');
-
-                Deflater deflater = new Deflater (settings.CompressionLevel);
-                //deflater.SetStrategy(DeflateStrategy.Filtered);
-                deflater.SetInput (uncompressedData);
-                deflater.Finish ();
-
-                byte[] outputBuffer = new byte[100 * 1024 * 4];
-                while (deflater.IsNeedingInput == false)
-                {
-                    int read = deflater.Deflate (outputBuffer);
-                    compressedStream.Write (outputBuffer, 0, read);
-                }
-
-                finalChunkData = compressedStream.ToArray ();
             }
 
             return finalChunkData;
@@ -356,7 +318,7 @@ namespace SrtmPlaying.Png
             return crc;
         }
 
-        private static readonly byte[] signature = new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 };
+        private static readonly byte[] signature = { 137, 80, 78, 71, 13, 10, 26, 10 };
         private static readonly uint[] lookup = 
             {
                 0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f, 0xe963a535, 0x9e6495a3,

@@ -33,7 +33,6 @@ namespace SrtmPlaying.Tests
                 Stopwatch watch = new Stopwatch();
 
                 watch.Restart();
-                settings.UseDotNetZip = true;
                 outputFileName = Path.GetFullPath(Path.Combine(
                     TestContext.CurrentContext.TestDirectory,
                     "output/pngwriter_sharp.png"));
@@ -60,7 +59,6 @@ namespace SrtmPlaying.Tests
                 Stopwatch watch = new Stopwatch ();
 
                 watch.Restart ();
-                settings.UseDotNetZip = false;
                 outputFileName = "output/pngwriter_sharp_part.png";
 
                 using (IRawReadOnlyBitmap raw = new RawReadOnlyBitmap(workingBitmap))
