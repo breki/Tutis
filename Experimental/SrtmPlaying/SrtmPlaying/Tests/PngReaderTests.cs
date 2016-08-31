@@ -4,7 +4,7 @@ using System.Text;
 using NUnit.Framework;
 using SrtmPlaying.BinaryProcessing;
 
-namespace Brejc.Geo.Tests.ImagingTests
+namespace SrtmPlaying.Tests
 {
     public class PngReaderTests
     {

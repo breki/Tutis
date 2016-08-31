@@ -72,7 +72,7 @@ namespace SrtmPlaying.BinaryProcessing
 
         private bool disposed;
         private Endianess endianess = Endianess.BigEndian;
-        private MemoryStream writeStream;
-        private BinaryWriterEx writer;
+        private readonly MemoryStream writeStream;
+        private readonly BinaryWriterEx writer;
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 
-namespace Brejc.Geo.Tests.ImagingTests
+namespace SrtmPlaying.Tests
 {
     public class PngImage
     {
@@ -69,6 +69,6 @@ namespace Brejc.Geo.Tests.ImagingTests
             }
         }
 
-        private List<PngChunk> chunks = new List<PngChunk>();
+        private readonly List<PngChunk> chunks = new List<PngChunk>();
     }
 }

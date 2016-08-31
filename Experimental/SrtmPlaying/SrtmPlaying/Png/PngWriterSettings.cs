@@ -1,4 +1,4 @@
-namespace Brejc.Imaging.Png
+namespace SrtmPlaying.Png
 {
     public class PngWriterSettings
     {

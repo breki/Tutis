@@ -2,9 +2,9 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace Brejc.Imaging.Png
+namespace SrtmPlaying.Png
 {
-    public unsafe class RawReadOnlyBitmap : IRawReadOnlyBitmap
+    public sealed unsafe class RawReadOnlyBitmap : IRawReadOnlyBitmap
     {
         public RawReadOnlyBitmap (Bitmap bitmap)
         {
@@ -36,7 +36,7 @@ namespace Brejc.Imaging.Png
             GC.SuppressFinalize (this);
         }
 
-        protected virtual void Dispose (bool disposing)
+        private void Dispose (bool disposing)
         {
             if (false == disposed)
             {
@@ -84,13 +84,13 @@ namespace Brejc.Imaging.Png
             pBase = null;
         }
 
-        private Bitmap bitmap;
+        private readonly Bitmap bitmap;
         private bool disposed;
         private int wwidth;
         private BitmapData bitmapData;
         private byte* pBase = null;
         private int pixelDataSize;
-        private int width;
-        private int height;
+        private readonly int width;
+        private readonly int height;
     }
 }

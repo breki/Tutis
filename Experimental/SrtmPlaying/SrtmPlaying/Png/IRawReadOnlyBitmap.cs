@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Brejc.Imaging.Png
+namespace SrtmPlaying.Png
 {
     [CLSCompliant (false)]
     public interface IRawReadOnlyBitmap : IDisposable

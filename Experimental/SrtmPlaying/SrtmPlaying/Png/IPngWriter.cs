@@ -3,7 +3,7 @@ using System.Drawing;
 using System.IO;
 using LibroLib.FileSystem;
 
-namespace Brejc.Imaging.Png
+namespace SrtmPlaying.Png
 {
     [CLSCompliant (false)]
     public interface IPngWriter

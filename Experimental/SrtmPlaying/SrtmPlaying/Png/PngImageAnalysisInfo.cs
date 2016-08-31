@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Brejc.Imaging.Png
+namespace SrtmPlaying.Png
 {
     public class PngImageAnalysisInfo
     {
@@ -13,6 +13,6 @@ namespace Brejc.Imaging.Png
             colorsUsed.Add(color);
         }
 
-        private HashSet<int> colorsUsed = new HashSet<int>();
+        private readonly HashSet<int> colorsUsed = new HashSet<int>();
     }
 }

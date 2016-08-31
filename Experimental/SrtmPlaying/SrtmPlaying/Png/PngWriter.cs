@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using ICSharpCode.SharpZipLib.Zip.Compression;
@@ -8,7 +9,7 @@ using SrtmPlaying.BinaryProcessing;
 using CompressionLevel = Ionic.Zlib.CompressionLevel;
 using CompressionMode = Ionic.Zlib.CompressionMode;
 
-namespace Brejc.Imaging.Png
+namespace SrtmPlaying.Png
 {
     public class PngWriter : IPngWriter
     {
@@ -41,9 +42,9 @@ namespace Brejc.Imaging.Png
             using (BinaryWriterEx writer = new BinaryWriterEx (outputStream))
             {
                 WriteSignature (writer);
-                WriteIHDRChunk (writer, pngInfo, width, height);
-                WriteIDATChunk (writer, bitmap, settings, pngInfo, x, y, width, height);
-                WriteIENDChunk (writer);
+                WriteIhdrChunk (writer, pngInfo, width, height);
+                WriteIdatChunk (writer, bitmap, settings, pngInfo, x, y, width, height);
+                WriteIendChunk (writer);
             }
         }
 
@@ -104,12 +105,12 @@ namespace Brejc.Imaging.Png
             return pngInfo;
         }
 
-        private static void WriteSignature (BinaryWriterEx writer)
+        private static void WriteSignature (BinaryWriter writer)
         {
             writer.Write (signature);
         }
 
-        private static void WriteIHDRChunk (
+        private static void WriteIhdrChunk (
             BinaryWriterEx writer, PngImageAnalysisInfo pngInfo, int width, int height)
         {
             using (BinaryWriteBlock b = new BinaryWriteBlock (13 + 4))
@@ -130,7 +131,7 @@ namespace Brejc.Imaging.Png
             }
         }
 
-        private static void WriteIDATChunk (
+        private static void WriteIdatChunk (
             BinaryWriterEx writer, 
             IRawReadOnlyBitmap bitmap, 
             PngWriterSettings settings, 
@@ -185,7 +186,12 @@ namespace Brejc.Imaging.Png
         }
 
         private static unsafe void FilterMethod0(
-            IRawReadOnlyBitmap bitmap, int y, byte[] filteredScanlineBuffer, int x, int width, PngImageAnalysisInfo pngInfo)
+            IRawReadOnlyBitmap bitmap, 
+            int y, 
+            IList<byte> filteredScanlineBuffer, 
+            int x, 
+            int width, 
+            PngImageAnalysisInfo pngInfo)
         {
             bool alphaChannelUsed = pngInfo.IsTransparencyUsed;
 
@@ -215,8 +221,13 @@ namespace Brejc.Imaging.Png
             }
         }
 
+        // ReSharper disable once UnusedMember.Local
         private static unsafe void FilterMethod1 (
-            IRawReadOnlyBitmap bitmap, int y, byte[] filteredScanlineBuffer, int width, PngImageAnalysisInfo pngInfo)
+            IRawReadOnlyBitmap bitmap, 
+            int y, 
+            IList<byte> filteredScanlineBuffer, 
+            int width, 
+            PngImageAnalysisInfo pngInfo)
         {
             bool alphaChannelUsed = pngInfo.IsTransparencyUsed;
 
@@ -305,9 +316,9 @@ namespace Brejc.Imaging.Png
             return finalChunkData;
         }
 
-        private static void WriteIENDChunk (BinaryWriterEx writer)
+        private static void WriteIendChunk (BinaryWriterEx writer)
         {
-            byte[] data = new[] { (byte)'I', (byte)'E', (byte)'N', (byte)'D' };
+            byte[] data = { (byte)'I', (byte)'E', (byte)'N', (byte)'D' };
             WriteChunk (writer, data);
         }
 
@@ -324,13 +335,13 @@ namespace Brejc.Imaging.Png
                 block.Write ((byte)chunkType[i]);
         }
 
-        private static uint CalculateCrc (byte[] data)
+        private static uint CalculateCrc (IReadOnlyList<byte> data)
         {
             //Crc32 crc32 = new Crc32();
             //crc32.Update(data);
             //return (uint)crc32.Value;
 
-            int length = data.Length;
+            int length = data.Count;
 
             uint crc = 0xffffffff;
 
@@ -345,8 +356,8 @@ namespace Brejc.Imaging.Png
             return crc;
         }
 
-        private static byte[] signature = new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 };
-        private static uint[] lookup = 
+        private static readonly byte[] signature = new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 };
+        private static readonly uint[] lookup = 
             {
                 0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f, 0xe963a535, 0x9e6495a3,
                 0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988, 0x09b64c2b, 0x7eb17cbd, 0xe7b82d07, 0x90bf1d91,

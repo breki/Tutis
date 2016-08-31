@@ -1,4 +1,4 @@
-﻿namespace Brejc.Geo.Tests.ImagingTests
+﻿namespace SrtmPlaying.Tests
 {
     public class PngChunk
     {
