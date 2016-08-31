@@ -13,7 +13,7 @@ namespace SrtmPlaying.Png
 
         [CLSCompliant(false)]
         void WritePngPart (
-            IRawReadOnlyBitmap bitmap,
+            IPngBitmapDataSource bitmap,
             int x,
             int y,
             int width,

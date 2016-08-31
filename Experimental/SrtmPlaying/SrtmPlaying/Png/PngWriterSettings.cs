@@ -8,6 +8,8 @@ namespace SrtmPlaying.Png
             set { compressionLevel = value; }
         }
 
+        public PngImageType ImageType { get; set; } = PngImageType.Rgb8;
+
         public PngTransparency Transparency
         {
             get { return transparency; }
@@ -15,6 +17,6 @@ namespace SrtmPlaying.Png
         }
 
         private int compressionLevel = 5;
-        private PngTransparency transparency = PngTransparency.AutoDetect;
+        private PngTransparency transparency = PngTransparency.Transparent;
     }
 }

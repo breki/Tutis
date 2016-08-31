@@ -1,6 +1,10 @@
-- find out if there is a way to unzip file without SharpZipLib
 - implement writing of PNG grayscale from an array
+	- break up PngWriter into several classes
+	- PngWriter must be modified to:
+		- properly configure IHDR chunk
+		- handle grayscale writing (instead of existing RGB)
 	- implement performance tests using actual SRTM tiles
 		- experiment with compression level
 		- read hgt
 	- compare the final size of PNG with ZIPs 
+- add R# annotations and code contracts to the code

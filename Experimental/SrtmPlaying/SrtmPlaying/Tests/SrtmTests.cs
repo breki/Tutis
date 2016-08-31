@@ -4,6 +4,8 @@ using Brejc.Rasters;
 using LibroLib;
 using LibroLib.FileSystem;
 using NUnit.Framework;
+using SrtmPlaying.Png;
+using SrtmPlaying.Srtm;
 
 namespace SrtmPlaying.Tests
 {
@@ -30,11 +32,10 @@ namespace SrtmPlaying.Tests
 
             ISrtm1CellFileReader cellFileReader = new Hgt1FileReader(fileSystem);
             IRaster cell = cellFileReader.ReadFromFile(cellFileName);
-        }
 
-        [Test]
-        public void Test()
-        {
+            IPngWriter pngWriter = new PngWriter();
+            SrtmTilePngFileWriter tileWriter = new SrtmTilePngFileWriter(fileSystem, pngWriter);
+            tileWriter.WriteToFile(Path.Combine(testDir, "output", "tile.png"), cell);
         }
     }
 }
