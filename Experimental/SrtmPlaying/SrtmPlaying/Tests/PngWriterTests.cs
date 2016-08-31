@@ -61,7 +61,7 @@ namespace SrtmPlaying.Tests
                 watch.Restart ();
                 outputFileName = "output/pngwriter_sharp_part.png";
 
-                using (IRawReadOnlyBitmap raw = new RawReadOnlyBitmap(workingBitmap))
+                using (IPngBitmapDataSource raw = new RawReadOnlyBitmap(workingBitmap))
                 using (Stream stream = new WindowsFileSystem().OpenFileToWrite(outputFileName))
                 {
                     pngWriter.WritePngPart(raw, 120, 160, 1200, 800, settings, stream);

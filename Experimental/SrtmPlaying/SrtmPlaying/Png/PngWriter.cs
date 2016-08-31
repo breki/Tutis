@@ -25,7 +25,7 @@ namespace SrtmPlaying.Png
 
         [CLSCompliant (false)]
         public void WritePngPart (
-            IRawReadOnlyBitmap bitmap,
+            IPngBitmapDataSource bitmap,
             int x,
             int y,
             int width,
@@ -45,7 +45,7 @@ namespace SrtmPlaying.Png
         }
 
         private static PngImageAnalysisInfo AnalyzeImage(
-            IRawReadOnlyBitmap raw, 
+            IPngBitmapDataSource raw, 
             PngWriterSettings settings,
             int x,
             int y,
@@ -129,7 +129,7 @@ namespace SrtmPlaying.Png
 
         private static void WriteIdatChunk (
             BinaryWriterEx writer, 
-            IRawReadOnlyBitmap bitmap, 
+            IPngBitmapDataSource bitmap, 
             PngWriterSettings settings, 
             PngImageAnalysisInfo pngInfo,
             int x,
@@ -150,7 +150,7 @@ namespace SrtmPlaying.Png
         }
 
         private static void FilterImageData(
-            IRawReadOnlyBitmap bitmap, 
+            IPngBitmapDataSource bitmap, 
             BinaryWriteBlock uncompressedBlock, 
             PngImageAnalysisInfo pngInfo,
             int x,
@@ -177,7 +177,7 @@ namespace SrtmPlaying.Png
         }
 
         private static unsafe void FilterMethod0(
-            IRawReadOnlyBitmap bitmap, 
+            IPngBitmapDataSource bitmap, 
             int y, 
             IList<byte> filteredScanlineBuffer, 
             int x, 
@@ -214,7 +214,7 @@ namespace SrtmPlaying.Png
 
         // ReSharper disable once UnusedMember.Local
         private static unsafe void FilterMethod1 (
-            IRawReadOnlyBitmap bitmap, 
+            IPngBitmapDataSource bitmap, 
             int y, 
             IList<byte> filteredScanlineBuffer, 
             int width, 

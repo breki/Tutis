@@ -4,7 +4,7 @@ using System.Drawing.Imaging;
 
 namespace SrtmPlaying.Png
 {
-    public sealed unsafe class RawReadOnlyBitmap : IRawReadOnlyBitmap
+    public sealed unsafe class RawReadOnlyBitmap : IPngBitmapDataSource
     {
         public RawReadOnlyBitmap (Bitmap bitmap)
         {
@@ -13,6 +13,8 @@ namespace SrtmPlaying.Png
             height = bitmap.Height;
             LockBitmap();
         }
+
+        public bool IsRaw { get { return true; } }
 
         public int Width
         {
@@ -25,9 +27,14 @@ namespace SrtmPlaying.Png
         }
 
         [CLSCompliant(false)]
-        public byte* GetScanline (int y)
+        public byte* GetRawScanline (int y)
         {
             return pBase + y*wwidth;
+        }
+
+        public byte[] GetScanline(int y)
+        {
+            throw new NotSupportedException();
         }
 
         public void Dispose ()
