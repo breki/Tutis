@@ -1,11 +1,11 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using Brejc.Imaging.Png;
 using LibroLib.FileSystem;
 using NUnit.Framework;
+using SrtmPlaying.Png;
 
-namespace Brejc.Geo.Tests.ImagingTests
+namespace SrtmPlaying.Tests
 {
     public class PngWriterTests
     {
