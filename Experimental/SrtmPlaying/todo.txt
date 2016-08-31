@@ -1,0 +1,6 @@
+- find out if there is a way to unzip file without SharpZipLib
+- implement writing of PNG grayscale from an array
+	- implement performance tests using actual SRTM tiles
+		- experiment with compression level
+		- read hgt
+	- compare the final size of PNG with ZIPs 
