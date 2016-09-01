@@ -1,10 +1,14 @@
 - implement writing of PNG grayscale from an array
+	- implement filtering and compressing for each line separately, instead of the whole thing
+	- filtering
+		- implement filter selection
+			- adaptive filtering for each scanline
+		- non-raw data source could simply be copied directly into the filtered buffer?
+
 	- break up PngWriter into several classes
-	- PngWriter must be modified to:
-		- properly configure IHDR chunk
-		- handle grayscale writing (instead of existing RGB)
-	- implement performance tests using actual SRTM tiles
-		- experiment with compression level
-		- read hgt
-	- compare the final size of PNG with ZIPs 
+
+- implement performance tests using actual SRTM tiles
+	- experiment with compression level
+	- read hgt
+- compare the final size of PNG with ZIPs 
 - add R# annotations and code contracts to the code

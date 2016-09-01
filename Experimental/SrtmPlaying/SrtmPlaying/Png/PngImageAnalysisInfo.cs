@@ -7,6 +7,7 @@ namespace SrtmPlaying.Png
         public int ColorsCount { get { return colorsUsed.Count; } }
         public bool IsTransparencyUsed { get; set; }
         public bool IsMoreThan256Colors { get { return colorsUsed.Count > 256; } }
+        public int PixelSize { get; set; }
 
         public void AddUsedColor (int color)
         {
