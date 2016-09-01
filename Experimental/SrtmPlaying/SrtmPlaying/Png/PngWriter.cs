@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using LibroLib;
 using LibroLib.FileSystem;
 using SrtmPlaying.BinaryProcessing;
 
@@ -38,14 +39,14 @@ namespace SrtmPlaying.Png
             using (BinaryWriterEx writer = new BinaryWriterEx (outputStream))
             {
                 WriteSignature (writer);
-                WriteIhdrChunk (writer, pngInfo, width, height);
+                WriteIhdrChunk (writer, settings, pngInfo, width, height);
                 WriteIdatChunk (writer, bitmap, settings, pngInfo, x, y, width, height);
                 WriteIendChunk (writer);
             }
         }
 
         private static PngImageAnalysisInfo AnalyzeImage(
-            IPngBitmapDataSource raw, 
+            IPngBitmapDataSource bitmapDataSource, 
             PngWriterSettings settings,
             int x,
             int y,
@@ -54,20 +55,48 @@ namespace SrtmPlaying.Png
         {
             PngImageAnalysisInfo pngInfo = new PngImageAnalysisInfo();
 
-            if (settings.Transparency == PngTransparency.Opaque)
+            switch (settings.Transparency)
             {
-                pngInfo.IsTransparencyUsed = false;
+                case PngTransparency.Opaque:
+                    pngInfo.IsTransparencyUsed = false;
+                    break;
+                case PngTransparency.Transparent:
+                    pngInfo.IsTransparencyUsed = true;
+                    break;
+            }
+
+            switch (settings.ImageType)
+            {
+                case PngImageType.Grayscale16:
+                    pngInfo.PixelSize = 2;
+                    break;
+                case PngImageType.Rgb8:
+                    pngInfo.PixelSize = pngInfo.IsTransparencyUsed ? 4 : 3;
+                    break;
+                default:
+                    throw new NotSupportedException(
+                        "This PNG image type ({0}) is currently not supported.".Fmt(settings.ImageType));
+            }
+
+            if (settings.Transparency != PngTransparency.AutoDetect)
+            {
+                // nothing more needed here
                 return pngInfo;
             }
 
-            if (settings.Transparency == PngTransparency.Transparent)
+            switch (settings.ImageType)
             {
-                pngInfo.IsTransparencyUsed = true;
-                return pngInfo;
+                case PngImageType.Grayscale16:
+                    break;
+                case PngImageType.Rgb8:
+                    break;
+                default:
+                    throw new InvalidOperationException(
+                        "PngTransparency.AutoDetect is not supported for PNG image type '{0}'.".Fmt(settings.ImageType));
             }
 
-            int bitmapWidth = raw.Width;
-            int bitmapHeight = raw.Height;
+            int bitmapWidth = bitmapDataSource.Width;
+            int bitmapHeight = bitmapDataSource.Height;
             int maxx = Math.Min(bitmapWidth, x + width);
             int maxy = Math.Min(bitmapHeight, y + height);
 
@@ -79,21 +108,43 @@ namespace SrtmPlaying.Png
                     if (pngInfo.IsMoreThan256Colors && pngInfo.IsTransparencyUsed)
                         break;
 
-                    byte* scanline = raw.GetScanline(yy);
-
-                    int i = x * 4;
-                    for (int xx = x; xx < maxx; xx++)
+                    if (bitmapDataSource.IsRaw)
                     {
-                        byte blue = scanline[i++];
-                        byte green = scanline[i++];
-                        byte red = scanline[i++];
-                        byte alpha = scanline[i++];
+                        byte* scanline = bitmapDataSource.GetRawScanline(yy);
 
-                        if (alpha < 255)
-                            pngInfo.IsTransparencyUsed = true;
+                        int i = x*4;
+                        for (int xx = x; xx < maxx; xx++)
+                        {
+                            byte blue = scanline[i++];
+                            byte green = scanline[i++];
+                            byte red = scanline[i++];
+                            byte alpha = scanline[i++];
 
-                        if (!pngInfo.IsMoreThan256Colors)
-                            pngInfo.AddUsedColor(alpha << 24 | red << 16 | green << 8 | blue);
+                            if (alpha < 255)
+                                pngInfo.IsTransparencyUsed = true;
+
+                            if (!pngInfo.IsMoreThan256Colors)
+                                pngInfo.AddUsedColor(alpha << 24 | red << 16 | green << 8 | blue);
+                        }
+                    }
+                    else
+                    {
+                        byte[] scanline = bitmapDataSource.GetScanline(yy);
+
+                        int i = x * 4;
+                        for (int xx = x; xx < maxx; xx++)
+                        {
+                            byte blue = scanline[i++];
+                            byte green = scanline[i++];
+                            byte red = scanline[i++];
+                            byte alpha = scanline[i++];
+
+                            if (alpha < 255)
+                                pngInfo.IsTransparencyUsed = true;
+
+                            if (!pngInfo.IsMoreThan256Colors)
+                                pngInfo.AddUsedColor(alpha << 24 | red << 16 | green << 8 | blue);
+                        }
                     }
                 }
             }
@@ -107,23 +158,47 @@ namespace SrtmPlaying.Png
         }
 
         private static void WriteIhdrChunk (
-            BinaryWriterEx writer, PngImageAnalysisInfo pngInfo, int width, int height)
+            BinaryWriterEx writer, PngWriterSettings settings, PngImageAnalysisInfo pngInfo, int width, int height)
         {
             using (BinaryWriteBlock b = new BinaryWriteBlock (13 + 4))
             {
-                int imageType = pngInfo.IsTransparencyUsed ? 6 : 2;
+                byte bitDepth;
+                byte colorType;
+
+                DetermineBitDepthAndColorType(settings, pngInfo, out bitDepth, out colorType);
 
                 b.Endianess = Endianess.BigEndian;
                 WriteChunkType (b, "IHDR");
                 b.Write (width);
                 b.Write (height);
-                b.Write ((byte)8);
-                b.Write ((byte)imageType);
+                b.Write (bitDepth);
+                b.Write (colorType);
                 b.Write ((byte)0);
                 b.Write ((byte)0);
                 b.Write ((byte)0);
 
                 WriteChunk (writer, b.ToArray ());
+            }
+        }
+
+        private static void DetermineBitDepthAndColorType(
+            PngWriterSettings settings,
+            PngImageAnalysisInfo pngInfo, 
+            out byte bitDepth, 
+            out byte colorType)
+        {
+            switch (settings.ImageType)
+            {
+                case PngImageType.Grayscale16:
+                    colorType = 0;
+                    bitDepth = 16;
+                    break;
+                case PngImageType.Rgb8:
+                    colorType = (byte) (pngInfo.IsTransparencyUsed ? 6 : 2);
+                    bitDepth = 8;
+                    break;
+                default:
+                    throw new InvalidOperationException("Unsupported PNG image type '{0}'.".Fmt(settings.ImageType));
             }
         }
 
@@ -137,12 +212,10 @@ namespace SrtmPlaying.Png
             int width,
             int height)
         {
-            int pixelSize = pngInfo.IsTransparencyUsed ? 4 : 3;
-
-            int uncompressedDataSize = (1 + width * pixelSize) * height;
+            int uncompressedDataSize = (1 + width * pngInfo.PixelSize) * height;
             using (BinaryWriteBlock uncompressedBlock = new BinaryWriteBlock (uncompressedDataSize))
             {
-                FilterImageData (bitmap, uncompressedBlock, pngInfo, x, y, width, height);
+                FilterImageData (bitmap, uncompressedBlock, settings, pngInfo, x, y, width, height);
                 byte[] finalChunkData = CompressImageDataChunk(settings, uncompressedBlock);
 
                 WriteChunk (writer, finalChunkData);
@@ -151,7 +224,8 @@ namespace SrtmPlaying.Png
 
         private static void FilterImageData(
             IPngBitmapDataSource bitmap, 
-            BinaryWriteBlock uncompressedBlock, 
+            BinaryWriteBlock uncompressedBlock,
+            PngWriterSettings settings,
             PngImageAnalysisInfo pngInfo,
             int x,
             int y,
@@ -160,16 +234,14 @@ namespace SrtmPlaying.Png
         {
             uncompressedBlock.Endianess = Endianess.BigEndian;
 
-            int pixelSize = pngInfo.IsTransparencyUsed ? 4 : 3;
-
-            byte[] filteredScanlineBuffer = new byte[1 + width * pixelSize];
+            byte[] filteredScanlineBuffer = new byte[1 + width * pngInfo.PixelSize];
 
             int bitmapHeight = bitmap.Height;
             int maxy = Math.Min (bitmapHeight, y + height);
 
             for (int yy = y; yy < maxy; yy++)
             {
-                FilterMethod0 (bitmap, yy, filteredScanlineBuffer, x, width, pngInfo);
+                FilterMethod0 (bitmap, yy, filteredScanlineBuffer, x, width, settings, pngInfo);
                 //FilterMethod1 (bitmap, y, filteredScanlineBuffer, width, pngInfo);
 
                 uncompressedBlock.Write (filteredScanlineBuffer);
@@ -177,80 +249,129 @@ namespace SrtmPlaying.Png
         }
 
         private static unsafe void FilterMethod0(
-            IPngBitmapDataSource bitmap, 
+            IPngBitmapDataSource bitmapDataSource, 
             int y, 
             IList<byte> filteredScanlineBuffer, 
             int x, 
             int width, 
+            PngWriterSettings settings, 
             PngImageAnalysisInfo pngInfo)
         {
             bool alphaChannelUsed = pngInfo.IsTransparencyUsed;
-
-            byte* scanline = bitmap.GetScanline (y);
-            int si = x * 4;
+            int si = x * pngInfo.PixelSize;
             int fi = 0;
 
             filteredScanlineBuffer[fi++] = 0;
 
-            for (int xx = 0; xx < width; xx++)
+            if (bitmapDataSource.IsRaw)
             {
-                byte blue = scanline[si++];
-                byte green = scanline[si++];
-                byte red = scanline[si++];
-
-                filteredScanlineBuffer[fi++] = red;
-                filteredScanlineBuffer[fi++] = green;
-                filteredScanlineBuffer[fi++] = blue;
-
-                if (alphaChannelUsed)
+                byte* scanline = bitmapDataSource.GetRawScanline(y);
+                for (int xx = 0; xx < width; xx++)
                 {
-                    byte alpha = scanline[si++];
-                    filteredScanlineBuffer[fi++] = alpha;
+                    switch (settings.ImageType)
+                    {
+                        case PngImageType.Rgb8:
+                            byte blue = scanline[si++];
+                            byte green = scanline[si++];
+                            byte red = scanline[si++];
+
+                            filteredScanlineBuffer[fi++] = red;
+                            filteredScanlineBuffer[fi++] = green;
+                            filteredScanlineBuffer[fi++] = blue;
+
+                            if (alphaChannelUsed)
+                            {
+                                byte alpha = scanline[si++];
+                                filteredScanlineBuffer[fi++] = alpha;
+                            }
+                            else
+                                si++;
+                           
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
                 }
-                else
-                    si++;
+            }
+            else
+            {
+                byte[] scanline = bitmapDataSource.GetScanline(y);
+                for (int xx = 0; xx < width; xx++)
+                {
+                    switch (settings.ImageType)
+                    {
+                        case PngImageType.Rgb8:
+                            byte blue = scanline[si++];
+                            byte green = scanline[si++];
+                            byte red = scanline[si++];
+
+                            filteredScanlineBuffer[fi++] = red;
+                            filteredScanlineBuffer[fi++] = green;
+                            filteredScanlineBuffer[fi++] = blue;
+
+                            if (alphaChannelUsed)
+                            {
+                                byte alpha = scanline[si++];
+                                filteredScanlineBuffer[fi++] = alpha;
+                            }
+                            else
+                                si++;
+
+                            break;
+                        case PngImageType.Grayscale16:
+                            byte lo = scanline[si++];
+                            byte hi = scanline[si++];
+                            filteredScanlineBuffer[fi++] = lo;
+                            filteredScanlineBuffer[fi++] = hi;
+
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
             }
         }
 
         // ReSharper disable once UnusedMember.Local
-        private static unsafe void FilterMethod1 (
-            IPngBitmapDataSource bitmap, 
-            int y, 
-            IList<byte> filteredScanlineBuffer, 
-            int width, 
-            PngImageAnalysisInfo pngInfo)
-        {
-            bool alphaChannelUsed = pngInfo.IsTransparencyUsed;
+        //private static unsafe void FilterMethod1 (
+        //    IPngBitmapDataSource bitmap, 
+        //    int y, 
+        //    IList<byte> filteredScanlineBuffer, 
+        //    int width, 
+        //    PngImageAnalysisInfo pngInfo)
+        //{
+        //    bool alphaChannelUsed = pngInfo.IsTransparencyUsed;
 
-            byte* scanline = bitmap.GetScanline (y);
-            int si = 0;
-            int fi = 0;
+        //    byte* scanline = bitmap.GetScanline (y);
+        //    int si = 0;
+        //    int fi = 0;
 
-            filteredScanlineBuffer[fi++] = 1;
+        //    filteredScanlineBuffer[fi++] = 1;
 
-            byte bb = 0, gg = 0, rr = 0, aa = 0;
-            for (int x = 0; x < width; x++)
-            {
-                byte blue = scanline[si++];
-                byte green = scanline[si++];
-                byte red = scanline[si++];
-                byte alpha = scanline[si++];
+        //    byte bb = 0, gg = 0, rr = 0, aa = 0;
+        //    for (int x = 0; x < width; x++)
+        //    {
+        //        byte blue = scanline[si++];
+        //        byte green = scanline[si++];
+        //        byte red = scanline[si++];
+        //        byte alpha = scanline[si++];
 
-                filteredScanlineBuffer[fi++] = (byte)(red - rr);
-                filteredScanlineBuffer[fi++] = (byte)(green - gg);
-                filteredScanlineBuffer[fi++] = (byte)(blue - bb);
+        //        filteredScanlineBuffer[fi++] = (byte)(red - rr);
+        //        filteredScanlineBuffer[fi++] = (byte)(green - gg);
+        //        filteredScanlineBuffer[fi++] = (byte)(blue - bb);
 
-                if (alphaChannelUsed)
-                    filteredScanlineBuffer[fi++] = (byte)(alpha - aa);
+        //        if (alphaChannelUsed)
+        //            filteredScanlineBuffer[fi++] = (byte)(alpha - aa);
 
-                rr = red;
-                gg = green;
-                bb = blue;
-                aa = alpha;
-            }
-        }
+        //        rr = red;
+        //        gg = green;
+        //        bb = blue;
+        //        aa = alpha;
+        //    }
+        //}
 
         private static byte[] CompressImageDataChunk (
+            // ReSharper disable once UnusedParameter.Local
             PngWriterSettings settings, 
             BinaryWriteBlock uncompressedBlock)
         {
@@ -299,10 +420,6 @@ namespace SrtmPlaying.Png
 
         private static uint CalculateCrc (IReadOnlyList<byte> data)
         {
-            //Crc32 crc32 = new Crc32();
-            //crc32.Update(data);
-            //return (uint)crc32.Value;
-
             int length = data.Count;
 
             uint crc = 0xffffffff;

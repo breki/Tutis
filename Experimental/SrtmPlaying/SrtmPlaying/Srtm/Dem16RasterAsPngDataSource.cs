@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Brejc.Rasters;
 using SrtmPlaying.Png;
 
@@ -31,6 +32,7 @@ namespace SrtmPlaying.Srtm
             for (int x = 0; x < raster.RasterWidth; x++)
             {
                 short value = raster.GetCellValueInt16(x, y) ?? -1;
+
                 scanlineData[x*2] = (byte)value;
                 scanlineData[x*2 + 1] = (byte)(value >> 8);
             }

@@ -12,7 +12,7 @@ namespace SrtmPlaying.Tests
     public class SrtmTests
     {
         //[Explicit]
-        [TestCase("N00E006")]
+        [TestCase("N00E010")]
         public void Test(string cellName)
         {
             string testDir = TestContext.CurrentContext.TestDirectory;
