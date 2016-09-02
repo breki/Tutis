@@ -44,14 +44,31 @@ namespace SrtmPlaying.Png
 
             for (int yy = pngInfo.ClipY; yy < maxy; yy++)
             {
-                FilterMethod0(settings, pngInfo, bitmap, yy, filteredStream);
-                //FilterMethod1 (bitmap, y, filteredScanlineBuffer, width, pngInfo);
+                filteredStream.WriteByte((byte)pngInfo.FilterType);
+
+                switch (pngInfo.FilterType)
+                {
+                    case PngFilterType.None:
+                        FilterMethodNone(settings, pngInfo, bitmap, yy, filteredStream);
+                        break;
+                    case PngFilterType.Sub:
+                        FilterMethodSub(settings, pngInfo, bitmap, yy, filteredStream);
+                        break;
+                    case PngFilterType.Up:
+                        break;
+                    case PngFilterType.Average:
+                        break;
+                    case PngFilterType.Paeth:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
 
             return filteredStream;
         }
 
-        private static unsafe void FilterMethod0(
+        private static unsafe void FilterMethodNone(
             PngWriterSettings settings,
             PngImageAnalysisInfo pngInfo,
             IPngBitmapDataSource bitmapDataSource,
@@ -59,9 +76,7 @@ namespace SrtmPlaying.Png
             Stream filteredStream)
         {
             bool alphaChannelUsed = pngInfo.IsTransparencyUsed;
-            int si = pngInfo.ClipX * pngInfo.PixelSize;
-
-            filteredStream.WriteByte(0);
+            int si = pngInfo.ClipX * pngInfo.SourcePixelSize;
 
             if (bitmapDataSource.IsRaw)
             {
@@ -131,43 +146,106 @@ namespace SrtmPlaying.Png
             }
         }
 
-        // ReSharper disable once UnusedMember.Local
-        //private static unsafe void FilterMethod1 (
-        //    IPngBitmapDataSource bitmap, 
-        //    int y, 
-        //    IList<byte> filteredScanlineBuffer, 
-        //    int width, 
-        //    PngImageAnalysisInfo pngInfo)
-        //{
-        //    bool alphaChannelUsed = pngInfo.IsTransparencyUsed;
+        private static unsafe void FilterMethodSub(
+            PngWriterSettings settings,
+            PngImageAnalysisInfo pngInfo,
+            IPngBitmapDataSource bitmapDataSource,
+            int lineY,
+            Stream filteredStream)
+        {
+            bool alphaChannelUsed = pngInfo.IsTransparencyUsed;
+            int si = pngInfo.ClipX * pngInfo.SourcePixelSize;
 
-        //    byte* scanline = bitmap.GetScanline (y);
-        //    int si = 0;
-        //    int fi = 0;
+            if (bitmapDataSource.IsRaw)
+            {
+                byte* scanline = bitmapDataSource.GetRawScanline(lineY);
+                for (int xx = 0; xx < pngInfo.ClipWidth; xx++)
+                {
+                    switch (settings.ImageType)
+                    {
+                        case PngImageType.Rgb8:
+                            byte blue = scanline[si++];
+                            if (xx > 0)
+                                blue -= scanline[si - pngInfo.SourcePixelSize - 1];
+                            byte green = scanline[si++];
+                            if (xx > 0)
+                                green -= scanline[si - pngInfo.SourcePixelSize - 1];
+                            byte red = scanline[si++];
+                            if (xx > 0)
+                                red -= scanline[si - pngInfo.SourcePixelSize - 1];
 
-        //    filteredScanlineBuffer[fi++] = 1;
+                            filteredStream.WriteByte(red);
+                            filteredStream.WriteByte(green);
+                            filteredStream.WriteByte(blue);
 
-        //    byte bb = 0, gg = 0, rr = 0, aa = 0;
-        //    for (int x = 0; x < width; x++)
-        //    {
-        //        byte blue = scanline[si++];
-        //        byte green = scanline[si++];
-        //        byte red = scanline[si++];
-        //        byte alpha = scanline[si++];
+                            if (alphaChannelUsed)
+                            {
+                                byte alpha = scanline[si++];
+                                if (xx > 0)
+                                    alpha -= scanline[si - pngInfo.SourcePixelSize - 1];
 
-        //        filteredScanlineBuffer[fi++] = (byte)(red - rr);
-        //        filteredScanlineBuffer[fi++] = (byte)(green - gg);
-        //        filteredScanlineBuffer[fi++] = (byte)(blue - bb);
+                                filteredStream.WriteByte(alpha);
+                            }
+                            else
+                                si++;
 
-        //        if (alphaChannelUsed)
-        //            filteredScanlineBuffer[fi++] = (byte)(alpha - aa);
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+            }
+            else
+            {
+                byte[] scanline = bitmapDataSource.GetScanline(lineY);
+                for (int xx = 0; xx < pngInfo.ClipWidth; xx++)
+                {
+                    switch (settings.ImageType)
+                    {
+                        case PngImageType.Rgb8:
+                            byte blue = scanline[si++];
+                            if (xx > 0)
+                                blue -= scanline[si - pngInfo.SourcePixelSize - 1];
+                            byte green = scanline[si++];
+                            if (xx > 0)
+                                green -= scanline[si - pngInfo.SourcePixelSize - 1];
+                            byte red = scanline[si++];
+                            if (xx > 0)
+                                red -= scanline[si - pngInfo.SourcePixelSize - 1];
 
-        //        rr = red;
-        //        gg = green;
-        //        bb = blue;
-        //        aa = alpha;
-        //    }
-        //}
+                            filteredStream.WriteByte(red);
+                            filteredStream.WriteByte(green);
+                            filteredStream.WriteByte(blue);
+
+                            if (alphaChannelUsed)
+                            {
+                                byte alpha = scanline[si++];
+                                if (xx > 0)
+                                    alpha -= scanline[si - pngInfo.SourcePixelSize - 1];
+
+                                filteredStream.WriteByte(alpha);
+                            }
+                            else
+                                si++;
+
+                            break;
+                        case PngImageType.Grayscale16:
+                            byte hi = scanline[si++];
+                            if (xx > 0)
+                                hi -= scanline[si - pngInfo.SourcePixelSize - 1];
+                            byte lo = scanline[si++];
+                            if (xx > 0)
+                                lo -= scanline[si - pngInfo.SourcePixelSize - 1];
+
+                            filteredStream.WriteByte(hi);
+                            filteredStream.WriteByte(lo);
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+            }
+        }
 
         private byte[] CompressImageDataChunk(
             // ReSharper disable once UnusedParameter.Local

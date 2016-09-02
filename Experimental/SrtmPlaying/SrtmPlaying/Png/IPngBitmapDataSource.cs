@@ -7,6 +7,7 @@ namespace SrtmPlaying.Png
         bool IsRaw { get; }
         int Width { get; } 
         int Height { get; }
+        int PixelSize { get; }
 
         unsafe byte* GetRawScanline(int y);
         byte[] GetScanline(int y);

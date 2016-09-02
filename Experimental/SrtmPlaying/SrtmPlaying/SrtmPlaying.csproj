@@ -73,6 +73,7 @@
     <Compile Include="Png\IPngBitmapDataSource.cs" />
     <Compile Include="Png\IZLibCompressor.cs" />
     <Compile Include="Png\PngChunkWriterBase.cs" />
+    <Compile Include="Png\PngFilterType.cs" />
     <Compile Include="Png\PngImageAnalysisInfo.cs" />
     <Compile Include="Png\PngTransparency.cs" />
     <Compile Include="Png\PngWriter.cs" />

@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using LibroLib;
 
 namespace SrtmPlaying.Png
 {
@@ -24,6 +25,42 @@ namespace SrtmPlaying.Png
         public int Height
         {
             get { return height; }
+        }
+
+        public int PixelSize
+        {
+            get
+            {
+                switch (bitmap.PixelFormat)
+                {
+                    case PixelFormat.Format32bppArgb:
+                        return 4;
+
+                    case PixelFormat.Indexed:
+                    case PixelFormat.Gdi:
+                    case PixelFormat.Alpha:
+                    case PixelFormat.PAlpha:
+                    case PixelFormat.Extended:
+                    case PixelFormat.Canonical:
+                    case PixelFormat.Undefined:
+                    case PixelFormat.Format1bppIndexed:
+                    case PixelFormat.Format4bppIndexed:
+                    case PixelFormat.Format8bppIndexed:
+                    case PixelFormat.Format16bppGrayScale:
+                    case PixelFormat.Format16bppRgb555:
+                    case PixelFormat.Format16bppRgb565:
+                    case PixelFormat.Format16bppArgb1555:
+                    case PixelFormat.Format24bppRgb:
+                    case PixelFormat.Format32bppRgb:
+                    case PixelFormat.Format32bppPArgb:
+                    case PixelFormat.Format48bppRgb:
+                    case PixelFormat.Format64bppArgb:
+                    case PixelFormat.Format64bppPArgb:
+                    case PixelFormat.Max:
+                    default:
+                        throw new NotImplementedException("Pixel format: {0}".Fmt(bitmap.PixelFormat));
+                }
+            }
         }
 
         public byte* GetRawScanline (int y)

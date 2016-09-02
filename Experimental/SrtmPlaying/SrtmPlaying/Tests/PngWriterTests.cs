@@ -16,8 +16,8 @@ namespace SrtmPlaying.Tests
             //Bitmap originalBitmap = (Bitmap)Image.FromFile (Constants.DataSamplesPath + "Bitmaps/05331.jpg");
             //Bitmap originalBitmap = (Bitmap)Image.FromFile (Constants.DataSamplesPath + "Bitmaps/SimpleGeoref.png");
             //Bitmap originalBitmap = (Bitmap)Image.FromFile (Constants.DataSamplesPath + "Bitmaps/EuropeMercator.png");
-            Bitmap originalBitmap = (Bitmap)Image.FromFile (@"D:\hg\tutis\Experimental\SrtmPlaying\SrtmPlaying\data\SimpleColored.png");
-            //Bitmap originalBitmap = (Bitmap)Image.FromFile (@"D:\hg\tutis\Experimental\SrtmPlaying\SrtmPlaying\data\05331.jpg");
+            //Bitmap originalBitmap = (Bitmap)Image.FromFile (@"D:\hg\tutis\Experimental\SrtmPlaying\SrtmPlaying\data\SimpleColored.png");
+            Bitmap originalBitmap = (Bitmap)Image.FromFile (@"D:\hg\tutis\Experimental\SrtmPlaying\SrtmPlaying\data\05331.jpg");
 
             string outputFileName = Path.GetFullPath(Path.Combine(
                 TestContext.CurrentContext.TestDirectory,
