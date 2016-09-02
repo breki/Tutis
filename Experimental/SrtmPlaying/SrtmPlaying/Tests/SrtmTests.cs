@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.IO.Compression;
 using Brejc.DemLibrary.Srtm;
 using Brejc.Rasters;
 using LibroLib;
@@ -26,16 +27,23 @@ namespace SrtmPlaying.Tests
             fileSystem.DeleteDirectory(tempDir);
             fileSystem.EnsureDirectoryExists(tempDir);
 
-            System.IO.Compression.ZipFile.ExtractToDirectory(zipFileName, tempDir);
+            ZipFile.ExtractToDirectory(zipFileName, tempDir);
 
             string cellFileName = Path.Combine(tempDir, @"{0}.hgt".Fmt(cellName));
 
             ISrtm1CellFileReader cellFileReader = new Hgt1FileReader(fileSystem);
             IRaster cell = cellFileReader.ReadFromFile(cellFileName);
 
-            IPngWriter pngWriter = new PngWriter();
+            IPngWriter pngWriter = new PngWriter(new ZLibCompressorUsingSharpZipLib());
             SrtmTilePngFileWriter tileWriter = new SrtmTilePngFileWriter(fileSystem, pngWriter);
-            tileWriter.WriteToFile(Path.Combine(testDir, "output", "tile.png"), cell);
+            string outputFileName = Path.Combine(testDir, "output", "tile.png");
+            tileWriter.WriteToFile(outputFileName, cell);
+
+            //using (Image img = Image.FromFile(outputFileName))
+            //{
+            //    int i = 0;
+            //    i++;
+            //}
         }
     }
 }

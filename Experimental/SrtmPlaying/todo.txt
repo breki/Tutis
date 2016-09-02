@@ -1,3 +1,6 @@
+- decide on what the elevation -> grayscale function should be
+	- several options that need to be tested regarding the final image size
+
 - implement writing of PNG grayscale from an array
 	- implement filtering and compressing for each line separately, instead of the whole thing
 	- filtering

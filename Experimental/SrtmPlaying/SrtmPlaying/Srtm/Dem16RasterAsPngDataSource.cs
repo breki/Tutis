@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Brejc.Rasters;
 using SrtmPlaying.Png;
 
@@ -33,8 +32,12 @@ namespace SrtmPlaying.Srtm
             {
                 short value = raster.GetCellValueInt16(x, y) ?? -1;
 
-                scanlineData[x*2] = (byte)value;
-                scanlineData[x*2 + 1] = (byte)(value >> 8);
+                //value = (short) Math.Min(short.MaxValue, value*10); 
+                //value = 15000;
+
+                // big endian!
+                scanlineData[x*2] = (byte)(value >> 8);
+                scanlineData[x*2 + 1] = (byte)value;
             }
 
             return scanlineData;
