@@ -1,3 +1,4 @@
+- implement filtering as separate classes
 - instead of using in-memory array we should work directly with streams
 	- implement filter as a stream?
 

@@ -7,6 +7,7 @@ namespace SrtmPlaying.Png
         public PngImageAnalysisInfo(
             int imageWidth,
             int imageHeight,
+            int sourcePixelSize,
             int clipX, 
             int clipY, 
             int clipWidth, 
@@ -14,6 +15,7 @@ namespace SrtmPlaying.Png
         {
             ImageWidth = imageWidth;
             ImageHeight = imageHeight;
+            SourcePixelSize = sourcePixelSize;
             this.clipX = clipX;
             this.clipY = clipY;
             this.clipWidth = clipWidth;
@@ -41,11 +43,14 @@ namespace SrtmPlaying.Png
         }
 
         public int ColorsCount { get { return colorsUsed.Count; } }
+
+        public PngFilterType FilterType { get; set; } = PngFilterType.Sub;
         public int ImageWidth { get; private set; }
         public int ImageHeight { get; private set; }
         public bool IsTransparencyUsed { get; set; }
         public bool IsMoreThan256Colors { get { return colorsUsed.Count > 256; } }
-        public int PixelSize { get; set; }
+        public int SourcePixelSize { get; set; }
+        public int DestinationPixelSize { get; set; }
 
         public void AddUsedColor (int color)
         {

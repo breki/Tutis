@@ -55,6 +55,7 @@ namespace SrtmPlaying.Png
             PngImageAnalysisInfo pngInfo = new PngImageAnalysisInfo(
                 bitmapDataSource.Width,
                 bitmapDataSource.Height,
+                bitmapDataSource.PixelSize,
                 clipX,
                 clipY,
                 clipWidth,
@@ -73,10 +74,10 @@ namespace SrtmPlaying.Png
             switch (settings.ImageType)
             {
                 case PngImageType.Grayscale16:
-                    pngInfo.PixelSize = 2;
+                    pngInfo.DestinationPixelSize = 2;
                     break;
                 case PngImageType.Rgb8:
-                    pngInfo.PixelSize = pngInfo.IsTransparencyUsed ? 4 : 3;
+                    pngInfo.DestinationPixelSize = pngInfo.IsTransparencyUsed ? 4 : 3;
                     break;
                 default:
                     throw new NotSupportedException(

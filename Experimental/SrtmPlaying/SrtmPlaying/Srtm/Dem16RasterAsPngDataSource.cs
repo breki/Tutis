@@ -18,6 +18,7 @@ namespace SrtmPlaying.Srtm
         public bool IsRaw { get { return false; } }
         public int Width { get { return raster.RasterWidth; } }
         public int Height { get { return raster.RasterHeight; } }
+        public int PixelSize { get { return 2; } }
 
         public unsafe byte* GetRawScanline(int y)
         {

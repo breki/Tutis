@@ -28,9 +28,9 @@ namespace SrtmPlaying.Png
                     writer.WriteBigEndian(pngInfo.ClipHeight);
                     writer.Write(bitDepth);
                     writer.Write(colorType);
-                    writer.Write((byte) 0);
-                    writer.Write((byte) 0);
-                    writer.Write((byte) 0);
+                    writer.Write((byte) 0); // compression method (only 0 supported)
+                    writer.Write((byte) 0); // filter method (only 0 supported)
+                    writer.Write((byte) 0); // interlace method
                 }
 
                 return chunkStream.ToArray();
