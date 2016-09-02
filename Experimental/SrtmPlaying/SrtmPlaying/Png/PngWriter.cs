@@ -5,6 +5,8 @@ using System.Text;
 using LibroLib;
 using LibroLib.FileSystem;
 using SrtmPlaying.BinaryProcessing;
+using SrtmPlaying.Png.ChunkWriters;
+using SrtmPlaying.Png.ChunkWriters.Hdr;
 
 namespace SrtmPlaying.Png
 {

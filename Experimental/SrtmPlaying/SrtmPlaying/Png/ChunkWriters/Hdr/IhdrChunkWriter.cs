@@ -4,7 +4,7 @@ using System.Text;
 using LibroLib;
 using SrtmPlaying.BinaryProcessing;
 
-namespace SrtmPlaying.Png
+namespace SrtmPlaying.Png.ChunkWriters.Hdr
 {
     public class IhdrChunkWriter : PngChunkWriterBase, IPngChunkWriter
     {

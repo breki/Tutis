@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace SrtmPlaying.Png
+namespace SrtmPlaying.Png.ChunkWriters
 {
     public class IdatChunkWriter : PngChunkWriterBase, IPngChunkWriter
     {

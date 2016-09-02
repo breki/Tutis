@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace SrtmPlaying.Png
+namespace SrtmPlaying.Png.ChunkWriters
 {
     public abstract class PngChunkWriterBase
     {
