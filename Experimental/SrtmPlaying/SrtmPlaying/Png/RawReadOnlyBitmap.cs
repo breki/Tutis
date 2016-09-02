@@ -26,7 +26,6 @@ namespace SrtmPlaying.Png
             get { return height; }
         }
 
-        [CLSCompliant(false)]
         public byte* GetRawScanline (int y)
         {
             return pBase + y*wwidth;

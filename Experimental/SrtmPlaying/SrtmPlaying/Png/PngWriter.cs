@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Text;
 using LibroLib;
 using LibroLib.FileSystem;
 using SrtmPlaying.BinaryProcessing;
@@ -10,15 +11,10 @@ namespace SrtmPlaying.Png
 {
     public class PngWriter : IPngWriter
     {
-        public PngWriter(IZLibCompressor zLibCompressor)
-        {
-            this.zLibCompressor = zLibCompressor;
-        }
-
         public void WritePng (Bitmap bitmap, PngWriterSettings settings, Stream outputStream)
         {
             using (RawReadOnlyBitmap raw = new RawReadOnlyBitmap(bitmap))
-                WritePngPart(raw, 0, 0, bitmap.Width, bitmap.Height, settings, outputStream);
+                WritePngClip(raw, 0, 0, bitmap.Width, bitmap.Height, settings, outputStream);
         }
 
         public void WritePng (Bitmap bitmap, PngWriterSettings settings, string fileName, IFileSystem fileSystem)
@@ -29,36 +25,41 @@ namespace SrtmPlaying.Png
                 WritePng (bitmap, settings, stream);
         }
 
-        [CLSCompliant (false)]
-        public void WritePngPart (
+        public void WritePngClip (
             IPngBitmapDataSource bitmap,
-            int x,
-            int y,
-            int width,
-            int height,
+            int clipX,
+            int clipY,
+            int clipWidth,
+            int clipHeight,
             PngWriterSettings settings,
             Stream outputStream)
         {
-            PngImageAnalysisInfo pngInfo = AnalyzeImage (bitmap, settings, x, y, width, height);
+            PngImageAnalysisInfo pngInfo = AnalyzeImage (bitmap, settings, clipX, clipY, clipWidth, clipHeight);
 
-            using (BinaryWriterEx writer = new BinaryWriterEx (outputStream))
+            using (BinaryWriter writer = new BinaryWriter (outputStream))
             {
                 WriteSignature (writer);
-                WriteIhdrChunk (writer, settings, pngInfo, width, height);
-                WriteIdatChunk (writer, bitmap, settings, pngInfo, x, y, width, height);
-                WriteIendChunk (writer);
+                WriteChunk(ihdrChunkWriter, settings, pngInfo, bitmap, outputStream);
+                WriteChunk(idatChunkWriter, settings, pngInfo, bitmap, outputStream);
+                WriteChunk(iendChunkWriter, settings, pngInfo, bitmap, outputStream);
             }
         }
 
         private static PngImageAnalysisInfo AnalyzeImage(
             IPngBitmapDataSource bitmapDataSource, 
             PngWriterSettings settings,
-            int x,
-            int y,
-            int width,
-            int height)
+            int clipX,
+            int clipY,
+            int clipWidth,
+            int clipHeight)
         {
-            PngImageAnalysisInfo pngInfo = new PngImageAnalysisInfo();
+            PngImageAnalysisInfo pngInfo = new PngImageAnalysisInfo(
+                bitmapDataSource.Width,
+                bitmapDataSource.Height,
+                clipX,
+                clipY,
+                clipWidth,
+                clipHeight);
 
             switch (settings.Transparency)
             {
@@ -102,12 +103,12 @@ namespace SrtmPlaying.Png
 
             int bitmapWidth = bitmapDataSource.Width;
             int bitmapHeight = bitmapDataSource.Height;
-            int maxx = Math.Min(bitmapWidth, x + width);
-            int maxy = Math.Min(bitmapHeight, y + height);
+            int maxx = Math.Min(bitmapWidth, clipX + clipWidth);
+            int maxy = Math.Min(bitmapHeight, clipY + clipHeight);
 
             unsafe
             {
-                for (int yy = x; yy < maxy; yy++)
+                for (int yy = clipX; yy < maxy; yy++)
                 {
                     // no additional information is needed, so we can skip the rest of the bitmap
                     if (pngInfo.IsMoreThan256Colors && pngInfo.IsTransparencyUsed)
@@ -117,8 +118,8 @@ namespace SrtmPlaying.Png
                     {
                         byte* scanline = bitmapDataSource.GetRawScanline(yy);
 
-                        int i = x*4;
-                        for (int xx = x; xx < maxx; xx++)
+                        int i = clipX*4;
+                        for (int xx = clipX; xx < maxx; xx++)
                         {
                             byte blue = scanline[i++];
                             byte green = scanline[i++];
@@ -136,8 +137,8 @@ namespace SrtmPlaying.Png
                     {
                         byte[] scanline = bitmapDataSource.GetScanline(yy);
 
-                        int i = x * 4;
-                        for (int xx = x; xx < maxx; xx++)
+                        int i = clipX * 4;
+                        for (int xx = clipX; xx < maxx; xx++)
                         {
                             byte blue = scanline[i++];
                             byte green = scanline[i++];
@@ -162,290 +163,25 @@ namespace SrtmPlaying.Png
             writer.Write (signature);
         }
 
-        private static void WriteIhdrChunk (
-            BinaryWriterEx writer, PngWriterSettings settings, PngImageAnalysisInfo pngInfo, int width, int height)
-        {
-            using (BinaryWriteBlock b = new BinaryWriteBlock (13 + 4))
-            {
-                byte bitDepth;
-                byte colorType;
-
-                DetermineBitDepthAndColorType(settings, pngInfo, out bitDepth, out colorType);
-
-                b.Endianess = Endianess.BigEndian;
-                WriteChunkType (b, "IHDR");
-                b.Write (width);
-                b.Write (height);
-                b.Write (bitDepth);
-                b.Write (colorType);
-                b.Write ((byte)0);
-                b.Write ((byte)0);
-                b.Write ((byte)0);
-
-                WriteChunk (writer, b.ToArray ());
-            }
-        }
-
-        private static void DetermineBitDepthAndColorType(
-            PngWriterSettings settings,
-            PngImageAnalysisInfo pngInfo, 
-            out byte bitDepth, 
-            out byte colorType)
-        {
-            switch (settings.ImageType)
-            {
-                case PngImageType.Grayscale16:
-                    colorType = 0;
-                    bitDepth = 16;
-                    break;
-                case PngImageType.Rgb8:
-                    colorType = (byte) (pngInfo.IsTransparencyUsed ? 6 : 2);
-                    bitDepth = 8;
-                    break;
-                default:
-                    throw new InvalidOperationException("Unsupported PNG image type '{0}'.".Fmt(settings.ImageType));
-            }
-        }
-
-        private void WriteIdatChunk (
-            BinaryWriterEx writer, 
-            IPngBitmapDataSource bitmap, 
+        private static void WriteChunk(
+            IPngChunkWriter chunkWriter, 
             PngWriterSettings settings, 
             PngImageAnalysisInfo pngInfo,
-            int x,
-            int y,
-            int width,
-            int height)
+            IPngBitmapDataSource bitmap,
+            Stream imageStream)
         {
-            int uncompressedDataSize = (1 + width * pngInfo.PixelSize) * height;
-            using (BinaryWriteBlock uncompressedBlock = new BinaryWriteBlock (uncompressedDataSize))
+            byte[] chunkData = chunkWriter.WriteChunk(settings, pngInfo, bitmap);
+            WriteChunkDataToStream(chunkData, imageStream);
+        }
+
+        private static void WriteChunkDataToStream (byte[] chunkData, Stream imageStream)
+        {
+            using (BinaryWriter writer = new BinaryWriter(imageStream, Encoding.ASCII, true))
             {
-                FilterImageData (bitmap, uncompressedBlock, settings, pngInfo, x, y, width, height);
-                byte[] finalChunkData = CompressImageDataChunk(settings, uncompressedBlock);
-                //byte[] finalChunkData = CompressImageDataChunkUsingSharpZipLib(settings, uncompressedBlock);
-
-                WriteChunk (writer, finalChunkData);
+                writer.WriteBigEndian(chunkData.Length - 4);
+                writer.Write(chunkData);
+                writer.WriteBigEndian(CalculateCrc(chunkData));
             }
-        }
-
-        private static void FilterImageData(
-            IPngBitmapDataSource bitmap, 
-            BinaryWriteBlock uncompressedBlock,
-            PngWriterSettings settings,
-            PngImageAnalysisInfo pngInfo,
-            int x,
-            int y,
-            int width,
-            int height)
-        {
-            uncompressedBlock.Endianess = Endianess.BigEndian;
-
-            byte[] filteredScanlineBuffer = new byte[1 + width * pngInfo.PixelSize];
-
-            int bitmapHeight = bitmap.Height;
-            int maxy = Math.Min (bitmapHeight, y + height);
-
-            for (int yy = y; yy < maxy; yy++)
-            {
-                FilterMethod0 (bitmap, yy, filteredScanlineBuffer, x, width, settings, pngInfo);
-                //FilterMethod1 (bitmap, y, filteredScanlineBuffer, width, pngInfo);
-
-                uncompressedBlock.Write (filteredScanlineBuffer);
-            }
-        }
-
-        private static unsafe void FilterMethod0(
-            IPngBitmapDataSource bitmapDataSource, 
-            int y, 
-            IList<byte> filteredScanlineBuffer, 
-            int x, 
-            int width, 
-            PngWriterSettings settings, 
-            PngImageAnalysisInfo pngInfo)
-        {
-            bool alphaChannelUsed = pngInfo.IsTransparencyUsed;
-            int si = x * pngInfo.PixelSize;
-            int fi = 0;
-
-            filteredScanlineBuffer[fi++] = 0;
-
-            if (bitmapDataSource.IsRaw)
-            {
-                byte* scanline = bitmapDataSource.GetRawScanline(y);
-                for (int xx = 0; xx < width; xx++)
-                {
-                    switch (settings.ImageType)
-                    {
-                        case PngImageType.Rgb8:
-                            byte blue = scanline[si++];
-                            byte green = scanline[si++];
-                            byte red = scanline[si++];
-
-                            filteredScanlineBuffer[fi++] = red;
-                            filteredScanlineBuffer[fi++] = green;
-                            filteredScanlineBuffer[fi++] = blue;
-
-                            if (alphaChannelUsed)
-                            {
-                                byte alpha = scanline[si++];
-                                filteredScanlineBuffer[fi++] = alpha;
-                            }
-                            else
-                                si++;
-                           
-                            break;
-                        default:
-                            throw new NotImplementedException();
-                    }
-                }
-            }
-            else
-            {
-                byte[] scanline = bitmapDataSource.GetScanline(y);
-                for (int xx = 0; xx < width; xx++)
-                {
-                    switch (settings.ImageType)
-                    {
-                        case PngImageType.Rgb8:
-                            byte blue = scanline[si++];
-                            byte green = scanline[si++];
-                            byte red = scanline[si++];
-
-                            filteredScanlineBuffer[fi++] = red;
-                            filteredScanlineBuffer[fi++] = green;
-                            filteredScanlineBuffer[fi++] = blue;
-
-                            if (alphaChannelUsed)
-                            {
-                                byte alpha = scanline[si++];
-                                filteredScanlineBuffer[fi++] = alpha;
-                            }
-                            else
-                                si++;
-
-                            break;
-                        case PngImageType.Grayscale16:
-                            byte lo = scanline[si++];
-                            byte hi = scanline[si++];
-                            filteredScanlineBuffer[fi++] = lo;
-                            filteredScanlineBuffer[fi++] = hi;
-
-                            break;
-                        default:
-                            throw new NotImplementedException();
-                    }
-                }
-            }
-        }
-
-        // ReSharper disable once UnusedMember.Local
-        //private static unsafe void FilterMethod1 (
-        //    IPngBitmapDataSource bitmap, 
-        //    int y, 
-        //    IList<byte> filteredScanlineBuffer, 
-        //    int width, 
-        //    PngImageAnalysisInfo pngInfo)
-        //{
-        //    bool alphaChannelUsed = pngInfo.IsTransparencyUsed;
-
-        //    byte* scanline = bitmap.GetScanline (y);
-        //    int si = 0;
-        //    int fi = 0;
-
-        //    filteredScanlineBuffer[fi++] = 1;
-
-        //    byte bb = 0, gg = 0, rr = 0, aa = 0;
-        //    for (int x = 0; x < width; x++)
-        //    {
-        //        byte blue = scanline[si++];
-        //        byte green = scanline[si++];
-        //        byte red = scanline[si++];
-        //        byte alpha = scanline[si++];
-
-        //        filteredScanlineBuffer[fi++] = (byte)(red - rr);
-        //        filteredScanlineBuffer[fi++] = (byte)(green - gg);
-        //        filteredScanlineBuffer[fi++] = (byte)(blue - bb);
-
-        //        if (alphaChannelUsed)
-        //            filteredScanlineBuffer[fi++] = (byte)(alpha - aa);
-
-        //        rr = red;
-        //        gg = green;
-        //        bb = blue;
-        //        aa = alpha;
-        //    }
-        //}
-
-        private byte[] CompressImageDataChunk (
-            // ReSharper disable once UnusedParameter.Local
-            PngWriterSettings settings, 
-            BinaryWriteBlock uncompressedBlock)
-        {
-            byte[] finalChunkData;
-            byte[] uncompressedData = uncompressedBlock.ToArray ();
-
-            using (MemoryStream compressedStream = new MemoryStream (uncompressedData.Length / 2))
-            {
-                compressedStream.WriteByte ((byte)'I');
-                compressedStream.WriteByte ((byte)'D');
-                compressedStream.WriteByte ((byte)'A');
-                compressedStream.WriteByte ((byte)'T');
-
-                zLibCompressor.Compress(uncompressedData, compressedStream);
-                finalChunkData = compressedStream.ToArray();
-            }
-
-            return finalChunkData;
-        }
-
-        //private static byte[] CompressImageDataChunkUsingSharpZipLib(
-        //    PngWriterSettings settings, BinaryWriteBlock uncompressedBlock)
-        //{
-        //    byte[] finalChunkData;
-        //    byte[] uncompressedData = uncompressedBlock.ToArray();
-
-        //    using (MemoryStream compressedStream = new MemoryStream(uncompressedData.Length / 2))
-        //    {
-        //        compressedStream.WriteByte((byte)'I');
-        //        compressedStream.WriteByte((byte)'D');
-        //        compressedStream.WriteByte((byte)'A');
-        //        compressedStream.WriteByte((byte)'T');
-
-        //        Deflater deflater = new Deflater(settings.CompressionLevel);
-        //        //deflater.SetStrategy(DeflateStrategy.Filtered);
-        //        deflater.SetInput(uncompressedData);
-        //        deflater.Finish();
-
-        //        byte[] outputBuffer = new byte[100 * 1024 * 4];
-        //        while (deflater.IsNeedingInput == false)
-        //        {
-        //            int read = deflater.Deflate(outputBuffer);
-        //            compressedStream.Write(outputBuffer, 0, read);
-        //        }
-
-        //        finalChunkData = compressedStream.ToArray();
-        //    }
-
-        //    return finalChunkData;
-        //}
-
-        private static void WriteIendChunk (BinaryWriterEx writer)
-        {
-            byte[] data = { (byte)'I', (byte)'E', (byte)'N', (byte)'D' };
-            WriteChunk (writer, data);
-        }
-
-        private static void WriteChunk (BinaryWriterEx writer, byte[] chunkData)
-        {
-            writer.WriteBigEndian (chunkData.Length - 4);
-            writer.Write (chunkData);
-            writer.WriteBigEndian (CalculateCrc (chunkData));
-        }
-
-        private static void WriteChunkType (BinaryWriteBlock block, string chunkType)
-        {
-            for (int i = 0; i < 4; i++)
-                block.Write ((byte)chunkType[i]);
         }
 
         private static uint CalculateCrc (IReadOnlyList<byte> data)
@@ -465,7 +201,9 @@ namespace SrtmPlaying.Png
             return crc;
         }
 
-        private readonly IZLibCompressor zLibCompressor;
+        private readonly IPngChunkWriter ihdrChunkWriter = new IhdrChunkWriter();
+        private readonly IPngChunkWriter idatChunkWriter = new IdatChunkWriter(new ZLibCompressorUsingSharpZipLib());
+        private readonly IPngChunkWriter iendChunkWriter = new IendChunkWriter();
         private static readonly byte[] signature = { 137, 80, 78, 71, 13, 10, 26, 10 };
         private static readonly uint[] lookup = 
             {

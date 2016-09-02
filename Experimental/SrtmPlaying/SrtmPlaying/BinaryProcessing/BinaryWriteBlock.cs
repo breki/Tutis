@@ -8,13 +8,13 @@ namespace SrtmPlaying.BinaryProcessing
         public BinaryWriteBlock()
         {
             writeStream = new MemoryStream();
-            writer = new BinaryWriterEx (writeStream);
+            writer = new BinaryWriter (writeStream);
         }
 
         public BinaryWriteBlock(int byteSize)
         {
             writeStream = new MemoryStream(byteSize);
-            writer = new BinaryWriterEx(writeStream);
+            writer = new BinaryWriter(writeStream);
         }
 
         public Endianess Endianess
@@ -73,6 +73,6 @@ namespace SrtmPlaying.BinaryProcessing
         private bool disposed;
         private Endianess endianess = Endianess.BigEndian;
         private readonly MemoryStream writeStream;
-        private readonly BinaryWriterEx writer;
+        private readonly BinaryWriter writer;
     }
 }

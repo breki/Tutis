@@ -6,7 +6,6 @@ namespace SrtmPlaying.Srtm
 {
     public class Dem16RasterAsPngDataSource : IPngBitmapDataSource
     {
-        [CLSCompliant(false)]
         public Dem16RasterAsPngDataSource(IRaster raster, Func<short, ushort> valueTransformFunc)
         {
             if (raster.RasterValueType != RasterValueType.Int16)
@@ -20,7 +19,6 @@ namespace SrtmPlaying.Srtm
         public int Width { get { return raster.RasterWidth; } }
         public int Height { get { return raster.RasterHeight; } }
 
-        [CLSCompliant(false)]
         public unsafe byte* GetRawScanline(int y)
         {
             throw new NotSupportedException();
