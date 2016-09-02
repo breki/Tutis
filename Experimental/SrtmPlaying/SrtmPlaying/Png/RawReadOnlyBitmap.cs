@@ -15,8 +15,6 @@ namespace SrtmPlaying.Png
             LockBitmap();
         }
 
-        public bool IsRaw { get { return true; } }
-
         public int Width
         {
             get { return width; }
@@ -63,14 +61,9 @@ namespace SrtmPlaying.Png
             }
         }
 
-        public byte* GetRawScanline (int y)
+        public IPngBitmapScanline GetScanline(int y)
         {
-            return pBase + y*wwidth;
-        }
-
-        public byte[] GetScanline(int y)
-        {
-            throw new NotSupportedException();
+            return new RawReadOnlyBitmapScanline(pBase + y * wwidth, true);
         }
 
         public void Dispose ()

@@ -15,7 +15,6 @@ namespace SrtmPlaying.Srtm
             this.valueTransformFunc = valueTransformFunc;
         }
 
-        public bool IsRaw { get { return false; } }
         public int Width { get { return raster.RasterWidth; } }
         public int Height { get { return raster.RasterHeight; } }
         public int PixelSize { get { return 2; } }
@@ -25,20 +24,9 @@ namespace SrtmPlaying.Srtm
             throw new NotSupportedException();
         }
 
-        public byte[] GetScanline(int y)
+        public IPngBitmapScanline GetScanline(int y)
         {
-            byte[] scanlineData = new byte[raster.RasterWidth * 2];
-
-            for (int x = 0; x < raster.RasterWidth; x++)
-            {
-                short rasterValue = raster.GetCellValueInt16(x, y) ?? -1;
-                ushort transformedValue = valueTransformFunc(rasterValue);
-
-                scanlineData[x*2] = (byte)(transformedValue >> 8);
-                scanlineData[x*2 + 1] = (byte)transformedValue;
-            }
-
-            return scanlineData;
+            return new Dem16RasterAsPngScanline(raster, valueTransformFunc, y);
         }
 
         public void Dispose()

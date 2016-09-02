@@ -6,7 +6,7 @@ using LibroLib;
 using LibroLib.FileSystem;
 using SrtmPlaying.BinaryProcessing;
 using SrtmPlaying.Png.ChunkWriters;
-using SrtmPlaying.Png.ChunkWriters.Hdr;
+using SrtmPlaying.Png.ChunkWriters.Idat;
 
 namespace SrtmPlaying.Png
 {
@@ -108,52 +108,29 @@ namespace SrtmPlaying.Png
             int maxx = Math.Min(bitmapWidth, clipX + clipWidth);
             int maxy = Math.Min(bitmapHeight, clipY + clipHeight);
 
-            unsafe
+            for (int yy = clipX; yy < maxy; yy++)
             {
-                for (int yy = clipX; yy < maxy; yy++)
+                // no additional information is needed, so we can skip the rest of the bitmap
+                if (pngInfo.IsMoreThan256Colors && pngInfo.IsTransparencyUsed)
+                    break;
+
+                IPngBitmapScanline scanline = bitmapDataSource.GetScanline(yy);
+
+                for (int xx = clipX; xx < maxx; xx++)
                 {
-                    // no additional information is needed, so we can skip the rest of the bitmap
-                    if (pngInfo.IsMoreThan256Colors && pngInfo.IsTransparencyUsed)
-                        break;
+                    byte blue = scanline.NextByte();
+                    byte green = scanline.NextByte();
+                    byte red = scanline.NextByte();
+                    byte alpha = 255;
 
-                    if (bitmapDataSource.IsRaw)
-                    {
-                        byte* scanline = bitmapDataSource.GetRawScanline(yy);
+                    if (scanline.HasAlpha)
+                        alpha = scanline.NextByte();
 
-                        int i = clipX*4;
-                        for (int xx = clipX; xx < maxx; xx++)
-                        {
-                            byte blue = scanline[i++];
-                            byte green = scanline[i++];
-                            byte red = scanline[i++];
-                            byte alpha = scanline[i++];
+                    if (alpha < 255)
+                        pngInfo.IsTransparencyUsed = true;
 
-                            if (alpha < 255)
-                                pngInfo.IsTransparencyUsed = true;
-
-                            if (!pngInfo.IsMoreThan256Colors)
-                                pngInfo.AddUsedColor(alpha << 24 | red << 16 | green << 8 | blue);
-                        }
-                    }
-                    else
-                    {
-                        byte[] scanline = bitmapDataSource.GetScanline(yy);
-
-                        int i = clipX * 4;
-                        for (int xx = clipX; xx < maxx; xx++)
-                        {
-                            byte blue = scanline[i++];
-                            byte green = scanline[i++];
-                            byte red = scanline[i++];
-                            byte alpha = scanline[i++];
-
-                            if (alpha < 255)
-                                pngInfo.IsTransparencyUsed = true;
-
-                            if (!pngInfo.IsMoreThan256Colors)
-                                pngInfo.AddUsedColor(alpha << 24 | red << 16 | green << 8 | blue);
-                        }
-                    }
+                    if (!pngInfo.IsMoreThan256Colors)
+                        pngInfo.AddUsedColor(alpha << 24 | red << 16 | green << 8 | blue);
                 }
             }
 
