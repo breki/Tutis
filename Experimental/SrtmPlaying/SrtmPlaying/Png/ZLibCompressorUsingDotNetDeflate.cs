@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
 
 namespace SrtmPlaying.Png
@@ -7,6 +8,7 @@ namespace SrtmPlaying.Png
     // to fully support ZLib.
     // http://stackoverflow.com/a/6283224/55408
     // http://www.libpng.org/pub/png/spec/1.2/PNG-Compression.html
+    [Obsolete("Not working")]
     public class ZLibCompressorUsingDotNetDeflate : IZLibCompressor
     {
         public void Compress(byte[] originalData, Stream outputStream)

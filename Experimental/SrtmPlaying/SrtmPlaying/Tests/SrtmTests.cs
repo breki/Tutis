@@ -39,11 +39,7 @@ namespace SrtmPlaying.Tests
             string outputFileName = Path.Combine(testDir, "output", "tile.png");
             tileWriter.WriteToFile(outputFileName, cell);
 
-            //using (Image img = Image.FromFile(outputFileName))
-            //{
-            //    int i = 0;
-            //    i++;
-            //}
+            PngValidator.ValidatePng(outputFileName);
         }
     }
 }

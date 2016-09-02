@@ -79,6 +79,7 @@
     <Compile Include="Srtm\ISrtmTileFileWriter.cs" />
     <Compile Include="Srtm\SrtmTilePngFileWriter.cs" />
     <Compile Include="Png\PngImageType.cs" />
+    <Compile Include="Tests\PngValidator.cs" />
     <Compile Include="Tests\SrtmTests.cs" />
     <Compile Include="Tests\PngChunk.cs" />
     <Compile Include="Tests\PngImage.cs" />

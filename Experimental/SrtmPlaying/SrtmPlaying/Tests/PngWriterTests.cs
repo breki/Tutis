@@ -43,7 +43,7 @@ namespace SrtmPlaying.Tests
                 pngWriter.WritePng (workingBitmap, settings, outputFileName, new WindowsFileSystem ());
             }
 
-            ValidatePng(outputFileName);
+            PngValidator.ValidatePng(outputFileName);
         }
 
         [Test]
@@ -77,41 +77,6 @@ namespace SrtmPlaying.Tests
                 //watch.Restart ();
                 //workingBitmap.Save ("output/pngwriter_net.png", ImageFormat.Png);
                 //Debug.WriteLine ("net: {0} ms", watch.ElapsedMilliseconds);
-            }
-        }
-
-        private static void ValidatePng(string outputFileName)
-        {
-            ProcessStartInfo processStartInfo = new ProcessStartInfo(
-                Path.Combine(TestContext.CurrentContext.TestDirectory,
-                    @"..\..\..\tools\pngcheck\pngcheck.exe"),
-                "-vt {0}".Fmt(outputFileName))
-            {
-                CreateNoWindow = true,
-                ErrorDialog = false,
-                RedirectStandardError = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false
-            };
-
-            StringBuilder outputText = new StringBuilder();
-            using (Process process = Process.Start(processStartInfo))
-            {
-                // ReSharper disable once PossibleNullReferenceException
-                process.ErrorDataReceived += (o, e) => { outputText.Append(e.Data); };
-                process.OutputDataReceived += (o, e) => { outputText.Append(e.Data); };
-
-                process.Start();
-
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
-
-                process.Start();
-                process.WaitForExit(20*1000);
-
-                Assert.AreEqual(0, process.ExitCode, outputText.ToString());
-
-                Console.Write(outputText);
             }
         }
     }
