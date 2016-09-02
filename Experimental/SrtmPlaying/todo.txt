@@ -7,8 +7,6 @@
 		- adaptive filtering for each scanline
 	- non-raw data source could simply be copied directly into the filtered buffer?
 
-- break up PngWriter into several classes
-
 - implement performance tests using actual SRTM tiles
 	- experiment with compression level
 	- read hgt

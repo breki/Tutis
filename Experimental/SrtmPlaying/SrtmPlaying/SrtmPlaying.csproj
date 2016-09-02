@@ -64,6 +64,7 @@
     <Compile Include="BinaryProcessing\BinaryWriteBlock.cs" />
     <Compile Include="BinaryProcessing\BinaryWriterExtensions.cs" />
     <Compile Include="BinaryProcessing\Endianess.cs" />
+    <Compile Include="Png\CrcCalculator.cs" />
     <Compile Include="Png\IdatChunkWriter.cs" />
     <Compile Include="Png\IendChunkWriter.cs" />
     <Compile Include="Png\IhdrChunkWriter.cs" />
