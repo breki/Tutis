@@ -10,6 +10,11 @@ namespace SrtmPlaying.Png
 {
     public class PngWriter : IPngWriter
     {
+        public PngWriter(IZLibCompressor zLibCompressor)
+        {
+            this.zLibCompressor = zLibCompressor;
+        }
+
         public void WritePng (Bitmap bitmap, PngWriterSettings settings, Stream outputStream)
         {
             using (RawReadOnlyBitmap raw = new RawReadOnlyBitmap(bitmap))
@@ -202,7 +207,7 @@ namespace SrtmPlaying.Png
             }
         }
 
-        private static void WriteIdatChunk (
+        private void WriteIdatChunk (
             BinaryWriterEx writer, 
             IPngBitmapDataSource bitmap, 
             PngWriterSettings settings, 
@@ -217,6 +222,7 @@ namespace SrtmPlaying.Png
             {
                 FilterImageData (bitmap, uncompressedBlock, settings, pngInfo, x, y, width, height);
                 byte[] finalChunkData = CompressImageDataChunk(settings, uncompressedBlock);
+                //byte[] finalChunkData = CompressImageDataChunkUsingSharpZipLib(settings, uncompressedBlock);
 
                 WriteChunk (writer, finalChunkData);
             }
@@ -370,7 +376,7 @@ namespace SrtmPlaying.Png
         //    }
         //}
 
-        private static byte[] CompressImageDataChunk (
+        private byte[] CompressImageDataChunk (
             // ReSharper disable once UnusedParameter.Local
             PngWriterSettings settings, 
             BinaryWriteBlock uncompressedBlock)
@@ -385,19 +391,43 @@ namespace SrtmPlaying.Png
                 compressedStream.WriteByte ((byte)'A');
                 compressedStream.WriteByte ((byte)'T');
 
-                System.IO.Compression.CompressionLevel compressionLevel = System.IO.Compression.CompressionLevel.Optimal;
-
-                using (System.IO.Compression.DeflateStream deflateStream = new System.IO.Compression.DeflateStream(
-                    compressedStream, compressionLevel, false))
-                {
-                    deflateStream.Write(uncompressedData, 0, uncompressedData.Length);
-                    deflateStream.Flush();
-                    finalChunkData = compressedStream.ToArray();
-                }
+                zLibCompressor.Compress(uncompressedData, compressedStream);
+                finalChunkData = compressedStream.ToArray();
             }
 
             return finalChunkData;
         }
+
+        //private static byte[] CompressImageDataChunkUsingSharpZipLib(
+        //    PngWriterSettings settings, BinaryWriteBlock uncompressedBlock)
+        //{
+        //    byte[] finalChunkData;
+        //    byte[] uncompressedData = uncompressedBlock.ToArray();
+
+        //    using (MemoryStream compressedStream = new MemoryStream(uncompressedData.Length / 2))
+        //    {
+        //        compressedStream.WriteByte((byte)'I');
+        //        compressedStream.WriteByte((byte)'D');
+        //        compressedStream.WriteByte((byte)'A');
+        //        compressedStream.WriteByte((byte)'T');
+
+        //        Deflater deflater = new Deflater(settings.CompressionLevel);
+        //        //deflater.SetStrategy(DeflateStrategy.Filtered);
+        //        deflater.SetInput(uncompressedData);
+        //        deflater.Finish();
+
+        //        byte[] outputBuffer = new byte[100 * 1024 * 4];
+        //        while (deflater.IsNeedingInput == false)
+        //        {
+        //            int read = deflater.Deflate(outputBuffer);
+        //            compressedStream.Write(outputBuffer, 0, read);
+        //        }
+
+        //        finalChunkData = compressedStream.ToArray();
+        //    }
+
+        //    return finalChunkData;
+        //}
 
         private static void WriteIendChunk (BinaryWriterEx writer)
         {
@@ -435,6 +465,7 @@ namespace SrtmPlaying.Png
             return crc;
         }
 
+        private readonly IZLibCompressor zLibCompressor;
         private static readonly byte[] signature = { 137, 80, 78, 71, 13, 10, 26, 10 };
         private static readonly uint[] lookup = 
             {

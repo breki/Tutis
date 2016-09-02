@@ -36,6 +36,10 @@
     <Reference Include="Brejc.Geospatial">
       <HintPath>..\..\..\..\Maperitive\current\bin\Debug\Brejc.Geospatial.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="LibroLib.Common, Version=1.5.0.0, Culture=neutral, PublicKeyToken=565e9639e336040e, processorArchitecture=MSIL">
       <HintPath>..\packages\LibroLib.Common.1.5.3\lib\net40\LibroLib.Common.dll</HintPath>
       <Private>True</Private>
@@ -62,11 +66,14 @@
     <Compile Include="BinaryProcessing\Endianess.cs" />
     <Compile Include="Png\IPngWriter.cs" />
     <Compile Include="Png\IPngBitmapDataSource.cs" />
+    <Compile Include="Png\IZLibCompressor.cs" />
     <Compile Include="Png\PngImageAnalysisInfo.cs" />
     <Compile Include="Png\PngTransparency.cs" />
     <Compile Include="Png\PngWriter.cs" />
     <Compile Include="Png\PngWriterSettings.cs" />
     <Compile Include="Png\RawReadOnlyBitmap.cs" />
+    <Compile Include="Png\ZLibCompressorUsingDotNetDeflate.cs" />
+    <Compile Include="Png\ZLibCompressorUsingSharpZipLib.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Srtm\Dem16RasterAsPngDataSource.cs" />
     <Compile Include="Srtm\ISrtmTileFileWriter.cs" />
