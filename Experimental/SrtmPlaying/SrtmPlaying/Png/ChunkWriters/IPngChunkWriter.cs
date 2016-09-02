@@ -1,4 +1,4 @@
-﻿namespace SrtmPlaying.Png
+﻿namespace SrtmPlaying.Png.ChunkWriters
 {
     public interface IPngChunkWriter
     {
