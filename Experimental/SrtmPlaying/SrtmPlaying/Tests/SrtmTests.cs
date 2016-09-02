@@ -35,7 +35,7 @@ namespace SrtmPlaying.Tests
             ISrtm1CellFileReader cellFileReader = new Hgt1FileReader(fileSystem);
             IRaster cell = cellFileReader.ReadFromFile(cellFileName);
 
-            IPngWriter pngWriter = new PngWriter(new ZLibCompressorUsingSharpZipLib());
+            IPngWriter pngWriter = new PngWriter();
             SrtmTilePngFileWriter tileWriter = new SrtmTilePngFileWriter(fileSystem, pngWriter, EncodeSrtmElevationToGrayscale);
             string outputFileName = Path.Combine(testDir, "output", "tile.png");
             tileWriter.WriteToFile(outputFileName, cell);

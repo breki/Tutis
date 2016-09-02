@@ -2,7 +2,6 @@
 
 namespace SrtmPlaying.Png
 {
-    [CLSCompliant (false)]
     public interface IPngBitmapDataSource : IDisposable
     {
         bool IsRaw { get; }

@@ -100,13 +100,11 @@ namespace SrtmPlaying.BinaryProcessing
             return (short)(value2 << 8 | value1);
         }
 
-        [CLSCompliant(false)]
         public ushort ReadUInt16()
         {
             return bigEndian ? ReadUInt16BigEndian() : ReadUInt16LittleEndian();
         }
 
-        [CLSCompliant(false)]
         public ushort ReadUInt16BigEndian()
         {
             byte value1 = ReadByte();
@@ -115,7 +113,6 @@ namespace SrtmPlaying.BinaryProcessing
             return (ushort)(value1 << 8 | value2);
         }
 
-        [CLSCompliant(false)]
         public ushort ReadUInt16LittleEndian()
         {
             byte value1 = ReadByte();
@@ -157,7 +154,6 @@ namespace SrtmPlaying.BinaryProcessing
             return ReadValues<int>(offset, count, ReadInt32);
         }
 
-        [CLSCompliant(false)]
         public uint[] ReadUInt32Values (int offset, int count)
         {
             Contract.Requires (count >= 0);
@@ -165,7 +161,6 @@ namespace SrtmPlaying.BinaryProcessing
             return ReadValues (offset, count, () => (uint)ReadInt32 ());
         }
 
-        [CLSCompliant (false)]
         public ushort[] ReadUInt16Values (int offset, int count)
         {
             Contract.Requires (count >= 0);

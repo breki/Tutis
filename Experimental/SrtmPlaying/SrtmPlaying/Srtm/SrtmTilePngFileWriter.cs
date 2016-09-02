@@ -6,7 +6,6 @@ using SrtmPlaying.Png;
 
 namespace SrtmPlaying.Srtm
 {
-    [CLSCompliant(false)]
     public class SrtmTilePngFileWriter : ISrtmTileFileWriter
     {
         public SrtmTilePngFileWriter(
@@ -29,7 +28,7 @@ namespace SrtmPlaying.Srtm
                 PngWriterSettings pngWriterSettings = new PngWriterSettings();
                 pngWriterSettings.ImageType = PngImageType.Grayscale16;
                 pngWriterSettings.Transparency = PngTransparency.Opaque;
-                pngWriter.WritePngPart(
+                pngWriter.WritePngClip(
                     rawBitmap,
                     0,
                     0,

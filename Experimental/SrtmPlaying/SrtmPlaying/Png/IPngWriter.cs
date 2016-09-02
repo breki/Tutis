@@ -5,14 +5,12 @@ using LibroLib.FileSystem;
 
 namespace SrtmPlaying.Png
 {
-    [CLSCompliant (false)]
     public interface IPngWriter
     {
         void WritePng(Bitmap bitmap, PngWriterSettings settings, Stream outputStream);
         void WritePng (Bitmap bitmap, PngWriterSettings settings, string fileName, IFileSystem fileSystem);
 
-        [CLSCompliant(false)]
-        void WritePngPart (
+        void WritePngClip (
             IPngBitmapDataSource bitmap,
             int x,
             int y,

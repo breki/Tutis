@@ -1,17 +1,19 @@
-- decide on what the elevation -> grayscale function should be
-	- several options that need to be tested regarding the final image size
+- instead of using in-memory array we should work directly with streams
+	- implement filter as a stream?
 
-- implement writing of PNG grayscale from an array
-	- implement filtering and compressing for each line separately, instead of the whole thing
-	- filtering
-		- implement filter selection
-			- adaptive filtering for each scanline
-		- non-raw data source could simply be copied directly into the filtered buffer?
+- implement filtering and compressing for each line separately, instead of the whole thing
+- filtering
+	- implement filter selection
+		- adaptive filtering for each scanline
+	- non-raw data source could simply be copied directly into the filtered buffer?
 
-	- break up PngWriter into several classes
+- break up PngWriter into several classes
 
 - implement performance tests using actual SRTM tiles
 	- experiment with compression level
 	- read hgt
-- compare the final size of PNG with ZIPs 
+	- decide on what the elevation -> grayscale function should be
+		- several options that need to be tested regarding the final image size
+	- compare the final size of PNG with ZIPs 
+
 - add R# annotations and code contracts to the code

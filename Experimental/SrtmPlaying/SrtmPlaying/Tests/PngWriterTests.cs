@@ -1,9 +1,6 @@
-using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Text;
-using LibroLib;
 using LibroLib.FileSystem;
 using NUnit.Framework;
 using SrtmPlaying.Png;
@@ -31,7 +28,7 @@ namespace SrtmPlaying.Tests
                 using (Graphics gfx = Graphics.FromImage(workingBitmap))
                     gfx.DrawImage(originalBitmap, 0, 0);
 
-                IPngWriter pngWriter = new PngWriter(new ZLibCompressorUsingSharpZipLib());
+                IPngWriter pngWriter = new PngWriter();
 
                 PngWriterSettings settings = new PngWriterSettings();
                 settings.CompressionLevel = 9;
@@ -55,7 +52,7 @@ namespace SrtmPlaying.Tests
                 using (Graphics gfx = Graphics.FromImage (workingBitmap))
                     gfx.DrawImage (originalBitmap, 0, 0);
 
-                IPngWriter pngWriter = new PngWriter (new ZLibCompressorUsingSharpZipLib());
+                IPngWriter pngWriter = new PngWriter ();
 
                 PngWriterSettings settings = new PngWriterSettings ();
                 settings.CompressionLevel = 9;
@@ -69,7 +66,7 @@ namespace SrtmPlaying.Tests
                 using (IPngBitmapDataSource raw = new RawReadOnlyBitmap(workingBitmap))
                 using (Stream stream = new WindowsFileSystem().OpenFileToWrite(outputFileName))
                 {
-                    pngWriter.WritePngPart(raw, 120, 160, 1200, 800, settings, stream);
+                    pngWriter.WritePngClip(raw, 120, 160, 1200, 800, settings, stream);
                 }
 
                 Debug.WriteLine ("sharp: {0} ms", watch.ElapsedMilliseconds);
