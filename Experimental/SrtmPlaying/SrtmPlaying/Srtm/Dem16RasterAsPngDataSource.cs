@@ -6,12 +6,14 @@ namespace SrtmPlaying.Srtm
 {
     public class Dem16RasterAsPngDataSource : IPngBitmapDataSource
     {
-        public Dem16RasterAsPngDataSource(IRaster raster)
+        [CLSCompliant(false)]
+        public Dem16RasterAsPngDataSource(IRaster raster, Func<short, ushort> valueTransformFunc)
         {
             if (raster.RasterValueType != RasterValueType.Int16)
                 throw new ArgumentException("This class only supports 16-bit rasters.");
 
             this.raster = raster;
+            this.valueTransformFunc = valueTransformFunc;
         }
 
         public bool IsRaw { get { return false; } }
@@ -30,14 +32,11 @@ namespace SrtmPlaying.Srtm
 
             for (int x = 0; x < raster.RasterWidth; x++)
             {
-                short value = raster.GetCellValueInt16(x, y) ?? -1;
+                short rasterValue = raster.GetCellValueInt16(x, y) ?? -1;
+                ushort transformedValue = valueTransformFunc(rasterValue);
 
-                //value = (short) Math.Min(short.MaxValue, value*10); 
-                //value = 15000;
-
-                // big endian!
-                scanlineData[x*2] = (byte)(value >> 8);
-                scanlineData[x*2 + 1] = (byte)value;
+                scanlineData[x*2] = (byte)(transformedValue >> 8);
+                scanlineData[x*2 + 1] = (byte)transformedValue;
             }
 
             return scanlineData;
@@ -62,6 +61,7 @@ namespace SrtmPlaying.Srtm
         }
 
         private readonly IRaster raster;
+        private readonly Func<short, ushort> valueTransformFunc;
         private bool disposed;
     }
 }
