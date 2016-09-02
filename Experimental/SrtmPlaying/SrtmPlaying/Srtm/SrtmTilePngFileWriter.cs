@@ -9,10 +9,14 @@ namespace SrtmPlaying.Srtm
     [CLSCompliant(false)]
     public class SrtmTilePngFileWriter : ISrtmTileFileWriter
     {
-        public SrtmTilePngFileWriter(IFileSystem fileSystem, IPngWriter pngWriter)
+        public SrtmTilePngFileWriter(
+            IFileSystem fileSystem, 
+            IPngWriter pngWriter,
+            Func<short, ushort> elevationToGrayscaleEncodingFunc)
         {
             this.fileSystem = fileSystem;
             this.pngWriter = pngWriter;
+            this.elevationToGrayscaleEncodingFunc = elevationToGrayscaleEncodingFunc;
         }
 
         public void WriteToFile(string fileName, IRaster tileData)
@@ -21,7 +25,7 @@ namespace SrtmPlaying.Srtm
 
             using (Stream fileStream = fileSystem.OpenFileToWrite(fileName))
             {
-                IPngBitmapDataSource rawBitmap = new Dem16RasterAsPngDataSource(tileData);
+                IPngBitmapDataSource rawBitmap = new Dem16RasterAsPngDataSource(tileData, elevationToGrayscaleEncodingFunc);
                 PngWriterSettings pngWriterSettings = new PngWriterSettings();
                 pngWriterSettings.ImageType = PngImageType.Grayscale16;
                 pngWriterSettings.Transparency = PngTransparency.Opaque;
@@ -38,5 +42,6 @@ namespace SrtmPlaying.Srtm
 
         private readonly IFileSystem fileSystem;
         private readonly IPngWriter pngWriter;
+        private readonly Func<short, ushort> elevationToGrayscaleEncodingFunc;
     }
 }
