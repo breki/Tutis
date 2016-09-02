@@ -18,15 +18,9 @@ namespace SrtmPlaying.Png.ChunkWriters.Idat
                 switch (imageType)
                 {
                     case PngImageType.Rgb8:
-                        byte blue = scanline.NextByte();
-                        if (xx > 0)
-                            blue -= scanline[si - pngInfo.SourcePixelSize - 1];
-                        byte green = scanline.NextByte();
-                        if (xx > 0)
-                            green -= scanline[si - pngInfo.SourcePixelSize - 1];
-                        byte red = scanline.NextByte();
-                        if (xx > 0)
-                            red -= scanline[si - pngInfo.SourcePixelSize - 1];
+                        byte blue = scanline.NextDiff();
+                        byte green = scanline.NextDiff();
+                        byte red = scanline.NextDiff();
 
                         filtered[fi++] = red;
                         filtered[fi++] = green;
@@ -34,26 +28,17 @@ namespace SrtmPlaying.Png.ChunkWriters.Idat
 
                         if (scanline.HasAlpha)
                         {
-                            byte alpha = scanline.NextByte();
+                            byte alpha = scanline.NextDiff();
 
                             if (useAlpha)
-                            {
-                                if (xx > 0)
-                                    alpha -= scanline[si - pngInfo.SourcePixelSize - 1];
-
                                 filtered[fi++] = alpha;
-                            }
                         }
 
                         break;
 
                     case PngImageType.Grayscale16:
-                        byte hi = scanline.NextByte();
-                        if (xx > 0)
-                            hi -= scanline[si - pngInfo.SourcePixelSize - 1];
-                        byte lo = scanline.NextByte();
-                        if (xx > 0)
-                            lo -= scanline[si - pngInfo.SourcePixelSize - 1];
+                        byte hi = scanline.NextDiff();
+                        byte lo = scanline.NextDiff();
 
                         filtered[fi++] = hi;
                         filtered[fi++] = lo;
@@ -63,8 +48,6 @@ namespace SrtmPlaying.Png.ChunkWriters.Idat
                         throw new NotImplementedException();
                 }
             }
-
-            throw new NotImplementedException();
         }
     }
 }
