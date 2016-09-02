@@ -63,7 +63,8 @@ namespace SrtmPlaying.Png
 
         public IPngBitmapScanline GetScanline(int y)
         {
-            return new RawReadOnlyBitmapScanline(pBase + y * wwidth, true);
+            return new RawReadOnlyBitmapScanline(
+                pBase + y * wwidth, PixelSize, true);
         }
 
         public void Dispose ()

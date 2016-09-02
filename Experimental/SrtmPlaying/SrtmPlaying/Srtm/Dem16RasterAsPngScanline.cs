@@ -6,7 +6,10 @@ namespace SrtmPlaying.Srtm
 {
     public class Dem16RasterAsPngScanline : IPngBitmapScanline
     {
-        public Dem16RasterAsPngScanline(IRasterArray raster, Func<short, ushort> valueTransformFunc, int y)
+        public Dem16RasterAsPngScanline(
+            IRasterArray raster, 
+            Func<short, ushort> valueTransformFunc, 
+            int y)
         {
             scanlineData = new byte[raster.RasterWidth * 2];
 
@@ -25,6 +28,15 @@ namespace SrtmPlaying.Srtm
         public byte NextByte()
         {
             return scanlineData[cursor++];
+        }
+
+        public unsafe byte NextDiff()
+        {
+            byte a = 0;
+            if (cursor >= 2)
+                a = scanlineData[cursor - 2];
+
+            return (byte)(scanlineData[cursor++] - a);
         }
 
         private readonly byte[] scanlineData;

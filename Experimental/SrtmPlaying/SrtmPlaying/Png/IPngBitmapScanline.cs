@@ -4,5 +4,6 @@
     {
         bool HasAlpha { get; }
         byte NextByte();
+        unsafe byte NextDiff();
     }
 }
