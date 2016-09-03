@@ -1,12 +1,10 @@
-- implement filtering as separate classes
+- implement optimized filter selection based on heuristics
+- implement other types of filters
+
 - instead of using in-memory array we should work directly with streams
 	- implement filter as a stream?
 
-- implement filtering and compressing for each line separately, instead of the whole thing
-- filtering
-	- implement filter selection
-		- adaptive filtering for each scanline
-	- non-raw data source could simply be copied directly into the filtered buffer?
+- experiment with ZLib compression levels
 
 - implement performance tests using actual SRTM tiles
 	- experiment with compression level
@@ -16,3 +14,4 @@
 	- compare the final size of PNG with ZIPs 
 
 - add R# annotations and code contracts to the code
+- implement SRTM cell reader from PNG

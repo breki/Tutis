@@ -4,13 +4,14 @@ namespace SrtmPlaying.Png.ChunkWriters.Idat
 {
     public class PngFilterSub : IPngFilter
     {
-        public void Filter(
-            IPngBitmapScanline scanline,
-            PngImageType imageType,
-            bool useAlpha,
-            int clipWidth,
-            byte[] filtered)
+        public byte[] Filter(
+            IPngBitmapScanline scanline, 
+            PngImageType imageType, 
+            bool useAlpha, 
+            int destinationPixelSize, 
+            int clipWidth)
         {
+            byte[] filtered = new byte[clipWidth * destinationPixelSize];
             int fi = 0;
 
             for (int xx = 0; xx < clipWidth; xx++)
@@ -48,6 +49,8 @@ namespace SrtmPlaying.Png.ChunkWriters.Idat
                         throw new NotImplementedException();
                 }
             }
+
+            return filtered;
         }
     }
 }
