@@ -44,7 +44,6 @@ namespace SrtmPlaying.Png
 
         public int ColorsCount { get { return colorsUsed.Count; } }
 
-        public PngFilterType FilterType { get; set; } = PngFilterType.Sub;
         public int ImageWidth { get; private set; }
         public int ImageHeight { get; private set; }
         public bool IsTransparencyUsed { get; set; }

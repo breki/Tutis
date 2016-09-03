@@ -8,6 +8,7 @@ namespace SrtmPlaying.Png
         public void Compress(byte[] originalData, Stream outputStream)
         {
             Deflater deflater = new Deflater(5);
+            //deflater.SetLevel(8);
             //deflater.SetStrategy(DeflateStrategy.Filtered);
             deflater.SetInput(originalData);
             deflater.Finish();

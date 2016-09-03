@@ -46,23 +46,51 @@ namespace SrtmPlaying.Png.ChunkWriters.Idat
             int bitmapHeight = bitmap.Height;
             int maxy = Math.Min(bitmapHeight, pngInfo.ClipY + pngInfo.ClipHeight);
 
-            byte[] filteredData = new byte[pngInfo.ClipWidth * pngInfo.DestinationPixelSize];
             for (int yy = pngInfo.ClipY; yy < maxy; yy++)
-            {
-                filteredStream.WriteByte((byte)pngInfo.FilterType);
-
-                IPngFilter filterToUse = filters[(int) pngInfo.FilterType];
-                filterToUse.Filter(
-                    bitmap.GetScanline(yy), 
-                    settings.ImageType, 
-                    settings.Transparency == PngTransparency.Transparent,
-                    pngInfo.ClipWidth,
-                    filteredData);
-
-                filteredStream.Write(filteredData, 0, filteredData.Length);
-            }
+                FilterScanline(filteredStream, settings, pngInfo, bitmap, yy);
 
             return filteredStream;
+        }
+
+        private void FilterScanline(
+            Stream filteredStream, 
+            PngWriterSettings settings, 
+            PngImageAnalysisInfo pngInfo, 
+            IPngBitmapDataSource bitmap, 
+            int yy)
+        {
+            byte[][] filteredDataByFilters = new byte[5][];
+            int[] filteredDataSums = new int[5];
+            int bestSumSoFar = int.MaxValue;
+            int bestFilterToUse = 0;
+            for (PngFilterType filterType = PngFilterType.None; filterType <= PngFilterType.Sub; filterType++)
+            {
+                int filterTypeInt = (int)filterType;
+                IPngFilter filterToUse = filters[filterTypeInt];
+                filteredDataByFilters[filterTypeInt] = filterToUse.Filter(bitmap.GetScanline(yy), settings.ImageType, pngInfo.IsTransparencyUsed, pngInfo.DestinationPixelSize, pngInfo.ClipWidth);
+                int sum = CalculateFilteredDataSum(filteredDataByFilters[filterTypeInt]);
+                filteredDataSums[filterTypeInt] = sum;
+
+                if (sum < bestSumSoFar)
+                {
+                    bestSumSoFar = sum;
+                    bestFilterToUse = filterTypeInt;
+                }
+            }
+
+            filteredStream.WriteByte((byte)bestFilterToUse);
+
+            filteredStream.Write(filteredDataByFilters[bestFilterToUse], 0, filteredDataByFilters[bestFilterToUse].Length);
+        }
+
+        private static int CalculateFilteredDataSum(byte[] data)
+        {
+            int sum = 0;
+
+            foreach (byte b in data)
+                sum += (sbyte)b;
+
+            return sum;
         }
 
         private byte[] CompressImageDataChunk(
