@@ -19,6 +19,7 @@ namespace SrtmPlaying.Tests
         [TestCase("N00E010")]
         [TestCase("N48E119")]
         [TestCase("S04W079")]
+        [Parallelizable(ParallelScope.Self)]
         public void WriteSrtmCellToPng(string cellName)
         {
             string zipFileName = @"D:\hg\tutis\Experimental\SrtmPlaying\SrtmPlaying\data\{0}.SRTMGL1.hgt.zip"

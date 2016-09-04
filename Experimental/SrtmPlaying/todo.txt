@@ -1,4 +1,5 @@
 - implement optimized filter selection based on heuristics
+	- parallelize?
 - implement other types of filters
 
 - instead of using in-memory array we should work directly with streams
