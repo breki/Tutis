@@ -8,11 +8,9 @@ namespace CalculatorTdd.Tests
         [Test]
         public void ShouldShow0OnStart()
         {
-            displayMock.Setup(x => x.SetText("0"));
-            
             calculator.Init ();
 
-            displayMock.Verify();
+            displayMock.AssertFinalText("0");
         }
 
         [Test]
@@ -20,15 +18,11 @@ namespace CalculatorTdd.Tests
         {
             calculator.Init ();
 
-            displayMock.Setup (x => x.SetText ("5"));
-            displayMock.Setup (x => x.SetText ("52"));
-            displayMock.Setup (x => x.SetText ("520"));
-
             calculator.HandleKeyPress(Key.N5);
             calculator.HandleKeyPress(Key.N2);
             calculator.HandleKeyPress(Key.N0);
 
-            displayMock.Verify ();
+            displayMock.AssertFinalText ("520");
         }
 
         [Test]
@@ -36,23 +30,35 @@ namespace CalculatorTdd.Tests
         {
             calculator.Init ();
 
-            //displayMock.Setup (x => x.SetText (It.IsAny<string>()));
-
             calculator.HandleKeyPress(Key.N0);
             calculator.HandleKeyPress(Key.N0);
             calculator.HandleKeyPress(Key.N0);
 
-            displayMock.Verify(x => x.SetText("0"), Times.Once);
+            displayMock.AssertLog (new[] { "0" });
+        }
+
+        [Test]
+        public void AddTwoNumbers()
+        {
+            calculator.Init ();
+
+            calculator.HandleKeyPress (Key.N5);
+            calculator.HandleKeyPress (Key.N8);
+            calculator.HandleKeyPress (Key.Add);
+            calculator.HandleKeyPress (Key.N7);
+            calculator.HandleKeyPress (Key.Equals);
+
+            displayMock.AssertLog (new[] { "0", "5", "58", "7", "65" });
         }
 
         [SetUp]
         public void Setup()
         {
-            displayMock = new Mock<IDisplay>();
-            calculator = new Calculator(displayMock.Object);
+            displayMock = new MockDisplay();
+            calculator = new Calculator(displayMock);
         }
 
         private Calculator calculator;
-        private Mock<IDisplay> displayMock;
+        private MockDisplay displayMock;
     }
 }
