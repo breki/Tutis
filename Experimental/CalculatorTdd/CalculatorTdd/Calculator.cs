@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -39,7 +38,10 @@ namespace CalculatorTdd
                 }
 
                 case Key.Add:
-                    HandleAddition();
+                case Key.Sub:
+                case Key.Mul:
+                case Key.Div:
+                    HandleOperationKey(key);
                     return;
 
                 case Key.Equals:
@@ -47,9 +49,6 @@ namespace CalculatorTdd
                     return;
 
                 case Key.Dot:
-                case Key.Sub:
-                case Key.Mul:
-                case Key.Div:
                 case Key.C:
                 case Key.MRC:
                 case Key.MPlus:
@@ -87,15 +86,35 @@ namespace CalculatorTdd
             UpdateDisplay();
         }
 
-        private void HandleAddition()
+        private void HandleOperationKey(Key operationKey)
         {
             ParseAndStoreCurrentValue();
             displayState = DisplayState.AfterOperation;
-            selectedOperation = SelectedOperation.Addition;
+
+            switch (operationKey)
+            {
+                case Key.Add:
+                    selectedOperation = SelectedOperation.Addition;
+                    break;
+                case Key.Sub:
+                    selectedOperation = SelectedOperation.Subtraction;
+                    break;
+                case Key.Mul:
+                    selectedOperation = SelectedOperation.Multiplication;
+                    break;
+                case Key.Div:
+                    selectedOperation = SelectedOperation.Division;
+                    break;
+                default:
+                    throw new InvalidOperationException("BUG");
+            }
         }
 
         private void HandleEquals()
         {
+            if (selectedOperation == SelectedOperation.None)
+                return;
+            
             ParseAndStoreCurrentValue();
             PerformOperation();
 
@@ -105,24 +124,41 @@ namespace CalculatorTdd
 
         private void PerformOperation()
         {
-            double val1 = valueStack.Pop();
             double val2 = valueStack.Pop();
+            double val1 = valueStack.Pop();
 
+            double result;
             switch (selectedOperation)
             {
                 case SelectedOperation.Addition:
-                    double result = val1 + val2;
-                    PushValueOnDisplay(result);
+                    result = val1 + val2;
+                    break;
+                case SelectedOperation.Subtraction:
+                    result = val1 - val2;
+                    break;
+                case SelectedOperation.Multiplication:
+                    result = val1 * val2;
+                    break;
+                case SelectedOperation.Division:
+                    result = val1 / val2;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            PushValueOnDisplay (result);
         }
 
         private void PushValueOnDisplay(double value)
         {
-            valueStack.Push(value);
-            currentlyDisplayedString = value.ToString(CultureInfo.InvariantCulture);
+            if (double.IsNaN(value) || double.IsInfinity(value))
+                currentlyDisplayedString = "ERR";
+            else
+            {
+                valueStack.Push (value);
+                currentlyDisplayedString = value.ToString (CultureInfo.InvariantCulture);
+            }
+
             UpdateDisplay();
         }
 
@@ -156,6 +192,9 @@ namespace CalculatorTdd
         {
             None,
             Addition,
+            Subtraction,
+            Multiplication,
+            Division,
         }
     }
 }

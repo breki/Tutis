@@ -51,6 +51,55 @@ namespace CalculatorTdd.Tests
             displayMock.AssertLog (new[] { "0", "5", "58", "7", "65" });
         }
 
+        [Test]
+        public void MultiplyTwoNumbers()
+        {
+            calculator.Init ();
+
+            calculator.HandleKeyPress (Key.N5);
+            calculator.HandleKeyPress (Key.N8);
+            calculator.HandleKeyPress (Key.Mul);
+            calculator.HandleKeyPress (Key.N7);
+            calculator.HandleKeyPress (Key.Equals);
+
+            displayMock.AssertLog (new[] { "0", "5", "58", "7", "406" });
+        }
+
+        [Test]
+        public void DivisionByZeroShouldShowError()
+        {
+            calculator.Init ();
+
+            calculator.HandleKeyPress (Key.N5);
+            calculator.HandleKeyPress (Key.N8);
+            calculator.HandleKeyPress (Key.Div);
+            calculator.HandleKeyPress (Key.N0);
+            calculator.HandleKeyPress (Key.Equals);
+
+            displayMock.AssertLog (new[] { "0", "5", "58", "0", "ERR" });
+        }
+
+        [Test]
+        public void PressingEqualsRightAtStartShouldNotCauseError()
+        {
+            calculator.Init ();
+
+            calculator.HandleKeyPress (Key.Equals);
+        }
+
+        [Test]
+        public void PressingEqualsAfterOperationButtonShouldReuseValue()
+        {
+            calculator.Init ();
+
+            calculator.HandleKeyPress (Key.N5);
+            calculator.HandleKeyPress (Key.N8);
+            calculator.HandleKeyPress (Key.Add);
+            calculator.HandleKeyPress (Key.Equals);
+
+            displayMock.AssertLog (new[] { "0", "5", "58", "116" });
+        }
+
         [SetUp]
         public void Setup()
         {
