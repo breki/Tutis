@@ -21,6 +21,7 @@ namespace FinanceReport.Tests
                 .AddGroup("hrana in nakupi", 4, 5, 10)
                 .AddGroup("kredit", 19)
                 .AddGroup("stanovanje", 12, 34, 35)
+                .AddGroup("Kozmo", 56)
                 .AddGroup("ostalo");
 
             foreach (TableRow row in categoriesTable.Rows.Values)
