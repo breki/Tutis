@@ -44,6 +44,14 @@
       <HintPath>..\packages\LibroLib.Common.1.5.3\lib\net40\LibroLib.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="LibroLib.WebUtils, Version=1.5.0.0, Culture=neutral, PublicKeyToken=565e9639e336040e, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibroLib.WebUtils.1.5.3\lib\net40\LibroLib.WebUtils.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="nunit.framework, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
@@ -93,6 +101,7 @@
     <Compile Include="Srtm\SrtmTilePngFileWriter.cs" />
     <Compile Include="Png\PngImageType.cs" />
     <Compile Include="Tests\PngValidator.cs" />
+    <Compile Include="Tests\SrtmServerTests.cs" />
     <Compile Include="Tests\SrtmTests.cs" />
     <Compile Include="Tests\PngChunk.cs" />
     <Compile Include="Tests\PngImage.cs" />
@@ -100,6 +109,7 @@
     <Compile Include="Tests\PngWriterTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
