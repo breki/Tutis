@@ -29,12 +29,13 @@ namespace FinanceReport
                 .AddGroup ("avto - ostali stroški", 3, 16, 17, 18, 6, 30)
                 .AddGroup ("hrana in nakupi", 4, 5, 10)
                 .AddGroup ("kredit", 19)
-                .AddGroup ("stanovanje", 12, 34, 35)
+                .AddGroup ("stanovanje", 12, 34, 35, 46)
+                .AddGroup ("Kozmo", 56)
                 .AddGroup ("ostalo");
 
             model.MonthlySpendingByCategories = calcMonthlyBalancesByGroups.Calc ();
 
-            RenderReport (model, @"\\NASTY\Web\finance.html");
+            RenderReport (model, @"\\HOBBIT\Web\finance.html");
 
             // monthly spending by categories
             // balance trend
