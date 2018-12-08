@@ -67,6 +67,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Step5\dist\main.js" />
+    <Content Include="Step5\index.html" />
+    <Content Include="Step5\index.js" />
+    <Content Include="Step5\lib.js" />
+    <Content Include="Step5\webpack.config.js" />
     <Content Include="Step4JsNpm\dist\main.js" />
     <Content Include="Step4JsNpm\index.html" />
     <Content Include="Step4JsNpm\webpack.config.js" />
@@ -86,6 +91,8 @@
     <None Include="packages.config" />
     <Content Include="Step4JsNpm\package.json" />
     <Content Include="Step4JsNpm\webpack.cmd" />
+    <Content Include="Step5\package.json" />
+    <Content Include="Step5\webpack.cmd" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
