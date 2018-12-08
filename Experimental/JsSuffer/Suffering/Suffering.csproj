@@ -67,6 +67,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Step3JsFiles\index.html" />
+    <Content Include="Step3JsFiles\lib.js" />
+    <Content Include="Step3JsFiles\main.js" />
     <Content Include="Step2JsFile\index.html" />
     <Content Include="Step1Vanilla\index.html" />
     <Content Include="Step2JsFile\main.js" />
