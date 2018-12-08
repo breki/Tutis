@@ -21,3 +21,5 @@ Experimental/AmazonS3/s3-credentials.txt
 Projects/Freude/TestResult.xml
 **/.vs
 Experimental/JsSuffer/packages
+Experimental/JsSuffer/Suffering/**/node_modules
+**/package-lock.json
