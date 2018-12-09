@@ -69,8 +69,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Step9\dist\main.js" />
+    <Content Include="Step9\index.html" />
+    <Content Include="Step9\webpack.config.js" />
     <Content Include="Step8\dist\main.js" />
     <Content Include="Step8\index.html" />
+    <TypeScriptCompile Include="Step9\index.ts" />
     <TypeScriptCompile Include="Step8\index.ts" />
     <Content Include="Step8\webpack.config.js" />
     <Content Include="Step7\dist\main.js" />
@@ -114,6 +118,9 @@
     <Content Include="Step8\package.json" />
     <Content Include="Step8\webpack.cmd" />
     <Content Include="Step8\tsconfig.json" />
+    <Content Include="Step9\package.json" />
+    <Content Include="Step9\tsconfig.json" />
+    <Content Include="Step9\webpack.cmd" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
