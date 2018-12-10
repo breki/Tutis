@@ -24,3 +24,4 @@ Experimental/JsSuffer/packages
 Experimental/JsSuffer/Suffering/**/node_modules
 **/package-lock.json
 Experimental/JsSuffer/**/dist/main.js
+Experimental/JsSuffer/Suffering/*/dist

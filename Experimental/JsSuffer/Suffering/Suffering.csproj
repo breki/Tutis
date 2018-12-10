@@ -69,6 +69,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Step7.1NonModule\dist\main.js" />
+    <Content Include="Step7.1NonModule\index.html" />
+    <Content Include="Step7.1NonModule\index.js" />
+    <Content Include="Step7.1NonModule\nonmodule-lib.js" />
+    <Content Include="Step7.1NonModule\webpack.config.js" />
     <Content Include="Step9\dist\main.js" />
     <Content Include="Step9\index.html" />
     <Content Include="Step9\webpack.config.js" />
@@ -121,6 +126,8 @@
     <Content Include="Step9\package.json" />
     <Content Include="Step9\tsconfig.json" />
     <Content Include="Step9\webpack.cmd" />
+    <Content Include="Step7.1NonModule\package.json" />
+    <Content Include="Step7.1NonModule\webpack.cmd" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
